@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "xyz.appmaker.odibfx",
+      "sha256_cert_fingerprints": ["72:EE:C4:B7:24:FC:84:32:AF:00:A3:26:60:24:15:BB:B8:BB:E4:25:65:5A:DA:2F:B8:F7:CE:D7:E9:22:68:69"]
+    }
+  }
+]
