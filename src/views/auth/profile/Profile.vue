@@ -30,7 +30,7 @@
             <section class="bio-container">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel,
                 blanditiis odio, atque quas minima, reprehenderit molestiae
-                itaque commodi nulla similique culpa! Amet reprehenderit
+                itaque commodi nulla similique culpa! Amet repr repr ehenderit
                 velit modi delectus consequuntur odit perferendis nemo?
             </section>
 
