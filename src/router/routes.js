@@ -4,6 +4,10 @@ const Login = () => import('@/views/guest/Login')
 const Home = () => import('@/views/auth/Home')
 const Profile = () => import('@/views/auth/profile/Profile')
 
+const About = () => import('@/views/auth/profile/about/About')
+const Matches = () => import('@/views/auth/profile/matches/Matches')
+const Settings = () => import('@/views/auth/profile/settings/Settings')
+
 export default [
 	...middleware('guest', [
 		{
@@ -19,12 +23,34 @@ export default [
 			name: 'home',
 			component: Home,
 			redirect: '/profile',
+
 			children: [
 				{
-					path: '/profile',
+					path: '/profile/',
 					name: 'profile',
-					component: Profile
-				},
+					redirect: '/profile/about',
+					component: Profile,
+
+					children: [
+						{
+							path: 'about',
+							name: 'about',
+							component: About
+						},
+
+						{
+							path: 'matches',
+							name: 'matches',
+							component: Matches
+						},
+
+						{
+							path: 'settings',
+							name: 'settings',
+							component: Settings
+						},
+					]
+				}
 			]
 		},
 	]),
@@ -42,7 +68,13 @@ function middleware(middleware, routes) {
 	// setting middleware for every route
 	routes.forEach(route => {
 		if (route.children) {
-			route.children.forEach(child => child.meta = { ...child.meta, middleware })
+			route.children.forEach(child => {
+				child.meta = { ...child.meta, middleware }
+
+				if (child.children) {
+					child.children.forEach(deepChild => deepChild.meta = { ...deepChild.meta, middleware })
+				}
+			})
 		}
 
 		route.meta = {

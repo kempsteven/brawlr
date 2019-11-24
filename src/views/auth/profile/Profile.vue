@@ -35,46 +35,63 @@
             </section>
 
             <section class="profile-nav">
-                <section class="link-container">
+                <section class="nav-container">
                     <router-link
-                        class="link-item active"
-                        to="profile/about"
-                        :class="{ 'active' : $route.name === 'about' }"
+                        class="link-item"
+                        to="/profile/about"
                     >
-                        About
+                        <div class="nav-icon about"/>
+
+                        <span class="nav-title">
+                            About
+                        </span>
                     </router-link>
 
                     <router-link
                         class="link-item"
-                        to="profile/matches"
-                        :class="{ 'active' : $route.name === 'matches' }"
+                        to="/profile/matches"
                     >
-                        Matches
+                        <div class="nav-icon matches"/>
+
+                        <span class="nav-title">
+                            Matches
+                        </span>
                     </router-link>
 
                     <router-link
                         class="link-item"
-                        to="profile/settings"
-                        :class="{ 'active' : $route.name === 'settings' }"
+                        to="/profile/settings"
                     >
-                        Settings
+                        <div class="nav-icon settings"/>
+
+                        <span class="nav-title">
+                            Settings
+                        </span>
                     </router-link>
+
+                    <button
+                        class="sign-out _main-btn"
+                        @click="logout()"
+                    >
+                        Sign out
+                    </button>
                 </section>
             </section>
         </section>
 
-        <button @click="$store.dispatch('authentication/logOut')">
-            LOG OUT
-        </button>
         <section class="profile-content">
-            <router-view />
+            <router-view/>
         </section>
     </div>
 </template>
 
 <script>
 export default {
-    
+    methods: {
+        logout () {
+            this.$store.dispatch('authentication/logOut')
+        }
+    },
 }
 </script>
 
@@ -215,22 +232,68 @@ export default {
             width: 100%;
             border-top: 1px solid #ececec;
 
-            .link-container {
-                width: 60%;
+            .nav-container {
+                width: 50%;
                 display: flex;
                 margin: 0 auto;
                 min-width: 600px;
 
                 .link-item {
-                    padding: 20px 25px 15px 25px;
                     font-size: 18px;
-                    border-bottom: 5px solid transparent;
+                    border-bottom: 3px solid transparent;
                     transition: 0.3s;
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 15px;
 
-                    &.active {
+                    .nav-icon {
+                        width: 28px;
+                        height: 28px;
+                        margin-right: 5px;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        filter: grayscale(100%);
+                        transition: 0.3s;
+
+                        &.about {
+                            background-image: url('~@/assets/img/icon/about.png');
+                        }
+
+                        &.matches {
+                            background-image: url('~@/assets/img/icon/matches.png');
+                        }
+
+                        &.settings {
+                            background-image: url('~@/assets/img/icon/settings.png');
+                        }
+
+                        @include mobile {
+                            width: 45px;
+                            height: 45px;
+                            margin-right: 0;
+                        }
+                    }
+
+                    &.router-link-active {
+                        color: $red;
                         border-bottom: 3px solid #DA5555;
                         color: #DA5555;
+
+                        .nav-icon {
+                            filter: unset;
+                        }
                     }
+
+                    @include mobile {
+                        .nav-title {
+                            display: none;
+                        }
+                    }
+                }
+
+                .sign-out {
+                    margin-left: auto;
+                    align-self: center;
                 }
             }
         }

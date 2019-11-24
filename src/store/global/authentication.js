@@ -42,7 +42,7 @@ export const actions = {
         state.isLoggedIn = false
         state.token = ''
         cookies.remove('token')
-        router.push('/login')
+        router.push({ name: 'login' })
         location.reload()
     },
 

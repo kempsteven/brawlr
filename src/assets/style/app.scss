@@ -54,6 +54,16 @@ button {
     &:hover {
         opacity: 1;
     }
+
+    &._main-btn {
+        border-radius: 5px;
+        border: none;
+        background: transparent;
+        padding: 15px 25px;
+        color: #fff;
+        font-size: 15px;
+        background: $red;
+    }
 }
 
 a {

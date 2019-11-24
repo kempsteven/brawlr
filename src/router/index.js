@@ -50,6 +50,8 @@ router.beforeEach(async (to, from, next) => {
     //     )
     // }).middleware
 
+    console.log(to)
+
     const routeMiddleware = to.meta.middleware
 
     // If middleware is *, just go to next route

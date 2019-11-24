@@ -118,6 +118,7 @@
                 background-repeat: no-repeat;
                 background-size: cover;
                 filter: grayscale(100%);
+                transition: 0.3s;
 
                 &.profile {
                     background-image: url('~@/assets/img/icon/profile-icon.png');
