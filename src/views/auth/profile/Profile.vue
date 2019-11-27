@@ -101,6 +101,7 @@ export default {
     display: flex;
     align-items: center;
     flex-direction: column;
+    justify-content: center;
 
 
     .profile-header {
@@ -206,7 +207,7 @@ export default {
         width: 100%;
         min-width: 700px;
         padding-top: 100px;
-        box-shadow: 0 1px 5px #cacaca;
+        box-shadow: 0 1px 5px #e4e4e4;
         background: #fff;
 
         @include mobile {
@@ -296,6 +297,20 @@ export default {
                     align-self: center;
                 }
             }
+        }
+    }
+
+    .profile-content {
+        margin-top: 15px;
+        min-width: 600px;
+        position: relative;
+        width: 50%;
+        box-shadow: 0 1px 5px #e4e4e4;
+
+        @include mobile {
+            min-width: unset;
+            width: 100%;
+            margin-top: 0;
         }
     }
 }

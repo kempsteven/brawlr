@@ -39,7 +39,7 @@ workbox.routing.registerRoute(
 workbox.skipWaiting()
 workbox.clientsClaim()
 
-const LATEST_VERSION = 'v3'
+const LATEST_VERSION = 'v4'
 self.addEventListener('activate', (event) => {
     console.log(`%c ${LATEST_VERSION} `, 'background: #ddd; color: #0000ff')
     if (caches) {
