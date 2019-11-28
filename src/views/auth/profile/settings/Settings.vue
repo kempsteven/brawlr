@@ -11,9 +11,13 @@
 </template>
 
 <script>
-    export default {
-        
-    }
+export default {
+    methods: {
+        logout () {
+            this.$store.dispatch('authentication/logOut')
+        }
+    },
+}
 </script>
 
 <style lang="scss" scoped>

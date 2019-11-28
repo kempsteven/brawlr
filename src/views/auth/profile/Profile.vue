@@ -80,11 +80,7 @@
 
 <script>
 export default {
-    methods: {
-        logout () {
-            this.$store.dispatch('authentication/logOut')
-        }
-    },
+    
 }
 </script>
 
@@ -283,11 +279,6 @@ export default {
                             display: none;
                         }
                     }
-                }
-
-                .sign-out {
-                    margin-left: auto;
-                    align-self: center;
                 }
             }
         }
