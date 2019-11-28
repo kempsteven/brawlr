@@ -21,12 +21,12 @@ export default {
 <style lang="scss" scoped>
 .home {
 	width: 100%;
-	min-height: 100vh;
+	min-height: 100%;
 	display: flex;
 	flex-direction: column;
 
 	.main-content {
-		flex: 1 1 auto;
+		width: 100%;
 		position: relative;
 		-webkit-overflow-scrolling: touch;
 	}

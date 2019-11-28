@@ -1,6 +1,12 @@
 <template>
     <div>
         settings page
+        <button
+            class="sign-out _main-btn"
+            @click="logout()"
+        >
+            Sign out
+        </button>
     </div>
 </template>
 

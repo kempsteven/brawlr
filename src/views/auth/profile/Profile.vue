@@ -68,13 +68,6 @@
                             Settings
                         </span>
                     </router-link>
-
-                    <button
-                        class="sign-out _main-btn"
-                        @click="logout()"
-                    >
-                        Sign out
-                    </button>
                 </section>
             </section>
         </section>
