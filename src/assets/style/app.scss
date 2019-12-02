@@ -17,7 +17,8 @@ html, body {
 	box-sizing: border-box;
 	word-wrap: break-word;
 	user-select: none;
-	font-family: 'Lato', sans-serif;
+    font-family: 'Lato', sans-serif;
+    color: #384e64;
 
 	&::-webkit-scrollbar-track { 
         background: transparent;
@@ -55,14 +56,26 @@ button {
         opacity: 1;
     }
 
-    &._main-btn {
+    &._primary {
         border-radius: 5px;
         border: none;
         background: transparent;
-        padding: 15px 25px;
+        padding: 15px 20px;
         color: #fff;
-        font-size: 15px;
+        font-size: 14px;
         background: $red;
+        min-width: 100px;
+    }
+
+    &._cancel {
+        border-radius: 5px;
+        border: 1px solid $red;
+        background: transparent;
+        padding: 15px 20px;
+        color: $red;
+        font-size: 14px;
+        background: #fff;
+        min-width: 100px;
     }
 }
 
@@ -79,5 +92,16 @@ a {
 }
 
 ._transition-anim-enter, ._transition-anim-leave-to{
+	opacity: 0;
+}
+
+._transition-fixed-enter-active, ._transition-fixed-leave-active {
+	transition: 0.5s ease;
+	position: fixed;
+	top: 0;
+    left: 0;
+}
+
+._transition-fixed-enter, ._transition-fixed-leave-to{
 	opacity: 0;
 }

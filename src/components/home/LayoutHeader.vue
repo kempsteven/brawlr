@@ -94,7 +94,9 @@
             flex-shrink: 0;
 
             &.router-link-active {
-                color: $red;
+                .item-title {
+                    color: $red;
+                }
 
                 .nav-icon {
                     filter: unset;

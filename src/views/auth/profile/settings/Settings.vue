@@ -2,7 +2,7 @@
     <div>
         settings page
         <button
-            class="sign-out _main-btn"
+            class="sign-out _primary"
             @click="logout()"
         >
             Sign out

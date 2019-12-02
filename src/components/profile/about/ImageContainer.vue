@@ -36,6 +36,7 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    margin-bottom: 25px;
 
     .image-item {
         width: 31.5%;

@@ -73,7 +73,9 @@
         </section>
 
         <section class="profile-content">
-            <router-view/>
+            <transition name="_transition-anim">
+                <router-view class="content-view"/>
+            </transition>
         </section>
     </div>
 </template>
@@ -267,7 +269,10 @@ export default {
                     &.router-link-active {
                         color: $red;
                         border-bottom: 3px solid #DA5555;
-                        color: #DA5555;
+
+                        .nav-title {
+                            color: #DA5555;
+                        }
 
                         .nav-icon {
                             filter: unset;
@@ -275,10 +280,19 @@ export default {
                     }
 
                     @include mobile {
+                        flex: 1 1 auto;
+                        justify-content: center;
+
                         .nav-title {
                             display: none;
                         }
                     }
+                }
+
+                @include mobile {
+                    justify-content: space-between;
+                    width: 100%;
+                    min-width: unset;
                 }
             }
         }
@@ -295,6 +309,14 @@ export default {
             min-width: unset;
             width: 100%;
             margin-top: 0;
+        }
+
+        .content-view {
+            padding: 15px;
+            width: 100%;
+            border-radius: 5px;
+            display: flex;
+            background: #fff;
         }
     }
 }
