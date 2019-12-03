@@ -19,6 +19,16 @@
                 </div>
             </section>
 
+            <section class="info-item">
+                <h4 class="item-title">
+                    Age:
+                </h4>
+
+                <div class="item-value" v-pre>
+                    99 Years Old
+                </div>
+            </section>
+
 
             <section class="info-item">
                 <h4 class="item-title">
