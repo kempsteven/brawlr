@@ -65,7 +65,7 @@
                 Age range:
             </h4>
 
-            <section class="item-value">
+            <section class="item-value range">
                 <input type="range" value="10" class="min-range">
                 <input type="range" value="10" class="max-range">
             </section>
@@ -158,107 +158,121 @@ export default {
                 }
             }
 
-            // .min-range, .max-range {
-            //     pointer-events: none;
-            //     position: absolute;
-            //     appearance: none;  
-            //     border: none;
-            //     border-radius: 5px;
-            //     background: #ddd;
-            //     left: 0;
-            //     top: 0;
-            //     width: 100%;
-            //     outline: none;
-            //     height: 5px;
-            //     margin: 0;
-            //     padding: 0;
+            &.range {
+                height: 20px;
+                display: flex;
+                align-items: center;
 
-            //     &::-webkit-slider-thumb {
-            //         pointer-events: all;
-            //         position: relative;
-            //         z-index: 1;
-            //         outline: 0;    
-            //         appearance: none;
-            //         width: 20px;
-            //         height: 20px;
-            //         border: none;
-            //         background-color: $red;
-            //         border-radius: 50%;
-            //         cursor: pointer;
-            //     }
-            // }
-            
-            input[type="range"] {
-                pointer-events: none;
-                position: absolute;
-                -webkit-appearance: none;
-                -webkit-tap-highlight-color: rgba(255, 255, 255, 0);    
-                border: none;
-                border-radius: 5px;
-                background: rgba(255, 255, 255, 0);
-                left: 0;
-                top: 0;
-                width: 100%;
-                outline: none;
+                &::before {
+                    content: '';
+                    height: 5px;
+                    background: #000;
+                    width: 100%;
+                    background: #ddd;
+                    border-radius: 3px;
+                }
+            }
+
+            .min-range, .max-range {
                 height: 25px;
+                width: 100%;
                 margin: 0;
                 padding: 0;
-            }  
-            
-            input[type="range"]::-webkit-slider-thumb {
-                pointer-events: all;
-                position: relative;
-                z-index: 1;
-                outline: 0;    
-                appearance: none;
-                width: 25px;
-                height: 25px;
-                border: none;
-                border-radius: 5px;
-                background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, lighten($red,60%)), color-stop(100%, $red)); /* android <= 2.2 */
-                background-image: -webkit-linear-gradient(top , lighten($red,60%) 0, $red 100%); /* older mobile safari and android > 2.2 */;
-                background-image: linear-gradient(to bottom, lighten($red,60%) 0, $red 100%); /* W3C */
-            }
-            
-            input[type="range"]::-moz-range-thumb {
-                pointer-events: all;
-                position: relative;
-                z-index: 10;
-                appearance: none;
-                width: 25px;
-                height: 25px;
-                border: none;
-                border-radius: 5px;
-                background-image: linear-gradient(to bottom, lighten($red,60%) 0, $red 100%); /* W3C */
-            }
-
-            input[type="range"]::-ms-thumb {
-                pointer-events: all !important;
-                position: relative;
-                z-index: 10;
-                appearance: none;
-                width: 25px;
-                height: 25px;
-                border-radius: 5px;
                 border: 0;
-                background-image: linear-gradient(to bottom, lighten($red,60%) 0, $red 100%); /* W3C */
-            }
-            
-            input[type=range]::-moz-range-track {
-                position: relative;
-                z-index: -1;
-                background-color: rgba(0, 0, 0, 1);
-                border: 0;
-            }
-            
-            input[type=range]:last-of-type::-moz-range-track {
+                outline: none;
+                background: transparent;
+                -webkit-appearance: none;
                 -moz-appearance: none;
-                background: none transparent;
-                border: 0;
-            } 
-            
-            input[type=range]::-moz-focus-outer {
-                border: 0;
+                pointer-events: none; // Prevent mouse interaction on the range slider.
+                position: absolute;
+
+                /* For Webkit Browsers (Chrome) */
+                &::-webkit-slider-runnable-track {
+                    cursor: default;
+                    height: 5px; /* Required for Samsung internet based browsers */
+                    outline: 0;
+                    appearance: none;
+                    background: #ddd;
+                    border-radius: 3px;
+                    position: relative;
+                }
+
+                &::-webkit-slider-thumb {
+                    -webkit-appearance: none; // Reset appearance so we can apply backgrounds/borders etc.
+                    pointer-events: all; // Re-enable pointer events so the handles can be used.
+                    background: $red;
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%;
+                    top: -10px;
+                    position: absolute;
+                    z-index: 10;
+                    cursor: pointer;
+                }
+
+                /* For Mozilla Browsers */
+                &::-moz-range-track {
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                &::-moz-range-thumb {
+                    -webkit-appearance: none; // Reset appearance so we can apply backgrounds/borders etc.
+                    pointer-events: all; // Re-enable pointer events so the handles can be used.
+                    background: $red;
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%;
+                    top: -5px;
+                    position: absolute;
+                    z-index: 10;
+                    cursor: pointer;
+                    border: 0;
+                }
+
+                /* For Edge Browsers */
+                // &::-ms-track {
+                //     height: 5px;
+                    
+                //     /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+                //     background: transparent;
+                    
+                //     /*leave room for the larger thumb to overflow with a transparent border */
+                //     border-color: transparent;
+                //     border-width: 6px 0;
+
+                //     /*remove default tick marks*/
+                //     color: transparent;
+
+                //     pointer-events: all;
+                // }
+
+                // &::-ms-thumb {
+                //     border: none;
+                //     height: 25px;
+                //     width: 25px;
+                //     border-radius: 50%;
+                //     background: $red;
+                //     pointer-events: all;
+                // }
+
+                &::-ms-track {
+                    pointer-events: all;
+                }
+
+                &::-ms-thumb {
+                    border: none;
+                    height: 25px;
+                    width: 25px;
+                    border-radius: 50%;
+                    background: $red;
+                    pointer-events: all;
+                }
+
+                &::-ms-tooltip {
+                    display: none;
+                    pointer-events: all;
+                }
             }
         }
     }
