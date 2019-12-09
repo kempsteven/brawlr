@@ -1,16 +1,18 @@
 <template>
     <div class="swipeable-cards">
-        <section class="card-container">
+        <!-- <section class="card-container"> -->
             <vue2-interact-draggable
                 class="card"
                 v-for="(card, key) in cards"
                 :key="cards.length - key"
+                :style="`z-index: ${cards.length - key}`"
                 :interact-out-of-sight-x-coordinate="500"
                 :interact-max-rotation="15"
-                :interact-x-threshold="200"
+                :interact-x-threshold="100"
                 :interact-y-threshold="200"
 
                 :interactBlockDragDown="true"
+
                 @draggedRight="like()"
                 @draggedLeft="ignore()"
                 @draggedUp="ignore()"
@@ -18,16 +20,16 @@
                 <section class="detail-container">
                     <img
                         class="fighter-img"
-                        src="@/assets/img/sample-picture.jpg"
+                        src="@/assets/img/test.jpg"
                         alt="fighter-image"
                     >
 
                     <section class="detail-name">
-                        {{ card.name }}
+                        {{ `${card.name} - ${key + 1}` }}
                     </section>
                 </section>
             </vue2-interact-draggable>
-        </section>
+        <!-- </section> -->
     </div>
 </template>
 
@@ -77,39 +79,36 @@ export default {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 
-    .card-container {
-        width: 600px;
-        height: 800px;
-        position: relative;
+    // .card-container {
+    //     width: 600px;
+    //     height: 800px;
+    //     position: relative;
 
-        @include mobile {
-            width: 95%;
-            height: 95%;
-        }
+    //     @include mobile {
+    //         // width: 95%;
+    //         // height: 95%;
+    //         width: 45%;
+    //         height: 45%;
+    //     }
 
         .card {
-            position: absolute;
             border-radius: 15px;
-            width: 100%;
-            height: 100%;
+            width: 600px;
+            height: 800px;
+            position: absolute;
             left: 0;
-            top: 0;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
             overflow: hidden;
 
-            &:nth-child(1) {
-                z-index: 999;
-                background-color: #555;
-            }
-
-            &:nth-child(2) {
-                z-index: 998;
-                background-color: $red;
-            }
-
-            &:nth-child(3) {
-                z-index: 997;
-                background-color: blue;
+            @include mobile {
+                // width: 95%;
+                // height: 95%;
+                width: 95%;
+                height: 95%;
             }
 
             .detail-container {
@@ -133,6 +132,6 @@ export default {
                 }
             }
         }
-    }
+    // }
 }
 </style>
