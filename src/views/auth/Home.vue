@@ -26,9 +26,12 @@ export default {
 	flex-direction: column;
 
 	.main-content {
+		flex: 1 1 auto;
 		width: 100%;
 		position: relative;
 		-webkit-overflow-scrolling: touch;
+		display: flex;
+		flex-direction: column;
 	}
 }
 </style>

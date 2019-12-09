@@ -3,7 +3,9 @@ const Login = () => import('@/views/guest/Login')
 
 const Home = () => import('@/views/auth/Home')
 const Profile = () => import('@/views/auth/profile/Profile')
+const Fighters = () => import('@/views/auth/fighters/Fighters')
 
+/* Profile Routes */
 const About = () => import('@/views/auth/profile/about/About')
 const Matches = () => import('@/views/auth/profile/matches/Matches')
 const Settings = () => import('@/views/auth/profile/settings/Settings')
@@ -50,6 +52,12 @@ export default [
 							component: Settings
 						},
 					]
+				},
+
+				{
+					path: '/fighters/',
+					name: 'fighters',
+					component: Fighters
 				}
 			]
 		},
