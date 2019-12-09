@@ -84,8 +84,8 @@ export default {
         position: relative;
 
         @include mobile {
-            width: 40%;
-            height: 40%;
+            width: 95%;
+            height: 95%;
         }
 
         .card {
