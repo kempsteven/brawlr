@@ -84,8 +84,8 @@ export default {
         position: relative;
 
         @include mobile {
-            width: 70%;
-            height: 70%;
+            width: 40%;
+            height: 40%;
         }
 
         .card {
@@ -98,17 +98,17 @@ export default {
             overflow: hidden;
 
             &:nth-child(1) {
-                z-index: 10;
+                z-index: 999;
                 background-color: #555;
             }
 
             &:nth-child(2) {
-                z-index: 9;
+                z-index: 998;
                 background-color: $red;
             }
 
             &:nth-child(3) {
-                z-index: 8;
+                z-index: 997;
                 background-color: blue;
             }
 
