@@ -17,5 +17,8 @@ export default {
 .fighters {
 	flex: 1 1 auto;
 	display: flex;
+	height: 100%;
+	position: absolute;
+	width: 100%;
 }
 </style>

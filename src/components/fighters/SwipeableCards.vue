@@ -1,40 +1,47 @@
 <template>
     <div class="swipeable-cards">
-        <!-- <section class="card-container"> -->
-            <vue2-interact-draggable
-                class="card"
-                v-for="(card, key) in cards"
-                :key="cards.length - key"
-                :style="`z-index: ${cards.length - key}`"
-                :interact-out-of-sight-x-coordinate="500"
-                :interact-max-rotation="15"
-                :interact-x-threshold="100"
-                :interact-y-threshold="200"
+        <vue2-interact-draggable
+            class="card"
+            :class="{ 'disabled' : key !== 0 }"
+            v-for="(card, key) in cards"
+            :key="cards.length - key"
+            :id="key"
+            :style="`z-index: ${cards.length - key}`"
 
-                :interactBlockDragDown="true"
+            :interact-event-bus-events="interactEventBus"
 
-                @draggedRight="like()"
-                @draggedLeft="ignore()"
-                @draggedUp="ignore()"
-            >
-                <section class="detail-container">
-                    <img
-                        class="fighter-img"
-                        src="@/assets/img/test.jpg"
-                        alt="fighter-image"
-                    >
+            :interact-out-of-sight-x-coordinate="500"
+            :interact-max-rotation="15"
+            :interact-x-threshold="100"
+            :interact-y-threshold="200"
 
-                    <section class="detail-name">
-                        {{ `${card.name} - ${key + 1}` }}
-                    </section>
+            :interactBlockDragDown="true"
+
+            @draggedRight="like($event)"
+            @draggedLeft="ignore($event)"
+            @draggedUp="ignore($event)"
+        >
+            <section class="detail-container">
+                <img
+                    class="fighter-img"
+                    src="@/assets/img/test.jpg"
+                    alt="fighter-image"
+                >
+
+                <section class="detail-name">
+                    {{ card.name }}
                 </section>
-            </vue2-interact-draggable>
-        <!-- </section> -->
-    </div>
+
+                <div>
+                    {{ this }}
+                </div>
+            </section>
+        </vue2-interact-draggable>
+    </div >
 </template>
 
 <script>
-import { Vue2InteractDraggable } from 'vue2-interact'
+import { Vue2InteractDraggable, InteractEventBus } from 'vue2-interact'
 
 export default {
     data () {
@@ -54,16 +61,36 @@ export default {
 				{ src: 'tucker.jpg', name: 'Tucker', age: 9 },
 				{ src: 'uriel.jpg', name: 'Uriel', age: 6 },
 				{ src: 'zoe.jpg', name: 'Zoe', age: 2 },
-			]
+            ],
+            
+            interactEventBus: {
+                draggedRight: 'right',
+                draggedLeft: 'left',
+                draggedUp: 'up'
+            },
 		}
     },
 
+    computed: {
+        activeCardPosition () {
+            return this.$children[0].interactPosition
+        }
+    },
+
+    mounted () {
+        const watcher = this.$watch('activeCardPosition', (val) => {
+			console.log(val)
+		}, { deep: true })
+    },
+
     methods: {
-        like () {
+        like (e) {
+            // InteractEventBus.$emit('right')
             setTimeout(() => this.cards.shift(), 300)
         },
 
-        ignore () {
+        ignore (e) {
+            // InteractEventBus.$emit('left')
             setTimeout(() => this.cards.shift(), 300)
         },
     },
@@ -76,62 +103,55 @@ export default {
 .swipeable-cards {
     flex: 1 1 auto;
     display: flex;
-    align-items: center;
     justify-content: center;
     overflow: hidden;
     position: relative;
 
-    // .card-container {
-    //     width: 600px;
-    //     height: 800px;
-    //     position: relative;
+    .card {
+        border-radius: 15px;
+        width: 600px;
+        height: 800px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+        top: 30px;
+        touch-action: none;
 
-    //     @include mobile {
-    //         // width: 95%;
-    //         // height: 95%;
-    //         width: 45%;
-    //         height: 45%;
-    //     }
+        &.disabled {
+            pointer-events: none;
+        }
 
-        .card {
-            border-radius: 15px;
-            width: 600px;
-            height: 800px;
-            position: absolute;
-            left: 0;
-            right: 0;
-            margin-left: auto;
-            margin-right: auto;
-            overflow: hidden;
+        @include mobile {
+            width: 95%;
+            height: 83%;
+            top: 15px;
+        }
 
-            @include mobile {
-                // width: 95%;
-                // height: 95%;
-                width: 95%;
-                height: 95%;
-            }
+        .detail-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
 
-            .detail-container {
-                position: relative;
-                width: 100%;
+            .fighter-img {
                 height: 100%;
-
-                .fighter-img {
-                    height: 100%;
-                    margin-left: 50%;
-                    transform: translateX(-50%);
-                }
-                
-                .detail-name {
-                    position: absolute;
-                    bottom: 0;
-                    padding: 15px;
-                    background: rgba(0,0,0,.5);
-                    color: #fff;
-                    width: 100%;
-                }
+                margin-left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .detail-name {
+                position: absolute;
+                bottom: 0;
+                padding: 15px;
+                background: rgba(0,0,0,.5);
+                color: #fff;
+                width: 100%;
             }
         }
-    // }
+    }
 }
 </style>

@@ -3,7 +3,9 @@
 		<layout-header />
 
 		<section class="main-content">
-			<router-view/>
+			<transition name="_transition-anim">
+				<router-view/>
+			</transition>
 		</section>
 	</div>
 </template>
@@ -22,16 +24,14 @@ export default {
 .home {
 	width: 100%;
 	min-height: 100%;
-	display: flex;
-	flex-direction: column;
+	position: relative;
 
 	.main-content {
-		flex: 1 1 auto;
 		width: 100%;
+		min-height: calc(100vh - 70px);
 		position: relative;
-		-webkit-overflow-scrolling: touch;
-		display: flex;
-		flex-direction: column;
+		// -webkit-overflow-scrolling: touch;
+		// display: flex;
 	}
 }
 </style>

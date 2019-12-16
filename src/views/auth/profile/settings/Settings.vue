@@ -64,7 +64,7 @@
             <h4 class="item-title">
                 Age range:
             </h4>
-
+            <!-- navigator.userAgent.indexOf('Edge') >= 0 -->
             <section class="item-value range">
                 <input type="range" value="10" class="min-range">
                 <input type="range" value="10" class="max-range">

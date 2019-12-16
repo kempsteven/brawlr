@@ -4,6 +4,7 @@ const Login = () => import('@/views/guest/Login')
 const Home = () => import('@/views/auth/Home')
 const Profile = () => import('@/views/auth/profile/Profile')
 const Fighters = () => import('@/views/auth/fighters/Fighters')
+const Messages = () => import('@/views/auth/messages/Messages')
 
 /* Profile Routes */
 const About = () => import('@/views/auth/profile/about/About')
@@ -11,7 +12,8 @@ const Matches = () => import('@/views/auth/profile/matches/Matches')
 const Settings = () => import('@/views/auth/profile/settings/Settings')
 
 export default [
-	...middleware('guest', [
+	// ...middleware('guest', [
+	...middleware('*', [
 		{
 			path: '/',
 			name: 'login',
@@ -19,7 +21,8 @@ export default [
 		},
 	]),
 
-	...middleware('auth', [
+	// ...middleware('auth', [
+	...middleware('*', [
 		{
 			path: '/',
 			name: 'home',
@@ -58,7 +61,13 @@ export default [
 					path: '/fighters/',
 					name: 'fighters',
 					component: Fighters
-				}
+				},
+
+				{
+					path: '/messages/',
+					name: 'messages',
+					component: Messages
+				},
 			]
 		},
 	]),
