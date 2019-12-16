@@ -7,7 +7,13 @@ Vue.use(Router)
 
 const router = new Router({
     mode: 'history',
-    routes
+    routes,
+
+    scrollBehavior(to, from, savedPosition) {
+        setTimeout(() => {
+            return { x: 0, y: 0 }
+        }, 0);
+    }
 })
 
 const guestMiddleware = (next, token, isLoggedIn) => {

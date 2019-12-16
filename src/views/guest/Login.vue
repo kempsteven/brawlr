@@ -193,6 +193,7 @@ export default {
                 font-size: 22px;
                 font-weight: 400;
                 text-shadow: 2px 2px 2px #000000;
+                text-align: center;
             }
         }
 
