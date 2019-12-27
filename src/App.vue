@@ -1,10 +1,22 @@
 <template>
 	<div id="app">
-		<transition name="_transition-anim">
+		<transition :name="isMobile">
 			<router-view/>
 		</transition>
 	</div>
 </template>
+
+<script>
+import { isMobileRegexFunction } from '@/regex'
+
+export default {
+	computed: {
+		isMobile () {
+			return isMobileRegexFunction ? '' : '_transition-anim'
+		}
+	}
+}
+</script>
 
 <style lang="scss">
 #app {

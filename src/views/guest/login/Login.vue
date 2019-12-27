@@ -1,23 +1,5 @@
 <template>
     <div class="login">
-        <div class="video-container" v-show="videoBuffered" v-if="!isMobileData">
-            <!-- <video
-                loop
-                muted
-                playsinline
-                key="1"
-                oncontextmenu="return false;"
-                @canplaythrough="videoHasBuffered()"
-                class='video'
-                ref="video"
-            >
-                <source :src="require('@/assets/video/bg-video.webm')" type="video/webm" />
-                <source :src="require('@/assets/video/bg-video.mp4')" type="video/mp4" />
-            </video> -->
-        </div>
-
-        <div class="bg-img" />
-
         <section class="login-form">
             <div class="logo-container">
                 <img :src="require('@/assets/img/brawlr-logo.png')">
@@ -51,7 +33,7 @@
                     Login
                 </button>
 
-                <button type="button" class="sign-up-btn">
+                <button type="button" class="sign-up-btn" @click="$router.push('signup')">
                     Sign Up
                 </button>
             </form>
@@ -63,33 +45,12 @@
 import { mapFields } from 'vuex-map-fields'
 
 export default {
-    data() {
-        return {
-            videoBuffered: false,
-            isMobileData: false
-        }
-    },
-
     computed: {
-        // The `mapFields` function takes an array of
-        // field names and generates corresponding
-        // computed properties with getter and setter
-        // functions for accessing the Vuex store.
         ...mapFields('authentication', [
             'email',
             'password',
             'loading'
-        ]),
-    },
-
-    beforeCreate () {
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-
-        if (connection.effectiveType === 'cellular') this.isMobileData = true
-
-        connection.addEventListener('change', () => {
-            if (connection.effectiveType === 'cellular') this.isMobileData = true
-        })
+        ])
     },
 
     methods: {
@@ -102,68 +63,18 @@ export default {
             form.append('password', this.password)
 
             await this.$store.dispatch('authentication/login', form)
-        },
-
-        videoHasBuffered () {
-            this.videoBuffered = true
-            this.$refs.video.play()
         }
-    },
+    }
 }
 </script>
 
 <style lang="scss" scoped>
 .login {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    background-image: url('~@/assets/img/main-bg.jpg');
-    position: relative;
-
-    .video-container {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
-
-        .video {
-            position: absolute;
-            min-height: 100%;
-            min-width: 100%;
-            transform: scale(1.04);
-            transition: 0.3s;
-            filter: blur(5px);
-            left: 50%;
-            top: 0;
-            transform: translate(-50%, 0);
-        }
-    }
-    
-
-    .bg-img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 2;
-        background: rgba(8, 0, 54, 0.15);
-    }
-
     .login-form {
         width: 350px;
         display: flex;
         flex-direction: column;
         margin-top: 220px;
-        z-index: 3;
 
         @include mobile {
             width: 300px;

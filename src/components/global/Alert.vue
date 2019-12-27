@@ -1,6 +1,6 @@
 <template>
-    <div class="modal-bg" @click.self="$emit('bgClick')">
-        <div class="modal-container scroll-visible">
+    <div class="alert-bg" @click.self="$emit('bgClick')">
+        <div class="alert-container">
             <slot name="content" />
         </div>
     </div>
@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.modal-bg {
+.alert-bg {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -23,11 +23,11 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 99;
+    z-index: 999;
     width: 100vw;
     height: 100vh;
 
-    .modal-container {
+    .alert-container {
         background-color: #fff;
         padding: 15px;
         box-shadow: 0 0 3px #00000029;
@@ -37,8 +37,6 @@ export default {
         @include mobile {
             min-width: unset;
             width: 96%;
-            height: 97%;
-            overflow: auto; 
         }
     }
 }

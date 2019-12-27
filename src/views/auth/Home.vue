@@ -3,7 +3,7 @@
 		<layout-header />
 
 		<section class="main-content">
-			<transition name="_transition-anim">
+			<transition :name="isMobile">
 				<router-view/>
 			</transition>
 		</section>
@@ -13,7 +13,15 @@
 <script>
 
 import LayoutHeader from '@/components/home/LayoutHeader'
+import { isMobileRegexFunction } from '@/regex'
+
 export default {
+	computed: {
+		isMobile () {
+			return isMobileRegexFunction ? '' : '_transition-anim'
+		}
+	},
+
 	components: {
 		LayoutHeader
 	}

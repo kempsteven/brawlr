@@ -1,6 +1,11 @@
 const PageNotFound = () => import('@/views/PageNotFound')
-const Login = () => import('@/views/guest/Login')
 
+/* Unauthorized Views */
+const Guest = () => import('@/views/guest/Guest')
+const Login = () => import('@/views/guest/login/Login')
+const SignUp = () => import('@/views/guest/signup/SignUp')
+
+/* Authorized Views */
 const Home = () => import('@/views/auth/Home')
 const Profile = () => import('@/views/auth/profile/Profile')
 const Fighters = () => import('@/views/auth/fighters/Fighters')
@@ -16,8 +21,22 @@ export default [
 	...middleware('*', [
 		{
 			path: '/',
-			name: 'login',
-            component: Login
+			name: 'guest',
+			component: Guest,
+
+			children: [
+				{
+					path: '',
+					name: 'login',
+					component: Login
+				},
+
+				{
+					path: 'signup',
+					name: 'signup',
+					component: SignUp
+				},
+			]
 		},
 	]),
 

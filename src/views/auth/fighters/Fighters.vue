@@ -5,10 +5,10 @@
 </template>
 
 <script>
-import SwipeableCards from '@/components/fighters/SwipeableCards'
+
 export default {
 	components: {
-		SwipeableCards,
+		SwipeableCards: () => import('@/components/fighters/SwipeableCards')
 	},
 }
 </script>

@@ -71,12 +71,6 @@ export default {
 		}
     },
 
-    computed: {
-        activeCardPosition () {
-            return this.$children[0].interactPosition
-        }
-    },
-
     mounted () {
         const watcher = this.$watch('activeCardPosition', (val) => {
 			console.log(val)
@@ -95,7 +89,9 @@ export default {
         },
     },
     
-    components: { Vue2InteractDraggable }
+    components: {
+        Vue2InteractDraggable: () => import('vue2-interact/src/components/Vue2InteractDraggable')
+    }
 }
 </script>
 

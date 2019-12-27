@@ -80,10 +80,6 @@
 </template>
 
 <script>
-import ImageContainer from '@/components/profile/about/ImageContainer'
-import AboutForm from '@/components/profile/about/AboutForm'
-import Modal from '@/components/global/Modal'
-
 import { mapFields } from 'vuex-map-fields'
 export default {
     computed: {
@@ -101,9 +97,9 @@ export default {
     },
 
     components: {
-        ImageContainer,
-        AboutForm,
-        Modal
+        ImageContainer: () => import('@/components/profile/about/ImageContainer'),
+        AboutForm: () => import('@/components/profile/about/AboutForm'),
+        Modal: () => import('@/components/global/Modal')
     },
 }
 </script>
