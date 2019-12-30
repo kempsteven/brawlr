@@ -1,8 +1,8 @@
 <template>
     <div class="input-field">
-        <label class="input-title" v-if="title">
+        <h4 class="input-title" v-if="title">
             {{ title }}
-        </label>
+        </h4>
 
         <input
             class="input-box"

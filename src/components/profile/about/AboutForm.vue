@@ -32,14 +32,18 @@
             v-model="text"
         />
 
-        <input-field
+        <select-field
+            class="select-margin"
             title="Gender"
             placeholder="Enter Gender"
             type="text"
 
-            :limit="50"
-            v-model="text"
+            :items="genders"
+            :hasOthers="true"
+
+            v-model="obj"
         />
+
 
         <input-field
             title="School/Company Name"
@@ -64,22 +68,42 @@
 
 <script>
 import InputField from '@/components/global/InputField'
+import SelectField from '@/components/global/SelectField'
 
 export default {
     data () {
         return {
-            text: ''
+            text: '',
+
+            obj: {},
+
+            genders: [
+                {
+                    id: 0,
+                    value: 'Male'
+                },
+                
+                {
+                    id: 1,
+                    value: 'Female'
+                }
+            ]
         }
     },
 
     methods: {
         closeForm () {
             this.$store.dispatch('modal/closeModal')
+        },
+
+        test (e) {
+            console.log(e)
         }
     },
 
     components: {
         InputField,
+        SelectField
     },
 }
 </script>
@@ -99,6 +123,10 @@ export default {
         margin-bottom: 15px;
         padding-bottom: 10px;
         border-bottom: 1px solid #ddd;
+    }
+
+    .select-margin {
+        margin-bottom: 24px;
     }
 
     .text-area {

@@ -10,6 +10,33 @@
                 placeholder="Search Messages"
                 type="text"
             />
+
+            <section class="see-all-container">
+                <span class="see-all">
+                    See More
+                </span>
+            </section>
+
+            <ul class="match-list scroll-visible">
+                <li
+                    class="list-item"
+                    :key="key"
+                    v-for="(item, key) in 15"
+                >
+                    <section class="img-container">
+                        <img
+                            class="item-img"
+                            src="@/assets/img/sample-picture.jpg"
+                            alt="user-message-image"
+                        >
+                    </section>
+
+                    <span class="item-name">
+                        Manny
+                    </span>
+                </li>
+            </ul>
+
         </section>
         
         <ul class="message-list">
@@ -77,6 +104,12 @@ export default {
     flex-direction: column;
     overflow: hidden;
 
+    @include mobile {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+    }
+
     .navigation-header {
         padding: 15px 20px;
         box-shadow: 0 -5px 15px #d1d1d1;
@@ -84,6 +117,10 @@ export default {
         .header-title {
             width: 100%;
             margin-bottom: 10px;
+
+            @include mobile {
+                font-size: 16px;
+            }
         }
 
         .input-field {
@@ -91,6 +128,71 @@ export default {
                 border-radius: 15px;
                 padding: 8px 15px;
                 background-color: #fcfcfc;
+            }
+        }
+
+        .see-all-container {
+            margin-top: 15px;
+            border-top: 1px solid #ddd;
+            margin-bottom: 5px;
+
+            @include flex-box(flex-end, '', '');
+
+            .see-all {
+                color: $blue;
+                cursor: pointer;
+            }
+        }
+
+        .match-list {
+            display: flex;
+            width: 100%;
+            overflow-y: hidden;
+            overflow-x: auto;
+            position: relative;
+
+            .list-item {
+                flex-shrink: 0;
+                cursor: pointer;
+
+                @include flex-box ('', center, column);
+
+                &:not(:last-child) {
+                    margin-right: 10px;
+                }
+
+                .img-container {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    position: relative;
+                    flex-shrink: 0;
+
+                    @include mobile {
+                        width: 40px;
+                        height: 40px;
+                    }
+
+                    .item-img {
+                        width: 100%;
+                        position: absolute;
+                        left: 50%;
+                        top: 50%;
+                        transform: translateY(-50%) translateX(-50%);
+                    }      
+                }
+
+                .item-name {
+                    max-width: 70px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+
+                    @include mobile {
+                        font-size: 13spx;
+                    }
+                }
             }
         }
     }

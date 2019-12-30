@@ -16,6 +16,7 @@
 
         <section class="view-content">
             <message-area />
+            
             <message-view-details />
         </section>
     </div>

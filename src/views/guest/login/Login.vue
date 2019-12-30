@@ -78,7 +78,7 @@ export default {
 
         @include mobile {
             width: 300px;
-            margin-top: 100px;
+            margin-top: 70px;
         }
 
         .logo-container {
@@ -110,7 +110,8 @@ export default {
 
         .form-container {
             opacity: 0;
-            @include fadeinfromtop(0.6s, 0.6s);
+            
+            @include fadeinfromtop(0.6s, 0.4s);
 
             input {
                 width: 100%;

@@ -16,6 +16,9 @@ const About = () => import('@/views/auth/profile/about/About')
 const Matches = () => import('@/views/auth/profile/matches/Matches')
 const Settings = () => import('@/views/auth/profile/settings/Settings')
 
+/* Messages Routes */
+const MessageView = () => import('@/views/auth/messages/message-view/MessageView')
+
 export default [
 	// ...middleware('guest', [
 	...middleware('*', [
@@ -85,7 +88,15 @@ export default [
 				{
 					path: '/messages/',
 					name: 'messages',
-					component: Messages
+					component: Messages,
+
+					children: [
+						{
+							path: 'view',
+							name: 'message-view',
+							component: MessageView
+						}
+					]
 				},
 			]
 		},

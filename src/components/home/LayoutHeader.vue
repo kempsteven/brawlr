@@ -1,12 +1,18 @@
 <template>
     <div class="layout-header">
-        <img class="brawlr-icon" :src="require('@/assets/img/brawlr-icon.png')" alt="Brawlr Icon">
+        <img
+            class="brawlr-icon"
+            :src="require('@/assets/img/brawlr-icon.png')"
+            alt="Brawlr Icon"
+            @click="returnToTop()"
+        >
 
         <section class="navigation-link">
             <router-link
                 class="nav-item"
                 to="/profile"
                 :class="{ 'active' : $route.path === '/profile' }"
+                @click.native="returnToTop()"
             >
                 <div class="nav-icon profile"/>
 
@@ -19,6 +25,7 @@
                 class="nav-item"
                 to="/fighters"
                 :class="{ 'active' : $route.path === '/fighters' }"
+                @click.native="returnToTop()"
             >
                 <div class="nav-icon fighter"/>
 
@@ -31,6 +38,7 @@
                 class="nav-item"
                 to="/messages"
                 :class="{ 'active' : $route.path === '/messages' }"
+                @click.native="returnToTop()"
             >
                 <div class="nav-icon message"/>
 
@@ -43,9 +51,13 @@
 </template>
 
 <script>
-    export default {
-        
-    }
+export default {
+    methods: {
+        returnToTop () {
+            document.body.scrollTo(0, 0)
+        }
+    },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -72,6 +84,7 @@
         width: 50px;
         height: 50px;
         flex-shrink: 0;
+        cursor: pointer;
 
         @include mobile {
             display: none;
@@ -121,6 +134,7 @@
                 background-size: cover;
                 filter: grayscale(100%);
                 transition: 0.3s;
+                pointer-events: none;
 
                 &.profile {
                     background-image: url('~@/assets/img/icon/profile-icon.png');
@@ -142,6 +156,7 @@
             }
 
             .item-title {
+                pointer-events: none;
                 display: block;    
 
                 @include mobile {

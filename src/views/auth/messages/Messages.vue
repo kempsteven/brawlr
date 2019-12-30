@@ -2,30 +2,80 @@
     <div class="messages">
         <section class="message-section">
             <message-list />
-            <message-view />
+
+            <router-view />
         </section>
     </div>
 </template>
 
 <script>
 import MessageList from '@/components/messages/MessageList'
-import MessageView from '@/components/messages/MessageView'
 
 export default {
-    components: {
-        MessageList,
-        MessageView
+    data () {
+        return {
+            windowWidth: 0
+        }
     },
+
+    async created () {
+        await this.setWindowWidthListener()
+        await this.isMobileViewWidth()
+    },
+
+    destroyed () {
+        this.removeWindowWidthListener()
+    },
+
+    computed: {
+        isMobileViewPort () {
+            return this.windowWidth <= 768
+        }
+    },
+
+    methods: {
+        /* Mounted Lifecycle Methods */
+        setWindowWidthListener () {
+            this.windowWidth = window.innerWidth
+            window.addEventListener('resize', this.onWindowResize)
+        },
+
+        onWindowResize () {
+            this.windowWidth = window.innerWidth
+        },
+
+        isMobileViewWidth () {
+            if (
+                this.windowWidth > 768
+                && this.$route.name !== 'message-view'
+            ) {
+                this.$router.push('/messages/view')
+            }
+        },
+
+        /* Destroyed Lifecycle Methods */
+        removeWindowWidthListener () {
+             window.removeEventListener('resize')
+        }
+    },
+
+    components: {
+        MessageList
+    }
 }
 </script>
 
 <style lang="scss" scoped>
 .messages {
-    padding: 35px;
+    padding: 15px;
     height: 100%;
     overflow: hidden;
     position: absolute;
     width: 100%;
+
+    @include mobile {
+        padding: 0;
+    }
 
     .message-section {
         height: 100%;

@@ -3,6 +3,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './registerServiceWorker'
+import { mixin as clickaway } from 'vue-clickaway'
+
+Vue.mixin(clickaway)
 
 Vue.config.productionTip = false
 
