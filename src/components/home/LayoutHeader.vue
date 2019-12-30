@@ -149,8 +149,8 @@ export default {
                 }
 
                 @include mobile {
-                    width: 45px;
-                    height: 45px;
+                    width: 41px;
+                    height: 41px;
                     margin-right: 0;
                 }
             }

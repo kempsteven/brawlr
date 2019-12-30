@@ -3,65 +3,23 @@
         <section class="message-section">
             <message-list />
 
-            <router-view />
+            <transition :name="transitionAnim">
+                <router-view class="message-view"/>
+            </transition>
         </section>
     </div>
 </template>
 
 <script>
 import MessageList from '@/components/messages/MessageList'
+import isMobileMixins from '@/mixins/isMobileMixins'
 
 export default {
-    data () {
-        return {
-            windowWidth: 0
-        }
-    },
-
-    async created () {
-        await this.setWindowWidthListener()
-        await this.isMobileViewWidth()
-    },
-
-    destroyed () {
-        this.removeWindowWidthListener()
-    },
-
-    computed: {
-        isMobileViewPort () {
-            return this.windowWidth <= 768
-        }
-    },
-
-    methods: {
-        /* Mounted Lifecycle Methods */
-        setWindowWidthListener () {
-            this.windowWidth = window.innerWidth
-            window.addEventListener('resize', this.onWindowResize)
-        },
-
-        onWindowResize () {
-            this.windowWidth = window.innerWidth
-        },
-
-        isMobileViewWidth () {
-            if (
-                this.windowWidth > 768
-                && this.$route.name !== 'message-view'
-            ) {
-                this.$router.push('/messages/view')
-            }
-        },
-
-        /* Destroyed Lifecycle Methods */
-        removeWindowWidthListener () {
-             window.removeEventListener('resize')
-        }
-    },
-
     components: {
         MessageList
-    }
+    },
+
+    mixins: [isMobileMixins]
 }
 </script>
 
@@ -82,6 +40,16 @@ export default {
         width: 100%;
         display: flex;
         align-items: center;
+
+        .message-view {
+            @include mobile {
+                position: fixed;
+                width: 100vw;
+                height: 100vh;
+                z-index: 99;
+                top: 0;
+            }
+        }
     }
 }
 </style>

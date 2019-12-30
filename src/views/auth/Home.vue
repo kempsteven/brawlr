@@ -40,6 +40,10 @@ export default {
 		position: relative;
 		// -webkit-overflow-scrolling: touch;
 		// display: flex;
+
+		@include mobile {
+			min-height: calc(100vh - 61px);
+		}
 	}
 }
 </style>

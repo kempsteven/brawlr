@@ -96,6 +96,16 @@ export default {
     min-width: 300px;
     border-left: 1px solid #ddd;
     overflow: auto;
+    background: #fff;
+
+    @include mobile {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 100%;
+        top: 0;
+        transition: 0.1s;
+    }
 
     .message-img-slider {
         position: relative;

@@ -88,6 +88,11 @@ export default {
     display: flex;
     flex-direction: column;
     min-width: 330px;
+
+    @include mobile {
+        min-width: unset;
+        width: 100%;
+    }
     
     .message-list {
         padding: 15px 0;
@@ -104,6 +109,10 @@ export default {
             padding: 8px 15px;
             display: flex;
             align-items: flex-end;
+
+            @include mobile {
+                padding: 8px 10px;
+            }
 
             &.own-message {
                 justify-content: flex-end;
@@ -135,6 +144,11 @@ export default {
                 margin-right: 10px;
                 position: relative;
                 flex-shrink: 0;
+
+                @include mobile {
+                    width: 40px;
+                    height: 40px;
+                }
 
                 .user-img {
                     width: 100%;

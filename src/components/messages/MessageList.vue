@@ -17,11 +17,13 @@
                 </span>
             </section>
 
-            <ul class="match-list scroll-visible">
-                <li
+            <section class="match-list scroll-visible">
+                <router-link
                     class="list-item"
                     :key="key"
                     v-for="(item, key) in 15"
+                    :to="`/messages/view?id=${key}`"
+                    @click.native="viewMessage(item, key)"
                 >
                     <section class="img-container">
                         <img
@@ -34,18 +36,18 @@
                     <span class="item-name">
                         Manny
                     </span>
-                </li>
-            </ul>
-
+                </router-link>
+            </section>
         </section>
         
-        <ul class="message-list">
-            <li
+        <section class="message-list">
+            <router-link
                 class="message-item"
                 :class="{ 'active' : activeMessage === key }"
                 :key="key"
                 v-for="(item, key) in 15"
-                @click="activeMessage = key"
+                :to="`/messages/view?id=${key}`"
+                @click.native="viewMessage(item, key)"
             >
                 <section class="img-container">
                     <img
@@ -70,8 +72,8 @@
                         </section>
                     </section>
                 </section>
-            </li>
-        </ul>
+            </router-link>
+        </section>
     </section>
 </template>
 
@@ -82,6 +84,12 @@ export default {
     data() {
         return {
             activeMessage: null
+        }
+    },
+
+    methods: {
+        viewMessage (item, key) {
+            this.activeMessage = key
         }
     },
 
@@ -114,6 +122,10 @@ export default {
         padding: 15px 20px;
         box-shadow: 0 -5px 15px #d1d1d1;
 
+        @include mobile {
+            padding: 10px 10px;
+        }
+
         .header-title {
             width: 100%;
             margin-bottom: 10px;
@@ -133,6 +145,7 @@ export default {
 
         .see-all-container {
             margin-top: 15px;
+            padding-top: 5px;
             border-top: 1px solid #ddd;
             margin-bottom: 5px;
 
@@ -150,6 +163,13 @@ export default {
             overflow-y: hidden;
             overflow-x: auto;
             position: relative;
+
+            @include mobile {
+                &::-webkit-scrollbar {  
+                    width: 0px;
+                    height: 0px;
+                }
+            }
 
             .list-item {
                 flex-shrink: 0;
@@ -208,6 +228,10 @@ export default {
             transition: 0.2s;
             cursor: pointer;
 
+            @include mobile {
+                padding: 10px 15px;
+            }
+
             &.active {
                 border-radius: 15px;
                 background: rgba(0, 0, 0, .05);
@@ -249,6 +273,11 @@ export default {
                         white-space: nowrap;
                         width: 240px;
                         flex-shrink: 1;
+
+                        @include mobile {
+                            width: 180px;
+                            min-width: unset;
+                        }
                     }
 
                     .message-time {
