@@ -1,11 +1,15 @@
 <template>
     <div class="layout-header">
-        <img
-            class="brawlr-icon"
-            :src="require('@/assets/img/brawlr-icon.png')"
-            alt="Brawlr Icon"
-            @click="returnToTop()"
+        <router-link
+            to="/profile"
+            @click.native="returnToTop()"
         >
+            <img
+                class="brawlr-icon"
+                :src="require('@/assets/img/brawlr-icon.png')"
+                alt="Brawlr Icon"
+            >
+        </router-link>
 
         <section class="navigation-link">
             <router-link

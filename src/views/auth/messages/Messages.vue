@@ -15,6 +15,18 @@ import MessageList from '@/components/messages/MessageList'
 import isMobileMixins from '@/mixins/isMobileMixins'
 
 export default {
+    mounted () {
+        this.isMobileViewWidth()
+    },
+
+    watch: {
+        '$route.name' (val) {
+            if (val === 'messages') {
+                this.isMobileViewWidth()
+            }
+        }
+    },
+
     components: {
         MessageList
     },

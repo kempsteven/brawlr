@@ -3,18 +3,31 @@
 		<transition :name="isMobile">
 			<router-view/>
 		</transition>
+
+		<transition name="_transition-anim">
+			<Alerts v-if="modalName.includes('alert-modal')"/>
+		</transition>
 	</div>
 </template>
 
 <script>
 import { isMobileRegexFunction } from '@/regex'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
 	computed: {
+		...mapFields('modal', [
+            'modalName',
+		]),
+		
 		isMobile () {
 			return isMobileRegexFunction ? '' : '_transition-anim'
 		}
-	}
+	},
+
+	components: {
+		Alerts: () => import('@/components/global/Alerts'),
+	},
 }
 </script>
 

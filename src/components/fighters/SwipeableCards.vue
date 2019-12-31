@@ -24,17 +24,13 @@
             <section class="detail-container">
                 <img
                     class="fighter-img"
-                    src="@/assets/img/test.jpg"
+                    src="@/assets/img/sample-picture.jpg"
                     alt="fighter-image"
                 >
 
                 <section class="detail-name">
                     {{ card.name }}
                 </section>
-
-                <div>
-                    {{ this }}
-                </div>
             </section>
         </vue2-interact-draggable>
     </div >
@@ -97,11 +93,12 @@ export default {
 
 <style lang="scss" scoped>
 .swipeable-cards {
-    flex: 1 1 auto;
     display: flex;
     justify-content: center;
     overflow: hidden;
     position: relative;
+    width: 100%;
+    height: 100%;
 
     .card {
         border-radius: 15px;
@@ -115,6 +112,7 @@ export default {
         overflow: hidden;
         top: 30px;
         touch-action: none;
+        background-color: #202020;
 
         &.disabled {
             pointer-events: none;
@@ -132,11 +130,13 @@ export default {
             height: 100%;
             pointer-events: none;
             z-index: 0;
+            background: black;
 
             .fighter-img {
                 height: 100%;
                 margin-left: 50%;
                 transform: translateX(-50%);
+                transition: 1s;
             }
             
             .detail-name {

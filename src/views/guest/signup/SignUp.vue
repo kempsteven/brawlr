@@ -1,5 +1,5 @@
 <template>
-    <form class="signup">
+    <form class="signup" @submit.prevent="signUp()">
         <h2 class="form-header">
             Sign Up
         </h2>
@@ -11,7 +11,7 @@
                 type="text"
 
                 :limit="50"
-                v-model="text"
+                v-model="firstName"
             />
 
             <input-field
@@ -20,7 +20,7 @@
                 type="text"
 
                 :limit="50"
-                v-model="text"
+                v-model="lastName"
             />
 
             <input-field
@@ -28,23 +28,23 @@
                 title="Email"
                 placeholder="Enter Email"
                 type="email"
-                v-model="text"
+                v-model="email"
             />
 
             <input-field
                 class="input-margin"
                 title="Password"
                 placeholder="Enter Password"
-                type="email"
-                v-model="text"
+                type="password"
+                v-model="password"
             />
 
             <input-field
                 class="input-margin"
                 title="Confirm Password"
                 placeholder="Enter Confirm Password"
-                type="email"
-                v-model="text"
+                type="password"
+                v-model="confirmPassword"
             />
 
             <select-field
@@ -52,12 +52,11 @@
                 dropdownPosition="top"
                 class="select-margin"
                 title="Gender"
-                type="text"
                 
                 :items="genders"
                 :hasOthers="true"
 
-                v-model="obj"
+                v-model="gender"
             />
 
             <input-field
@@ -65,7 +64,7 @@
                 placeholder="Enter Age"
                 type="Number"
                 :limit="3"
-                v-model="text"
+                v-model="age"
             />
         </section>
 
@@ -84,13 +83,13 @@
 <script>
 import InputField from '@/components/global/InputField'
 import SelectField from '@/components/global/SelectField'
+import { formValidation } from '@/helpers/FormValidation'
+
+import { mapFields } from 'vuex-map-fields'
 
 export default {
     data () {
         return {
-            text: '',
-
-            obj: {},
 
             genders: [
                 {
@@ -106,7 +105,49 @@ export default {
         }
     },
 
+    computed: {
+        ...mapFields('signup', [
+            'signup.firstName',
+            'signup.lastName',
+            'signup.email',
+            'signup.password',
+            'signup.confirmPassword',
+            'signup.gender',
+            'signup.age',
+            'signup'
+        ])
+    },
+
     methods: {
+        signUp () {
+            if (!formValidation.isFormComplete(this.signup)) return
+
+            if (
+                !formValidation.isEqual(
+                    this.password,
+                    this.confirmPassword,
+                    'Password is not the same with confirm password'
+                )
+            ) { return }
+
+            console.log(1)
+
+            const form = new FormData()
+
+            form.append('firstName', this.firstName)
+            form.append('lastName', this.lastName)
+            form.append('email', this.email)
+            form.append('password', this.password)
+            form.append('confirmPassword', this.confirmPassword)
+            form.append('gender[id]', this.gender.id)
+            form.append('gender[value]', this.gender.value)
+            form.append('age', this.age)
+
+            console.log(1)
+            this.$store.dispatch('signup/signUp', form)
+            console.log(2)
+        },
+
         closeForm () {
             this.$store.dispatch('modal/closeModal')
         }
@@ -218,6 +259,7 @@ $white: #ececec;
         display: flex;
         justify-content: flex-end;
         margin-top: 25px;
+        justify-self: flex-end; 
 
         ._cancel {
             border: none;

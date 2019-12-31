@@ -94,7 +94,6 @@ export default {
     flex-direction: column;
     justify-content: center;
 
-
     .profile-header {
         width: 100%;
         position: relative;
@@ -151,11 +150,14 @@ export default {
                     font-size: 28px;
                     padding-bottom: 5px;
                     border-bottom: 1px solid #fff;
-                    margin-bottom: px;
+                    margin-bottom: 5px;
+                    text-align: center;
                 }
 
                 .profile-type {
                     font-size: 18px;
+                    text-align: center;
+                    display: block;
                 }
 
             }

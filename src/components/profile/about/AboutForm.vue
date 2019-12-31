@@ -4,55 +4,57 @@
             Edit Information
         </h3>
 
-        <input-field
-            class="text-area"
-            title="About You"
-            placeholder="Enter about you"
-            inputType="textarea"
-            
-            :limit="200"
-            v-model="text"
-        />
+        <section class="input-section">
+            <input-field
+                class="text-area"
+                title="About You"
+                placeholder="Enter about you"
+                inputType="textarea"
+                
+                :limit="200"
+                v-model="text"
+            />
 
-        <input-field
-            title="Fighter Type"
-            placeholder="Enter Fighter Type e.g. (Boxer, Martial Artist)"
-            type="text"
+            <input-field
+                title="Fighter Type"
+                placeholder="Enter Fighter Type e.g. (Boxer, Martial Artist)"
+                type="text"
 
-            :limit="50"
-            v-model="text"
-        />
+                :limit="50"
+                v-model="text"
+            />
 
-        <input-field
-            title="Location"
-            placeholder="Enter Location"
-            type="text"
+            <input-field
+                title="Location"
+                placeholder="Enter Location"
+                type="text"
 
-            :limit="50"
-            v-model="text"
-        />
+                :limit="50"
+                v-model="text"
+            />
 
-        <select-field
-            class="select-margin"
-            title="Gender"
-            placeholder="Enter Gender"
-            type="text"
+            <select-field
+                class="select-margin"
+                title="Gender"
+                placeholder="Enter Gender"
+                type="text"
 
-            :items="genders"
-            :hasOthers="true"
+                :items="genders"
+                :hasOthers="true"
 
-            v-model="obj"
-        />
+                v-model="obj"
+            />
 
 
-        <input-field
-            title="School/Company Name"
-            placeholder="Enter School/Company Name"
-            type="text"
+            <input-field
+                title="School/Company Name"
+                placeholder="Enter School/Company Name"
+                type="text"
 
-            :limit="50"
-            v-model="text"
-        />
+                :limit="50"
+                v-model="text"
+            />
+        </section>
 
         <section class="controls">
             <button class="_cancel" type="button" @click="closeForm()">
@@ -113,6 +115,9 @@ export default {
     min-width: 500px;
     width: 50%;
     padding: 5px;
+    height: 100%;
+
+    @include flex-box('', '', column);
 
     @include mobile {
         min-width: unset;
@@ -125,18 +130,24 @@ export default {
         border-bottom: 1px solid #ddd;
     }
 
-    .select-margin {
-        margin-bottom: 24px;
-    }
+    .input-section {
+        flex: 1 1 auto;
+        overflow: auto;
 
-    .text-area {
-        height: 170px;
+        .select-margin {
+            margin-bottom: 24px;
+        }
+
+        .text-area {
+            height: 170px;
+        }
     }
     
     .controls {
-        display: flex;
-        justify-content: flex-end;
         margin-top: 25px;
+        width: 100%;
+
+        @include flex-box(flex-end, '', '');
 
         ._cancel {
             margin-right: 15px;

@@ -20,8 +20,8 @@ const Settings = () => import('@/views/auth/profile/settings/Settings')
 const MessageView = () => import('@/views/auth/messages/message-view/MessageView')
 
 export default [
-	// ...middleware('guest', [
-	...middleware('*', [
+	...middleware('guest', [
+	// ...middleware('*', [
 		{
 			path: '/',
 			name: 'guest',
@@ -43,8 +43,8 @@ export default [
 		},
 	]),
 
-	// ...middleware('auth', [
-	...middleware('*', [
+	...middleware('auth', [
+	// ...middleware('*', [
 		{
 			path: '/',
 			name: 'home',

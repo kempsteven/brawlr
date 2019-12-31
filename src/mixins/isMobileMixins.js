@@ -7,7 +7,6 @@ export default {
 
     async created() {
         await this.setWindowWidthListener()
-        await this.isMobileViewWidth()
     },
 
     destroyed() {
@@ -36,7 +35,7 @@ export default {
             this.windowWidth = window.innerWidth
         },
 
-        isMobileViewWidth() {
+        isMobileViewWidth () {
             if (
                 this.windowWidth > 768
                 && this.$route.name !== 'message-view'
@@ -47,7 +46,7 @@ export default {
 
         /* Destroyed Lifecycle Methods */
         removeWindowWidthListener() {
-            window.removeEventListener('resize')
+            window.removeEventListener('resize', this.onWindowResize)
         }
     }
 }
