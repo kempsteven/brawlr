@@ -12,12 +12,11 @@ class FormValidation {
                 (formProperty.constructor === Object
                 && !Object.keys(formProperty).length)
             ) {
-                store.commit('modal/toggleModal', {
-                    modalName: 'alert-modal',
-                    modalType: 'error',
-                    modalTitle: 'Oooops!',
-                    modalDesc: 'Please fill up all values',
-                })
+                store.dispatch(
+                    'modal/errorModal',
+                    'Please fill up all values',
+                    { root: true }
+                )
 
                 return false
             }
@@ -50,12 +49,11 @@ class FormValidation {
         if (valueOne !== valueTwo) isEqual = false
 
         if (!isEqual) {
-            store.commit('modal/toggleModal', {
-                modalName: 'alert-modal',
-                modalType: 'error',
-                modalTitle: 'Oooops!',
-                modalDesc: message || 'Hey Dev, 3rd Parameter is Required.',
-            })
+            store.dispatch(
+                'modal/errorModal',
+                message || 'Hey Dev, 3rd Parameter is Required.',
+                { root: true }
+            )
         }
 
         return isEqual

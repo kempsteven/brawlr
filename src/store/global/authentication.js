@@ -16,10 +16,10 @@ export const actions = {
     async login ({ commit }, payload) {
         state.loading = true
 
-        const { data } = await api('post', '/user/login', payload)
-        
+        const { status, data } = await api('post', '/user/sign-in', payload)
+
         // if error
-        if (data.status !== 200) {
+        if (status !== 200) {
             commit('modal/toggleModal', {
                 modalName: 'alert-modal',
                 modalType: 'error',
@@ -27,6 +27,7 @@ export const actions = {
                 modalDesc: data.message,
             }, { root: true })
 
+            state.loading = false
             return
         }
 
@@ -36,20 +37,24 @@ export const actions = {
 
         await router.push({ name: 'home' })
         commit('clearLogin')
+        
+        state.loading = false
     },
 
-    async logOut() {
+    async logOut () {
         state.isLoggedIn = false
         state.token = ''
-        cookies.remove('token')
+        await cookies.remove('token')
+
         router.push({ name: 'login' })
+        
         location.reload()
     },
 
     async checkToken () {
-        const { data } = await api('get', '/user/check-token')
+        const { status } = await api('get', '/user/check-token')
 
-        if (!data || data.status !== 200) {
+        if (status !== 200) {
             state.isLoggedIn = false
             state.token = ''
             cookies.remove('token')

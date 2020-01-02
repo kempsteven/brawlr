@@ -49,7 +49,7 @@ export default {
         },
 
         async confirm () {
-            if (this.modalType === 'warning') {
+            if (this.storeAction) {
                 // if modal type warning, on confirm
                 // call store action given from the arguments on toggleModal
                 this.$store.dispatch(this.storeAction, this.storePayload)
@@ -152,7 +152,7 @@ export default {
         }
 		
 		.modal-header {
-			margin: 0 0 30px 0;
+			margin: 0 0 20px 0;
             font-size: 26px;
             text-align: center;
             color: #fff;
@@ -165,6 +165,7 @@ export default {
             margin-bottom: 35px;
             text-align: center;
             color: #fff;
+            text-transform: capitalize;
         }
         
         .btn-container {

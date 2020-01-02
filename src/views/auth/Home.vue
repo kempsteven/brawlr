@@ -36,10 +36,9 @@ export default {
 
 	.main-content {
 		width: 100%;
-		min-height: calc(100vh - 70px);
+		min-height: calc(100vh - 73px);
 		position: relative;
-		// -webkit-overflow-scrolling: touch;
-		// display: flex;
+		-webkit-overflow-scrolling: touch;
 
 		@include mobile {
 			min-height: calc(100vh - 61px);

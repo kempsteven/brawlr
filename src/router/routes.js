@@ -1,4 +1,6 @@
-const PageNotFound = () => import('@/views/PageNotFound')
+/* Unprotected Routes */
+const PageNotFound = () => import('@/views/all/PageNotFound')
+const AccountActivation = () => import('@/views/all/AccountActivation')
 
 /* Unauthorized Views */
 const Guest = () => import('@/views/guest/Guest')
@@ -107,6 +109,13 @@ export default [
 			path: '*',
 			name: 'PageNotFound',
 			component: PageNotFound,
+		},
+
+		{
+			path: '/account-activation',
+			name: 'account-activation',
+			props: route => ({ ...route.query, ...route.params }),
+			component: AccountActivation,
 		},
 	])
 ]

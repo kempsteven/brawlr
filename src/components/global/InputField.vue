@@ -8,6 +8,7 @@
             class="input-box"
             v-bind="$attrs"
             :value="value"
+            :autocomplete="autoComplete ? true : 'new-password'"
             @input="$emit('input', $event.target.value)"
             @keydown="checkValue($event)"
             @paste="onPaste($event)"
@@ -50,6 +51,11 @@ export default {
         inputType: {
             type: String,
             default: ''
+        },
+
+        autoComplete: {
+            type: Boolean,
+            default: false
         },
 
         limit: {

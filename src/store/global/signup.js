@@ -12,30 +12,37 @@ export const state = {
         age: ''
     },
 
-    loading: false,
-
-    isSignUpValid: false
+    loading: false
 }
 
 export const actions = {
-    async signUp ({ commit }, payload) {
+    async signUp({ commit, dispatch }, payload) {
         state.loading = true
 
-        const { data } = await api('post', '/user/sign-up', payload)
+        const { status, data } = await api('post', '/user/sign-up', payload)
         
         // if error
-        if (data.status !== 200) {
-            commit('modal/toggleModal', {
-                modalName: 'alert-modal',
-                modalType: 'error',
-                modalTitle: 'Oooops!',
-                modalDesc: data.message,
-            }, { root: true })
-
+        if (status !== 200) {
+            dispatch(
+                'modal/errorModal',
+                data.message, 
+                { root: true }
+            )
+            
+            state.loading = false
             return
         }
 
+        commit('modal/toggleModal', {
+            modalName: 'alert-modal',
+            modalType: 'success',
+            modalTitle: 'Success',
+            modalDesc: data.message,
+        }, { root: true })
+
         commit('clearSignup')
+
+        state.loading = false
     }
 }
 
@@ -43,12 +50,14 @@ export const mutations = {
     updateField,
 
     clearSignup () {
-        state.firstName = ''
-        state.lastName = ''
-        state.email = ''
-        state.password = ''
-        state.gender = {}
-        state.age = ''
+        state.signup = {
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            gender: {},
+            age: ''
+        }
 
         state.loading = false
     }

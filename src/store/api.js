@@ -16,11 +16,18 @@ axios.interceptors.request.use(request => {
 
 export default async (method, url, payload) => {
     try {
-        return await axios[method](url, payload)
-    } catch (error) {
+        const response = await axios[method](url, payload)
+
         return {
-            status: 500,
-            message: error
+            status: response.status,
+            data: response.data
+        }
+    } catch (error) {
+        const { status, data } = error.response
+
+        return {
+            status: status,
+            data: data
         }
     }
 }

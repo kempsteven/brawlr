@@ -69,12 +69,20 @@
         </section>
 
         <section class="controls">
-            <button class="_cancel" type="button" @click="$router.push('/')">
+            <button
+                class="_cancel"
+                type="button"
+                @click="$router.push('/')"
+                :disabled="loading"
+            >
                 Back
             </button>
 
-            <button class="_primary">
-                Save
+            <button
+                class="_primary"
+                :disabled="loading"
+            >
+                {{ loading ? 'Loading...' : 'Save' }}
             </button>
         </section>
     </form>
@@ -114,12 +122,15 @@ export default {
             'signup.confirmPassword',
             'signup.gender',
             'signup.age',
-            'signup'
+            'signup',
+            'loading'
         ])
     },
 
     methods: {
         signUp () {
+            if (this.loading) return
+            
             if (!formValidation.isFormComplete(this.signup)) return
 
             if (
@@ -130,22 +141,17 @@ export default {
                 )
             ) { return }
 
-            console.log(1)
-
             const form = new FormData()
 
             form.append('firstName', this.firstName)
             form.append('lastName', this.lastName)
             form.append('email', this.email)
             form.append('password', this.password)
-            form.append('confirmPassword', this.confirmPassword)
             form.append('gender[id]', this.gender.id)
             form.append('gender[value]', this.gender.value)
             form.append('age', this.age)
 
-            console.log(1)
             this.$store.dispatch('signup/signUp', form)
-            console.log(2)
         },
 
         closeForm () {
