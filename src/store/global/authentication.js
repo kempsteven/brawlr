@@ -20,12 +20,11 @@ export const actions = {
 
         // if error
         if (status !== 200) {
-            commit('modal/toggleModal', {
-                modalName: 'alert-modal',
-                modalType: 'error',
-                modalTitle: 'Oooops!',
-                modalDesc: data.message,
-            }, { root: true })
+            dispatch(
+                'modal/errorModal',
+                data.message, 
+                { root: true }
+            )
 
             state.loading = false
             return

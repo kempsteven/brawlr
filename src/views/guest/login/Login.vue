@@ -29,11 +29,18 @@
                     v-model="password"
                 >
 
-                <button class="login-btn">
-                    Login
+                <button
+                    class="login-btn"
+                    :disabled="loading"
+                >
+                    {{ loading ? 'Logging in...' : 'Login' }}
                 </button>
 
-                <button type="button" class="sign-up-btn" @click="$router.push('signup')">
+                <button
+                    type="button"
+                    class="sign-up-btn"
+                    @click="$router.push('signup')"
+                >
                     Sign Up
                 </button>
             </form>

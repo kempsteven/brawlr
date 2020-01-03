@@ -72,7 +72,7 @@
             <button
                 class="_cancel"
                 type="button"
-                @click="$router.push('/')"
+                @click="back()"
                 :disabled="loading"
             >
                 Back
@@ -154,8 +154,9 @@ export default {
             this.$store.dispatch('signup/signUp', form)
         },
 
-        closeForm () {
-            this.$store.dispatch('modal/closeModal')
+        back () {
+            this.$router.push('/')
+            this.$store.commit('signup/clearSignup')
         }
     },
 

@@ -1,5 +1,5 @@
 <template>
-    <form class="about-form">
+    <form class="about-form" @submit.prevent="updateUser()">
         <h3 class="form-header">
             Edit Information
         </h3>
@@ -12,37 +12,37 @@
                 inputType="textarea"
                 
                 :limit="200"
-                v-model="text"
+                v-model="bio"
             />
 
             <input-field
                 title="Fighter Type"
-                placeholder="Enter Fighter Type e.g. (Boxer, Martial Artist)"
+                placeholder="Enter Fighter Type e.g. (Boxer, Muay Thai, Taekwondo)"
                 type="text"
 
                 :limit="50"
-                v-model="text"
+                v-model="fighterType"
             />
 
-            <input-field
+            <select-field
+                class="select-margin"
                 title="Location"
                 placeholder="Enter Location"
-                type="text"
+                :hasSearch="true"
+                :items="countries"
 
-                :limit="50"
-                v-model="text"
+                v-model="location"
             />
 
             <select-field
                 class="select-margin"
                 title="Gender"
                 placeholder="Enter Gender"
-                type="text"
 
                 :items="genders"
                 :hasOthers="true"
 
-                v-model="obj"
+                v-model="gender"
             />
 
 
@@ -52,17 +52,25 @@
                 type="text"
 
                 :limit="50"
-                v-model="text"
+                v-model="organization"
             />
         </section>
 
         <section class="controls">
-            <button class="_cancel" type="button" @click="closeForm()">
+            <button
+                class="_cancel"
+                type="button"
+                :disabled="updateLoading"
+                @click="closeForm()"
+            >
                 Cancel
             </button>
 
-            <button class="_primary">
-                Save
+            <button
+                class="_primary"
+                :disabled="updateLoading"
+            >
+                {{ updateLoading ? 'Loading...' : 'Save' }}
             </button>
         </section>
     </form>
@@ -71,6 +79,8 @@
 <script>
 import InputField from '@/components/global/InputField'
 import SelectField from '@/components/global/SelectField'
+
+import { mapFields } from 'vuex-map-fields'
 
 export default {
     data () {
@@ -93,13 +103,60 @@ export default {
         }
     },
 
+    created () {
+        this.setUserForm()
+    },
+
+    computed: {
+        ...mapFields('countries', [
+            'countries'
+        ]),
+
+        ...mapFields('user', [
+            'userForm.bio',
+            'userForm.fighterType',
+            'userForm.location',
+            'userForm.gender',
+            'userForm.organization',
+            'updateLoading',
+            'user'
+        ])
+    },
+
     methods: {
-        closeForm () {
-            this.$store.dispatch('modal/closeModal')
+        /* Created Lifecycle Methods */
+        setUserForm () {
+            const {
+                bio, fighterType, location, 
+                gender, organization
+            } = this.user
+            
+            this.bio = bio || ''
+            this.fighterType = fighterType || ''
+            this.location = location || {id: 0, value: ''}
+            this.gender = gender || {id: 0, value: ''}
+            this.organization = organization || ''
         },
 
-        test (e) {
-            console.log(e)
+        /* Update User Methods */
+        updateUser () {
+            const form = new FormData()
+
+            form.append('bio', this.bio)
+            form.append('fighterType', this.fighterType)
+            form.append('location[id]', this.location.id)
+            form.append('location[value]', this.location.value)
+            form.append('gender[id]', this.gender.id)
+            form.append('gender[value]', this.gender.value)
+            form.append('organization', this.organization)
+
+            this.$store.dispatch('user/updateUser', form)
+        },
+
+        /* Close Form Methods */
+        closeForm () {
+            this.$store.dispatch('modal/closeModal')
+            this.$store.commit('user/clearUserForm')
         }
     },
 
@@ -132,7 +189,10 @@ export default {
 
     .input-section {
         flex: 1 1 auto;
-        overflow: auto;
+
+        @include mobile {
+            overflow: auto;
+        }
 
         .select-margin {
             margin-bottom: 24px;

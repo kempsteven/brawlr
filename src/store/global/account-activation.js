@@ -13,7 +13,7 @@ export const actions = {
     async activateAccount({ commit }, payload) {
         state.loading = true
 
-        const { status, data } = await api('post', 'user/account-activation', payload)
+        const { status, data } = await api('post', '/user/account-activation', payload)
 
         // if error
         if (status !== 200) {

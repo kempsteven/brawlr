@@ -6,11 +6,11 @@
 
                 <section class="profile-main-info">
                     <h2 class="profile-name">
-                        Lorem ipsum dolor
+                        {{ fullName | null }}
                     </h2>
 
                     <span class="profile-type">
-                        Lorem ipsum
+                        {{ user.fighterType | null }}
                     </span>
                 </section>
             </div>
@@ -25,14 +25,15 @@
                 </div>
             </div>
         </section>
-
+    
         <section class="profile-info">
-            <section class="bio-container">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel,
-                blanditiis odio, atque quas minima, reprehenderit molestiae
-                itaque commodi nulla similique culpa! Amet repr repr ehenderit
-                velit modi delectus consequuntur odit perferendis nemo?
-            </section>
+            <textarea
+                class="bio-container"
+                readonly
+                :value="user.bio || '-'"
+                @paste="test()"
+                ref="bioTextArea"
+            />
 
             <section class="profile-nav">
                 <section class="nav-container">
@@ -81,8 +82,66 @@
 </template>
 
 <script>
+import { mapFields } from 'vuex-map-fields'
+import * as user from '@/store/user/'
+
 export default {
+    data() {
+        return {
+            bioWatcher: null
+        }
+    },
+
+    beforeCreate () {
+		if (!this.$store._modulesNamespaceMap['user/']) {
+            this.$store.registerModule('user', user.default)
+		}
+    },
     
+    created () {
+        if (!this.online) return
+        
+        this.getUser()
+    },
+
+    mounted () {
+        this.bioWatcher = this.$watch('user.bio', (val) => {
+            if (val !== '-' && val) {
+                const bioTextArea = this.$refs.bioTextArea
+                const scrollHeight = bioTextArea.scrollHeight
+
+                bioTextArea.style.height = `${scrollHeight}px`
+            }
+		}, { immediate: true })
+    },
+
+    destroyed () {
+        this.removeWatcher()
+    },
+
+    computed: {
+        ...mapFields('user', [
+            'user'
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
+		]),
+
+        fullName () {
+            return this.user.firstName ? `${this.user.firstName} ${this.user.lastName}` : null
+        }
+    },
+    
+    methods: {
+        getUser () {
+            this.$store.dispatch('user/getUser')
+        },
+
+        removeWatcher () {
+            this.bioWatcher()
+        }
+    },
 }
 </script>
 
@@ -139,6 +198,7 @@ export default {
 
                 @include mobile {
                     min-width: 80%;
+                    top: 30px;
                 }
                 
                 .profile-name, .profile-type {
@@ -152,12 +212,31 @@ export default {
                     border-bottom: 1px solid #fff;
                     margin-bottom: 5px;
                     text-align: center;
+                    min-width: 150px;
+                    margin: 0 auto;
+                    max-width: 770px;
+                    word-break: break-all;
+                    max-height: 72px;
+                    overflow: hidden;
+
+                    @include mobile {
+                        min-width: unset;
+                        max-width: 100%;
+                    }
                 }
 
                 .profile-type {
                     font-size: 18px;
                     text-align: center;
                     display: block;
+                    word-break: break-all;
+
+                    @include mobile {
+                        min-width: unset;
+                        max-width: 100%;
+                        max-height: 72px;
+                        overflow: hidden;
+                    }
                 }
 
             }
@@ -209,16 +288,21 @@ export default {
         }
 
         .bio-container {
-            width: 50%;
-            margin: 0 auto;
-            line-height: 28px;
-            padding: 25px 0;
+            width: 100%;
+            margin: 25px auto;
+            padding: 15px 0;
             min-width: 590px;
+            text-align: center;
+            border: 0;
+            resize: none;
+            outline: none;
+            max-height: 250px;
 
             @include mobile {
                 min-width: unset;
                 width: 100%;
                 padding: 0 20px 15px 20px;
+                max-height: 150px;
             }
         }
 

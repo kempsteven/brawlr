@@ -28,6 +28,22 @@ const authMiddleware = (next, token, isLoggedIn) => {
 
 // middleware to check if user is authenticated
 router.beforeEach(async (to, from, next) => {
+    if (!navigator.onLine) {
+        if (routeMiddleware === 'auth') {
+            const token = store.getters['authentication/getField']('token')
+
+            if (token) {
+                next()
+            } else {
+                next({ name: 'login' })
+            }
+            return
+        }
+
+        next()
+        return
+    }
+
     const token = store.getters['authentication/getField']('token')
     let isLoggedIn = store.getters['authentication/getField']('isLoggedIn')
 

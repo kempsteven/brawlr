@@ -12,11 +12,12 @@
                     About you:
                 </h4>
 
-                <div class="item-value" v-pre>
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.<br><br>
-                    Cupiditate aliquam laudantium error odio tempora, odit<br><br>
-                    quam vel omnis cumque id.
-                </div>
+                <textarea
+                    class="item-value-area"
+                    v-bind="$attrs"
+                    :value="user.bio"
+                    readonly
+                />
             </section>
 
             <section class="info-item">
@@ -24,8 +25,8 @@
                     Age:
                 </h4>
 
-                <div class="item-value" v-pre>
-                    99 Years Old
+                <div class="item-value">
+                    {{ `${user.age} Year(s) Old` }}
                 </div>
             </section>
 
@@ -35,8 +36,8 @@
                     Fighter Type:
                 </h4>
 
-                <div class="item-value" v-pre>
-                    Lorem ipsum dolor
+                <div class="item-value">
+                    {{ user.fighterType | null }}
                 </div>
             </section>
 
@@ -45,8 +46,8 @@
                     Location:
                 </h4>
 
-                <div class="item-value" v-pre>
-                    Lorem ipsum
+                <div class="item-value">
+                    {{ user.location ? user.location.value : '-'}}
                 </div>
             </section>
 
@@ -55,8 +56,8 @@
                     Gender:
                 </h4>
 
-                <div class="item-value" v-pre>
-                    Lorem ipsum
+                <div class="item-value">
+                    {{ user.gender ? user.gender.value : '-'}}
                 </div>
             </section>
 
@@ -65,8 +66,8 @@
                     School/Company Name:
                 </h4>
 
-                <div class="item-value" v-pre>
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                <div class="item-value">
+                    {{ user.organization | null }}
                 </div>
             </section>
         </section>
@@ -86,6 +87,10 @@ export default {
         ...mapFields('modal',[
             'modalName',
         ]),
+
+        ...mapFields('user', [
+            'user'
+        ])
     },
 
     methods: {
@@ -131,6 +136,19 @@ export default {
                 background: #f8f8f8;
                 border: 1px solid #ddd;
                 border-radius: 5px;
+                font-size: 15px;
+            }
+
+            .item-value-area {
+                padding: 15px 10px;
+                background: #f8f8f8;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                width: 100%;
+                height: 200px;
+                resize: none;
+                outline: none;
+                font-size: 15px;
             }
         }
     }

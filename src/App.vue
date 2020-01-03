@@ -19,10 +19,24 @@ export default {
 		...mapFields('modal', [
             'modalName',
 		]),
+
+		...mapFields('connection-status', [
+            'online'
+		]),
 		
 		isMobile () {
 			return isMobileRegexFunction ? '' : '_transition-anim'
 		}
+	},
+
+	mounted () {
+		window.addEventListener('offline', () => {
+			this.online = false
+		})
+
+		window.addEventListener('online', () => {
+			this.online = true
+		})
 	},
 
 	components: {

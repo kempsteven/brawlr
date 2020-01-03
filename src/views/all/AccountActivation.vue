@@ -148,6 +148,10 @@ export default {
         margin-top: 15%;
         width: 600px;
 
+        @include mobile {
+            width: 90%;
+        }
+
         .activation-header {
             color: #fff;
             text-shadow: 2px 2px 2px #000000;
@@ -156,6 +160,10 @@ export default {
             text-align: center;
             padding-bottom: 10px;
             border-bottom: 1px solid #fff;
+
+            @include mobile {
+                margin-bottom: 20px;
+            }
         }
 
         .activation-message {
@@ -169,6 +177,10 @@ export default {
             border: 2px solid #fff;
             border-radius: 5px;
             margin-bottom: 30px;
+
+            @include mobile {
+                margin-bottom: 40px;
+            }
         }
 
         .back-button {

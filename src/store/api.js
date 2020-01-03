@@ -15,6 +15,23 @@ axios.interceptors.request.use(request => {
 })
 
 export default async (method, url, payload) => {
+    if (!navigator.onLine) {
+        
+        if (method === 'post') {
+            return {
+                status: 503,
+                data: {
+                    message: 'No internet connection'
+                }
+            }
+        }
+
+        return {
+            status: 503,
+            data: {}
+        }
+    }
+
     try {
         const response = await axios[method](url, payload)
 

@@ -35,8 +35,11 @@ export const mutations = {
     updateField,
 
     toggleModal (state, { modalName, modalType, modalTitle, modalDesc, storeAction, storePayload }) {
-        if (modalName !== '') state.modalName.push(modalName)
-        else state.modalName.pop()
+        if (modalName !== '') {
+            if (!state.modalName.includes(modalName)) state.modalName.push(modalName)
+        } else {
+            state.modalName.pop()
+        }
 
         state.modalType = modalType
         state.modalTitle = modalTitle

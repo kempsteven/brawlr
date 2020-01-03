@@ -1,5 +1,11 @@
 <template>
-    <div class="select-field" v-on-clickaway="closeDropdown">
+    <div
+        class="select-field"
+        v-on-clickaway="closeDropdown"
+        tabindex="0"
+        @focus="openDropdown()"
+        @blur="closeDropdown()"
+    >
         <!-- Select Title -->
         <h4 class="select-title" v-if="title">
             {{ title }}
@@ -21,27 +27,40 @@
 
         <!-- Select Dropdown -->
         <transition name="_transition-anim">
-            <ul
-                :class="`list-container ${dropdownPosition}`"
+            <section
+                :class="`dropdown-container ${dropdownPosition}`"
                 v-if="showDropdown"
             >
-                <li
-                    class="list-item"
-                    :key="key"
-                    v-for="(item, key) in items"
-                    @click="selectItem(item)"
+                <input
+                    type="text"
+                    class="search-field"
+                    placeholder="Search"
+                    @input="searchList($event.target.value)"
+                    v-if="hasSearch"
                 >
-                    {{ item.value }}
-                </li>
 
-                <li
-                    class="list-item"
-                    v-if="hasOthers"
-                    @click="toggleReadOnly()"
-                >
-                    Others
-                </li>
-            </ul>
+                <ul class="list-container">
+                    <li
+                        class="list-item"
+                        :class="{
+                            'selected' : parseInt(item.id) === parseInt(value.id)
+                        }"
+                        :key="key"
+                        v-for="(item, key) in list"
+                        @click="selectItem(item)"
+                    >
+                        {{ item.value }}
+                    </li>
+
+                    <li
+                        class="list-item"
+                        v-if="hasOthers"
+                        @click="toggleReadOnly()"
+                    >
+                        Others
+                    </li>
+                </ul>
+            </section>
         </transition>
     </div>
 </template>
@@ -51,7 +70,8 @@ export default {
     data() {
         return {
             showDropdown: false,
-            isReadOnly: true
+            isReadOnly: true,
+            list: []
         }
     },
 
@@ -84,10 +104,19 @@ export default {
             default: false
         },
 
+        hasSearch: {
+            type: Boolean,
+            default: false
+        },
+
         dropdownPosition: {
             type: String,
             default: 'bottom'
         }
+    },
+
+    created () {
+        this.list = [...this.items]
     },
 
     methods: {
@@ -95,13 +124,13 @@ export default {
         selectItem (item) {
             this.isReadOnly = true
             this.input(item)
+
+            this.showDropdown = false
         },
 
         /* Input Value From Others (Input tag) */
         inputOtherValue (value) {
             if (this.isReadOnly) return
-
-            console.log(value)
             
             this.input({
                 id: 0,
@@ -114,9 +143,29 @@ export default {
             this.$emit('input', value)
         },
 
+        /* Search List */
+        searchList (searchText) {
+            clearTimeout(this.timeout)
+
+			this.timeout = setTimeout(() => {
+                if (!searchText) {
+                    this.list = [...this.items]
+                    return
+                }
+                
+				this.list = this.items.filter((item) => {
+                    return item.value.toLowerCase().indexOf(searchText) > -1
+                })
+			}, 500)
+        },
+
         /* Template Methods */
         closeDropdown () {
             this.showDropdown = false
+        },
+
+        openDropdown () {
+            this.showDropdown = true
         },
 
         toggleDropdown () {
@@ -140,6 +189,7 @@ export default {
 <style lang="scss" scoped>
 .select-field {
     position: relative;
+    outline: none;
     @include flex-box('', '', column);
 
     .select-title {
@@ -162,8 +212,7 @@ export default {
             color: #c3c3c3;
         }
     }
-
-    .list-container {
+    .dropdown-container {
         position: absolute;
         top: 100%;
         z-index: 2;
@@ -172,27 +221,47 @@ export default {
         border-radius: 0 0 3px 3px;
         border: 1px solid #ddd;
         transition: 0.3s;
-        max-height: 200px;
-        overflow: auto;
 
         &.top {
             top: unset;
             bottom: 58%;
             transform: rotate(180deg);
 
-            .list-item {
+            .list-container {
                 transform: rotate(180deg);
             }
         }
 
-        .list-item {
-            padding: 10px;
-            transition: 0.3s;
+        .search-field {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #ddd;
+            padding: 8px 10px;
 
-            &:hover {
-                background: lighten($red, 6%);
-                color: #fff;
+            &::placeholder {
+                color: #c3c3c3;
+            }
+        }
+
+        .list-container {
+            width: 100%;
+            overflow: auto;
+            max-height: 167px;
+
+            .list-item {
+                padding: 10px;
+                transition: 0.3s;
                 cursor: pointer;
+
+                &.selected {
+                    background: lighten($red, 6%);
+                    color: #fff;
+                }
+
+                &:hover {
+                    background: lighten($red, 6%);
+                    color: #fff;
+                }
             }
         }
     }
