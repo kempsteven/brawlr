@@ -224,9 +224,10 @@ $white: #ececec;
                 }
             }
 
-            .list-container {
+            .dropdown-container {
                 bottom: 65%;
                 border-radius: 15px;
+                overflow: hidden;
             }
         }
 

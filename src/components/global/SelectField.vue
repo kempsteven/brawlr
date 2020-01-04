@@ -122,6 +122,19 @@ export default {
         this.list = [...this.items]
     },
 
+    watch: {
+        value: {
+            handler (value) {
+                if (value && value.id === 'other-option') {
+                    this.isReadOnly = false
+                }
+            },
+
+            immediate: true,
+            deep: true
+        }
+    },
+
     methods: {
         /* Select Item */
         selectItem (item) {
@@ -176,8 +189,6 @@ export default {
         },
 
         toggleReadOnly () {
-            this.isReadOnly = false
-
             this.$refs.selectedInput.focus()
 
             this.input({
@@ -193,6 +204,7 @@ export default {
 .select-field {
     position: relative;
     outline: none;
+    
     @include flex-box('', '', column);
 
     .select-title {
@@ -215,6 +227,7 @@ export default {
             color: #c3c3c3;
         }
     }
+
     .dropdown-container {
         position: absolute;
         top: 100%;

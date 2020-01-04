@@ -6,6 +6,8 @@ export const state = {
     loading: false,
 
     userForm: {
+        firstName: '',
+        lastName: '',
         bio: '',
         fighterType: '',
         location: {},
@@ -15,9 +17,9 @@ export const state = {
 
     userSettings: {
         genderPreference: {
-            male: false,
-            female: false,
-            others: false
+            male: 0,
+            female: 0,
+            others: 0
         },
 
         ageRange: {

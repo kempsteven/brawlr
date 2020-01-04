@@ -282,6 +282,8 @@ export default {
         box-shadow: 0 1px 5px #e4e4e4;
         background: #fff;
 
+        @include flex-box(center, '', column);
+
         @include mobile {
             min-width: unset;
             padding-top: 130px;
@@ -297,6 +299,8 @@ export default {
             resize: none;
             outline: none;
             max-height: 250px;
+            max-width: 600px;
+            flex-shrink: 0;
 
             @include mobile {
                 min-width: unset;
@@ -309,6 +313,7 @@ export default {
         .profile-nav {
             width: 100%;
             border-top: 1px solid #ececec;
+            flex-shrink: 0;
 
             .nav-container {
                 width: 50%;

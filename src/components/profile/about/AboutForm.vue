@@ -6,6 +6,24 @@
 
         <section class="input-section">
             <input-field
+                title="First Name"
+                placeholder="Enter First Name"
+                type="text"
+
+                :limit="50"
+                v-model="firstName"
+            />
+
+            <input-field
+                title="Last Name"
+                placeholder="Enter Last Name"
+                type="text"
+
+                :limit="50"
+                v-model="lastName"
+            />
+
+            <input-field
                 class="text-area"
                 title="About You"
                 placeholder="Enter about you"
@@ -113,6 +131,8 @@ export default {
         ]),
 
         ...mapFields('user', [
+            'userForm.firstName',
+            'userForm.lastName',
             'userForm.bio',
             'userForm.fighterType',
             'userForm.location',
@@ -127,10 +147,13 @@ export default {
         /* Created Lifecycle Methods */
         setUserForm () {
             const {
-                bio, fighterType, location, 
-                gender, organization
+                firstName, lastName, bio,
+                fighterType, location, gender,
+                organization
             } = this.user
             
+            this.firstName = firstName || ''
+            this.lastName = lastName || ''
             this.bio = bio || ''
             this.fighterType = fighterType || ''
             this.location = location || {id: 0, value: ''}
@@ -142,6 +165,8 @@ export default {
         updateUser () {
             const form = new FormData()
 
+            form.append('firstName', this.firstName)
+            form.append('lastName', this.lastName)
             form.append('bio', this.bio)
             form.append('fighterType', this.fighterType)
             form.append('location[id]', this.location.id)
