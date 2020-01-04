@@ -13,6 +13,19 @@ export const state = {
         organization: ''
     },
 
+    userSettings: {
+        genderPreference: {
+            male: false,
+            female: false,
+            others: false
+        },
+
+        ageRange: {
+            from: 0,
+            to: 100
+        }
+    },
+
     updateLoading: false
 }
 

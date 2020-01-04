@@ -43,7 +43,7 @@
                     <li
                         class="list-item"
                         :class="{
-                            'selected' : parseInt(item.id) === parseInt(value.id)
+                            'selected' : parseInt(item.id) === parseInt(value.id) && value.id !== 'other-option'
                         }"
                         :key="key"
                         v-for="(item, key) in list"
@@ -54,6 +54,9 @@
 
                     <li
                         class="list-item"
+                        :class="{
+                            'selected' : items.every(x => x.value !== value.value)
+                        }"
                         v-if="hasOthers"
                         @click="toggleReadOnly()"
                     >
@@ -133,7 +136,7 @@ export default {
             if (this.isReadOnly) return
             
             this.input({
-                id: 0,
+                id: 'other-option',
                 value: value
             })
         },
@@ -178,7 +181,7 @@ export default {
             this.$refs.selectedInput.focus()
 
             this.input({
-                id: 0,
+                id: 'other-option',
                 value: 'Other'
             })
         }

@@ -2,6 +2,10 @@
     <div class="settings">
         <h3 class="settings-header">
             Settings
+
+            <button class="_primary" @click="saveSettings()">
+                Save
+            </button>
         </h3>
 
         <section class="settings-item">
@@ -13,7 +17,7 @@
                 <label
                     for="male"
                     class="checkbox"
-                    :class="{ 'active' : showMe.male }"
+                    :class="{ 'active' : male }"
                 >
                     <span class="checkbox-title">
                         Male
@@ -22,14 +26,14 @@
                     <input
                         id="male"
                         type="checkbox"
-                        v-model="showMe.male"
+                        v-model="male"
                     >
                 </label>
 
                 <label
                     for="female"
                     class="checkbox"
-                    :class="{ 'active' : showMe.female }"
+                    :class="{ 'active' : female }"
                 >
                     <span class="checkbox-title">
                         Female
@@ -38,14 +42,14 @@
                     <input
                         id="female"
                         type="checkbox"
-                        v-model="showMe.female"
+                        v-model="female"
                     >
                 </label>
 
                 <label
                     for="others"
                     class="checkbox"
-                    :class="{ 'active' : showMe.others }"
+                    :class="{ 'active' : others }"
                 >
                     <span class="checkbox-title">
                         Others
@@ -54,7 +58,7 @@
                     <input
                         id="others"
                         type="checkbox"
-                        v-model="showMe.others"
+                        v-model="others"
                     >
                 </label>
             </section>
@@ -62,12 +66,24 @@
 
         <section class="settings-item">
             <h4 class="item-title">
-                Age range:
+                Age range: {{ `${ageRange.from} - ${ageRange.to}` }}
             </h4>
             <!-- navigator.userAgent.indexOf('Edge') >= 0 -->
             <section class="item-value range">
-                <input type="range" value="10" class="min-range">
-                <input type="range" value="10" class="max-range">
+                <input
+                    type="range"
+                    class="min-range"
+                    min="0"
+                    v-model="ageRange.from"
+                    @input="checkAgeRange($event, 'min')"
+                >
+
+                <input
+                    type="range"
+                    class="max-range"
+                    v-model="ageRange.to"
+                    @input="checkAgeRange($event, 'max')"
+                >
             </section>
         </section>
 
@@ -81,18 +97,106 @@
 </template>
 
 <script>
+import { mapFields } from 'vuex-map-fields'
+
 export default {
-    data() {
-        return {
-            showMe: {
-                male: false,
-                female: false,
-                others: false
+    created () {
+        const unwatch = this.$watch('user', (val) => {
+            if (Object.keys(val).length) {
+                this.setSettings()
+
+                unwatch()
             }
-        }
+		}, { immediate: true })
+    },
+
+    computed: {
+        ...mapFields('user', [
+            'user',
+            'userSettings.genderPreference',
+            'userSettings.genderPreference.male',
+            'userSettings.genderPreference.female',
+            'userSettings.genderPreference.others',
+            'userSettings.ageRange'
+        ])
     },
 
     methods: {
+        /* Created Methods */
+        setSettings () {
+            this.male = this.user.genderPreference.includes(0)
+            this.female = this.user.genderPreference.includes(1)
+            this.others = this.user.genderPreference.includes(2)
+
+            this.ageRange.from = this.user.ageRange[0]
+            this.ageRange.to = this.user.ageRange[1]
+        },
+
+        /* Age Range Checker Methods */
+        checkAgeRange (e, rangeType) {
+            const value = parseInt(e.target.value)
+
+            // For Min Range
+            if (rangeType === 'min') {
+                if (value >= parseInt(this.ageRange.to)) {
+                    this.ageRange.from = parseInt(this.ageRange.to) - 1
+
+                    return
+                }
+
+                this.ageRange.from = value
+                return
+            }
+
+            // For Max Range
+            if (value <= parseInt(this.ageRange.from)) {
+                this.ageRange.to = parseInt(this.ageRange.from) + 1
+
+                return
+            }
+
+            this.ageRange.to = value
+        },
+
+        /* Save Settings Methods */
+        async saveSettings () {
+            if (await this.isAgeRangeValid()) return
+
+            const genderPreference = ['male', 'female', 'others'].reduce((result, item, index) => {
+                if (this.genderPreference[item]) {
+                    result.push(index)
+                }
+
+                return result
+            }, [])
+
+            const form = new FormData()
+
+            genderPreference.forEach((genderValue, index) => {
+                form.append(`genderPreference[${index}]`, index)
+            })
+
+            form.append('ageRange[0]', this.ageRange.from)
+            form.append('ageRange[1]', this.ageRange.to)
+
+
+        },
+
+        isAgeRangeValid () {
+            const { from, to } = this.ageRange
+
+            if ((from > to) || (to < from)) {
+                this.$store.dispatch(
+                    'modal/errorModal',
+                    'Age range is not valid.',
+                    { root: true }
+                )
+
+                return false
+            }
+        },
+
+        /* Logout */
         logout () {
             this.$store.dispatch('authentication/logOut')
         }
@@ -110,11 +214,17 @@ export default {
         margin-bottom: 20px;
         padding-bottom: 10px;
         border-bottom: 1px solid #ddd;
+
+        @include flex-box(space-between, center, '');
+
+        ._primary {
+            padding: 10px 15px;
+        }
     }
 
     .settings-item {
         margin-bottom: 15px;
-        margin-bottom: 100px;
+        margin-bottom: 50px;
         width: 100%;
 
         .item-title {
@@ -185,6 +295,7 @@ export default {
                 -moz-appearance: none;
                 pointer-events: none; // Prevent mouse interaction on the range slider.
                 position: absolute;
+                outline: none;
 
                 /* For Webkit Browsers (Chrome) */
                 &::-webkit-slider-runnable-track {
@@ -195,6 +306,7 @@ export default {
                     background: #ddd;
                     border-radius: 3px;
                     position: relative;
+
                 }
 
                 &::-webkit-slider-thumb {
@@ -208,6 +320,7 @@ export default {
                     position: absolute;
                     z-index: 10;
                     cursor: pointer;
+                    border: 1px solid darken($red, 5%);
                 }
 
                 /* For Mozilla Browsers */
@@ -227,7 +340,7 @@ export default {
                     position: absolute;
                     z-index: 10;
                     cursor: pointer;
-                    border: 0;
+                    border: 1px solid darken($red, 5%);
                 }
 
                 /* For Edge Browsers */
