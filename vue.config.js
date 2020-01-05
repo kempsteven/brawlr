@@ -21,5 +21,3 @@ module.exports = {
         themeColor: '#1a1a1a'
     }
 }
-    
-    

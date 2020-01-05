@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
+import offlineTokenValidation from './offline-token-validation'
 import store from '../store'
 
 Vue.use(Router)
@@ -28,15 +29,24 @@ const authMiddleware = (next, token, isLoggedIn) => {
 
 // middleware to check if user is authenticated
 router.beforeEach(async (to, from, next) => {
+    const routeMiddleware = to.meta.middleware
+
     if (!navigator.onLine) {
         if (routeMiddleware === 'auth') {
             const token = store.getters['authentication/getField']('token')
 
             if (token) {
+                if (!await offlineTokenValidation(token)) {
+                    next({ name: 'login' })
+
+                    return
+                }
+
                 next()
             } else {
                 next({ name: 'login' })
             }
+            
             return
         }
 
@@ -65,8 +75,6 @@ router.beforeEach(async (to, from, next) => {
     //             .indexOf(to.name) > -1
     //     )
     // }).middleware
-
-    const routeMiddleware = to.meta.middleware
 
     // If middleware is *, just go to next route
     if (routeMiddleware === '*') {
