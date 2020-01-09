@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
-import offlineTokenValidation from './offline-token-validation'
 import store from '../store'
+import offlineTokenValidation from './offline-token-validation'
 
 Vue.use(Router)
 
@@ -27,38 +27,39 @@ const authMiddleware = (next, token, isLoggedIn) => {
     }
 }
 
-// middleware to check if user is authenticated
-router.beforeEach(async (to, from, next) => {
-    const routeMiddleware = to.meta.middleware
+const offlineMiddleware = async (next) => {
+    const token = store.getters['authentication/getField']('token')
 
-    alert(`
-        navigator.onLine: ${navigator.onLine}, ${!navigator.onLine}
-        routeMiddleware: ${routeMiddleware}, ${routeMiddleware === 'auth'}
-    `)
-    if (!navigator.onLine) {
-        if (routeMiddleware === 'auth') {
-            const token = store.getters['authentication/getField']('token')
-            
-            alert('token', token)
-            if (token) {
-                if (!await offlineTokenValidation(token)) {
-                    next({ name: 'login' })
+    if (token) {
+        if (!await offlineTokenValidation(token)) {
+            next({ name: 'login' })
 
-                    return
-                }
-
-                next()
-            } else {
-                next({ name: 'login' })
-            }
-            
             return
         }
 
-        next()
+        if (routeMiddleware === 'auth') {
+            next()
+
+            return
+        }
+
+        next({ name: 'home' })
+    } else {
+        next({ name: 'login' })
+    }
+}
+
+router.beforeEach(async (to, from, next) => {
+    const isOnline = navigator.onLine
+
+    /* Route Handler for Offline Mode */
+    if (!isOnline) { 
+        offlineMiddleware(next)   
         return
     }
 
+    /* Route Handler for Online Mode */
+    const routeMiddleware = to.meta.middleware
     const token = store.getters['authentication/getField']('token')
     let isLoggedIn = store.getters['authentication/getField']('isLoggedIn')
 
@@ -66,20 +67,6 @@ router.beforeEach(async (to, from, next) => {
         await store.dispatch('authentication/checkToken')
         isLoggedIn = store.getters['authentication/getField']('isLoggedIn')
     }
-
-    // This will return the middleware of a route
-    // if a route.name is the same as the next route's name
-    // return the route's middleware or
-    // if the route has children and one of its childrens name
-    // is the same as the next route's name, get the route's middleware
-    // const routeMiddleware = routes.find(route => {
-    //     return route.name === to.name || (
-    //         route.children &&
-    //         route.children
-    //             .map(item => item.name)
-    //             .indexOf(to.name) > -1
-    //     )
-    // }).middleware
 
     // If middleware is *, just go to next route
     if (routeMiddleware === '*') {
