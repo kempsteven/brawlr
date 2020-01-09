@@ -27,8 +27,7 @@ const authMiddleware = (next, token, isLoggedIn) => {
     }
 }
 
-const offlineMiddleware = async (next) => {
-    const routeMiddleware = to.meta.middleware
+const offlineMiddleware = async (next, routeMiddleware) => {
     const token = store.getters['authentication/getField']('token')
 
     if (token) {
@@ -51,16 +50,16 @@ const offlineMiddleware = async (next) => {
 }
 
 router.beforeEach(async (to, from, next) => {
+    const routeMiddleware = to.meta.middleware
     const isOnline = navigator.onLine
 
     /* Route Handler for Offline Mode */
     if (!isOnline) { 
-        offlineMiddleware(next)   
+        offlineMiddleware(next, routeMiddleware)   
         return
     }
 
     /* Route Handler for Online Mode */
-    const routeMiddleware = to.meta.middleware
     const token = store.getters['authentication/getField']('token')
     let isLoggedIn = store.getters['authentication/getField']('isLoggedIn')
 
