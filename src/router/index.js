@@ -31,8 +31,10 @@ const authMiddleware = (next, token, isLoggedIn) => {
 router.beforeEach(async (to, from, next) => {
     const routeMiddleware = to.meta.middleware
 
-    alert('navigator.onLine', navigator.onLine, !navigator.onLine)
-    alert('routeMiddleware', routeMiddleware, routeMiddleware === 'auth')
+    alert(`
+        navigator.onLine: ${navigator.onLine}, ${!navigator.onLine}
+        routeMiddleware: ${routeMiddleware}, ${routeMiddleware === 'auth'}
+    `)
     if (!navigator.onLine) {
         if (routeMiddleware === 'auth') {
             const token = store.getters['authentication/getField']('token')
