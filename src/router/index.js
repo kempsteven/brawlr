@@ -28,6 +28,7 @@ const authMiddleware = (next, token, isLoggedIn) => {
 }
 
 const offlineMiddleware = async (next) => {
+    const routeMiddleware = to.meta.middleware
     const token = store.getters['authentication/getField']('token')
 
     if (token) {
