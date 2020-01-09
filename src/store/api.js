@@ -1,8 +1,9 @@
 import axios from 'axios'
 import store from './'
 
-axios.defaults.baseURL = 'https://brawlr-backend.herokuapp.com'
-// axios.defaults.baseURL = 'http://localhost:3000'
+axios.defaults.baseURL = process.env.NODE_ENV === 'development'
+                                ? 'http://localhost:3000'
+                                : 'https://brawlr-backend.herokuapp.com'
 
 axios.interceptors.request.use(request => {
     const token = store.getters['authentication/getField']('token')
