@@ -74,7 +74,7 @@
         </section>
 
         <section class="profile-content">
-            <transition name="_transition-anim">
+            <transition :name="isMobile">
                 <router-view class="content-view"/>
             </transition>
         </section>
@@ -84,6 +84,7 @@
 <script>
 import { mapFields } from 'vuex-map-fields'
 import * as user from '@/store/user/'
+import { isMobileRegexFunction } from '@/regex'
 
 export default {
     data() {
@@ -130,7 +131,11 @@ export default {
 
         fullName () {
             return this.user.firstName ? `${this.user.firstName} ${this.user.lastName}` : null
-        }
+        },
+
+		isMobile () {
+			return isMobileRegexFunction ? '' : '_transition-anim'
+		}
     },
     
     methods: {

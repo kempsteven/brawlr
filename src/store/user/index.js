@@ -83,6 +83,36 @@ export const actions = {
         commit('clearUserForm')
 
         state.updateLoading = false
+    },
+
+    async updateUserImage ({ commit, dispatch }, payload) {
+        state.updateLoading = true
+
+        const { status, data } = await api('post', '/user/update-user-image', payload)
+
+        if (status !== 200) {
+            dispatch(
+                'modal/errorModal',
+                data.message || 'Sorry, Something went wrong.',
+                { root: true }
+            )
+
+            state.updateLoading = false
+            return
+        }
+
+        state.user = data
+
+        await dispatch('modal/closeModal', {}, { root: true })
+
+        commit('modal/toggleModal', {
+            modalName: 'alert-modal',
+            modalType: 'success',
+            modalTitle: 'Success',
+            modalDesc: 'Updated succesfully',
+        }, { root: true })
+
+        state.updateLoading = false
     }
 }
 

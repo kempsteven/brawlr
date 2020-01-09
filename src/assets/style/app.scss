@@ -93,6 +93,10 @@ button {
         font-size: 14px;
         background: #fff;
         min-width: 100px;
+
+        &:hover {
+            background: lighten($red, 37%);
+        }
     }
 }
 

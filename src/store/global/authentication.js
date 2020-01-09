@@ -13,7 +13,7 @@ export const state = {
 }
 
 export const actions = {
-    async login ({ commit }, payload) {
+    async login({ commit, dispatch }, payload) {
         state.loading = true
 
         const { status, data } = await api('post', '/user/sign-in', payload)

@@ -23,9 +23,7 @@
                 </h5>
             </section>
 
-            <button class="_primary">
-                
-            </button>
+            <button class="_primary" />
         </section>
     </div>
 </template>

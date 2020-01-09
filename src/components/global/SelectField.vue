@@ -55,7 +55,7 @@
                     <li
                         class="list-item"
                         :class="{
-                            'selected' : items.every(x => x.value !== value.value)
+                            'selected' : items.every(x => x.value !== value.value) && Object.keys(value).length
                         }"
                         v-if="hasOthers"
                         @click="toggleReadOnly()"

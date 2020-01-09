@@ -16,7 +16,7 @@
             </h2>
 
             <div class="modal-desc">
-                {{ modalDesc }}
+                {{ modalDesc | capitalize }}
             </div>
 
             <div class="btn-container">
@@ -165,7 +165,6 @@ export default {
             margin-bottom: 35px;
             text-align: center;
             color: #fff;
-            text-transform: capitalize;
         }
         
         .btn-container {

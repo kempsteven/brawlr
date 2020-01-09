@@ -2,14 +2,16 @@
     <div class="image-container">
         <section
             class="image-item"
+            :class="{ 'default-image' : !isImageAvailable(key + 1) }"
             v-for="(val, key) in 6"
             :key="key"
+            @click="openImageCropper(key + 1)"
         >
             <span class="item-number">
                 {{ key + 1 }}
             </span>
 
-            <section class="img-wrapper">
+            <section class="img-wrapper" v-if="isImageAvailable(key + 1)">
                 <img
                     class="user-image"
                     src="@/assets/img/sample-picture.jpg"
@@ -17,16 +19,94 @@
                 >
             </section>
 
-            <button class="remove-add-btn">
-                &times;
-            </button>
+            <section class="overlay-container">
+                Click to upload image
+            </section>
+
+            <button class="_primary" v-if="isImageAvailable(key + 1)"/>
         </section>
+
+        <transition name="_transition-fixed">
+            <modal class="modal" v-if="modalName.includes('image-cropper')">
+               <image-cropper
+                    title="Crop your picture"
+                    @cancel="closeModal()"
+                    @save="saveProfilePicture($event)"
+                    :initial-image="require('@/assets/img/sample-picture.jpg')"
+                    slot="content"
+                />
+            </modal>
+        </transition>
     </div>
 </template>
 
 <script>
+import { mapFields } from 'vuex-map-fields'
+
 export default {
-    
+    data () {
+        return {
+            activeImagePosition: null
+        }
+    },
+
+    computed: {
+        ...mapFields('modal', [
+            'modalName'
+        ]),
+
+        ...mapFields('user', [
+            'user'
+        ])
+    },
+
+    methods: {
+        /* Update Profile Picture Methods */
+        async saveProfilePicture (image) {
+            const form = new FormData()
+
+            form.append('images', this.convertBlobToFile(image))
+            form.append('position[0]', this.activeImagePosition)
+
+            this.$store.dispatch('user/updateUserImage', form)
+        },
+
+        convertBlobToFile (blob) {
+            return new File([blob], 'image', {
+                type: blob.type,
+            })
+        },
+
+        openImageCropper (position) {
+            this.activeImagePosition = position
+
+            this.$store.commit('modal/toggleModal', { modalName: 'image-cropper' })
+        },
+
+        closeModal () {
+            this.activeImagePosition = null
+
+            this.$store.dispatch('modal/closeModal')
+        },
+
+        /* Template Methods */
+        isImageAvailable (position) {
+            if (
+                !Object.keys(this.user).length 
+                && this.user.profilePictures
+                && !this.user.profilePictures.length
+            ) { return false }
+
+            return this.user.profilePictures
+                    && this.user.profilePictures
+                        .some(picture => parseInt(picture.position) === position)
+        }
+    },
+
+    components: {
+        Modal: () => import('@/components/global/Modal'),
+        ImageCropper: () => import('@/components/global/ImageCropper')
+    },
 }
 </script>
 
@@ -45,6 +125,20 @@ export default {
         border-radius: 8px;
         position: relative;
         margin-bottom: 2.5%;
+        background: #ddd;
+        cursor: pointer;
+
+        &.default-image {
+            background-position: center;
+            background-image: url('~@/assets/img/avatar-default.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            .overlay-container {
+                background-color: rgba(0,0,0, 0.2);
+                opacity: 1;
+            }
+        }
 
         @include mobile {
             width: 31%;
@@ -76,29 +170,59 @@ export default {
             }
         }
 
-        .remove-add-btn {
+        .overlay-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
             position: absolute;
-            bottom: -10px;
-            right: -10px;
-            border-radius: 50%;
-            border: 1px solid #ddd;
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            font-size: 26px;
-            font-weight: 600;
-            color: $red;
-            opacity: 1;
+            background-color: rgba(0,0,0, 0.3);
+            color: #fff;
+            border: 2px dashed #fff;
+            font-size: 18px;
+            transition: 0.3s;
+            opacity: 0;
+            padding: 15px;
+            text-align: center;
+
+            @include flex-box(center, center, '');
+
+            &:hover {
+                opacity: 1;
+            }
 
             @include mobile {
-                width: 25px;
-                height: 25px;
-                font-size: 17px;
-                bottom: -5px;
-                right: -5px;
+                opacity: 1;
+                font-size: 12px;
+                border: 1px dashed #fff;
+            }
+        }
+
+        ._primary {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 2px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+            min-width: unset;
+
+            &:after {
+                content: '\2716'
+            }
+
+            @include mobile {
+                top: -7px;
+                right: -7px;
+            }
+        }
+    }
+
+    .modal {
+        /deep/.modal-container {
+            @include mobile {
+                height: unset;
             }
         }
     }
