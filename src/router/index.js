@@ -31,10 +31,13 @@ const authMiddleware = (next, token, isLoggedIn) => {
 router.beforeEach(async (to, from, next) => {
     const routeMiddleware = to.meta.middleware
 
+    alert('navigator.onLine', navigator.onLine, !navigator.onLine)
+    alert('routeMiddleware', routeMiddleware, routeMiddleware === 'auth')
     if (!navigator.onLine) {
         if (routeMiddleware === 'auth') {
             const token = store.getters['authentication/getField']('token')
-
+            
+            alert('token', token)
             if (token) {
                 if (!await offlineTokenValidation(token)) {
                     next({ name: 'login' })
