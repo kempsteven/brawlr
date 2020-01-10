@@ -45,6 +45,10 @@ export const actions = {
                 { root: true }
             )
 
+            if (status === 404) {
+                dispatch('authentication/logOut', '', { root: true })
+            }
+
             return
         }
 

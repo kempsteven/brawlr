@@ -106,7 +106,8 @@ a {
 }
 
 ._transition-anim-enter-active, ._transition-anim-leave-active {
-	transition: 0.5s ease;
+    transition: 0.5s ease;
+    pointer-events: none;
 	position: absolute;
 	top: 0;
     left: 0;
@@ -117,7 +118,8 @@ a {
 }
 
 ._transition-fixed-enter-active, ._transition-fixed-leave-active {
-	transition: 0.5s ease;
+    transition: 0.5s ease;
+    pointer-events: none;
 	position: fixed;
 	top: 0;
     left: 0;

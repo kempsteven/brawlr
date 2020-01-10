@@ -12,11 +12,10 @@
             </span>
 
             <section class="img-wrapper" v-if="isImageAvailable(key + 1)">
-                <img
-                    class="user-image"
-                    src="@/assets/img/sample-picture.jpg"
-                    alt="User Image"
-                >
+                <div
+                    class="img-container"
+                    :style="`background-image: url(${setImageSrcByPosition(key + 1)})`"
+                />
             </section>
 
             <section class="overlay-container">
@@ -32,7 +31,7 @@
                     title="Crop your picture"
                     @cancel="closeModal()"
                     @save="saveProfilePicture($event)"
-                    :initial-image="require('@/assets/img/sample-picture.jpg')"
+                    :initial-image="cropInitialImage"
                     slot="content"
                 />
             </modal>
@@ -46,7 +45,7 @@ import { mapFields } from 'vuex-map-fields'
 export default {
     data () {
         return {
-            activeImagePosition: null
+            activeImagePosition: null,
         }
     },
 
@@ -57,7 +56,21 @@ export default {
 
         ...mapFields('user', [
             'user'
-        ])
+        ]),
+
+        cropInitialImage () {
+            const isUserHasValue = !Object.keys(this.user).length
+            const activeImage = this.user.profilePictures.find(x => parseInt(x.position) === this.activeImagePosition).image
+            
+            if (
+                isUserHasValue
+                || activeImage === null
+            ) {
+                return null
+            }
+
+            return activeImage.image.url
+        }
     },
 
     methods: {
@@ -72,7 +85,7 @@ export default {
         },
 
         convertBlobToFile (blob) {
-            return new File([blob], 'image', {
+            return new File([blob], 'image.png', {
                 type: blob.type,
             })
         },
@@ -91,15 +104,21 @@ export default {
 
         /* Template Methods */
         isImageAvailable (position) {
-            if (
-                !Object.keys(this.user).length 
-                && this.user.profilePictures
-                && !this.user.profilePictures.length
-            ) { return false }
+            if (!Object.keys(this.user).length) return false
 
-            return this.user.profilePictures
-                    && this.user.profilePictures
-                        .some(picture => parseInt(picture.position) === position)
+            const positionObject = this.user.profilePictures.find(picture => parseInt(picture.position) === position)
+
+            if (!positionObject) return false
+
+            return positionObject.image !== null
+        },
+
+        setImageSrcByPosition (position) {
+            const positionObject = this.user.profilePictures.find(picture => parseInt(picture.position) === position)
+
+            if (!positionObject) return null
+
+            return positionObject.image.url
         }
     },
 
@@ -164,9 +183,18 @@ export default {
             top: 0;
             left: 0;
             
-            .user-image {
+            .img-container {
+                position: relative;
                 width: 100%;
-                min-height: 100%;
+                height: 100%;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+
+                // .user-image {
+                //     width: 100%;
+                //     min-height: 100%;
+                // }
             }
         }
 
