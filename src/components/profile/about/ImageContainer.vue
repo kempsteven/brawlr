@@ -5,7 +5,6 @@
             :class="{ 'default-image' : !isImageAvailable(key + 1) }"
             v-for="(val, key) in 6"
             :key="key"
-            @click="openImageCropper(key + 1)"
         >
             <span class="item-number">
                 {{ key + 1 }}
@@ -18,11 +17,18 @@
                 />
             </section>
 
-            <section class="overlay-container">
+            <section
+                class="overlay-container"
+                @click="openImageCropper(key + 1)"
+            >
                 Click to upload image
             </section>
 
-            <button class="_primary" v-if="isImageAvailable(key + 1)"/>
+            <button
+                class="_primary"
+                v-if="isImageAvailable(key + 1)"
+                @click="removeImage()"
+            />
         </section>
 
         <transition name="_transition-fixed">
@@ -69,7 +75,7 @@ export default {
                 return null
             }
 
-            return activeImage.image.url
+            return activeImage.url
         }
     },
 
@@ -100,6 +106,10 @@ export default {
             this.activeImagePosition = null
 
             this.$store.dispatch('modal/closeModal')
+        },
+
+        /* Remove Profile Picture Methods */
+        removeImage () {
         },
 
         /* Template Methods */
@@ -235,6 +245,7 @@ export default {
             height: 30px;
             font-size: 12px;
             min-width: unset;
+            z-index: 1;
 
             &:after {
                 content: '\2716'
