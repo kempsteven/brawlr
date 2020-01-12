@@ -18,7 +18,7 @@
             <div class="picture-wrapper">
                 <div class="picture-container">
                     <img
-                        :src="require('@/assets/img/avatar-default.png')"
+                        :src="profilePicture"
                         alt="Profile Picture"
                         class="profile-picture"
                     >
@@ -127,7 +127,24 @@ export default {
 
         ...mapFields('connection-status', [
             'online'
-		]),
+        ]),
+        
+        profilePicture () {
+            if (
+                !this.user
+                || !this.user.profilePictures
+                || (
+                    this.user.profilePictures
+                    && this.user.profilePictures.every(x => x.image === null)
+                )
+            ) { return require('@/assets/img/avatar-default.png') }
+
+            for (const picture of this.user.profilePictures) {
+                if (picture.image !== null) {
+                    return picture.image.url
+                }
+            }
+        },
 
         fullName () {
             return this.user.firstName ? `${this.user.firstName} ${this.user.lastName}` : null
@@ -249,7 +266,7 @@ export default {
 
         .picture-wrapper {
             position: absolute;
-            top: 180px;
+            top: 160px;
             margin-left: 50%;
             transform: translateX(-50%);
             // padding: 5px;
@@ -264,8 +281,8 @@ export default {
 
             .picture-container {
                 position: relative;
-                width: 180px;
-                height: 180px;
+                width: 210px;
+                height: 210px;
                 overflow: hidden;
                 border-radius: 50%;
 
@@ -275,6 +292,11 @@ export default {
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
+                }
+
+                @include mobile {
+                    width: 180px;
+                    height: 180px;
                 }
             }
         }

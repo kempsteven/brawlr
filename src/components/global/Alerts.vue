@@ -20,7 +20,11 @@
             </div>
 
             <div class="btn-container">
-                <button class="cancel" v-if="modalType === 'warning'" @click="close()">
+                <button
+                    class="cancel"
+                    v-if="modalType === 'warning'"
+                    @click="close()"
+                >
                     Cancel
                 </button>
 

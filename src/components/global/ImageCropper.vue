@@ -7,6 +7,7 @@
         <section class="croppa-container">
             <button
                 class="_primary"
+                :disabled="loading"
                 @click="removeImage()"
                 v-if="croppa && croppa.img"
             />
@@ -35,12 +36,20 @@
         </section>
 
         <section class="control-container">
-            <button class="_cancel" @click="$emit('cancel')">
+            <button
+                class="_cancel"
+                :disabled="loading"
+                @click="$emit('cancel')"
+            >
                 Cancel
             </button>
 
-            <button class="_primary" @click="generateImage()">
-                Save
+            <button
+                class="_primary"
+                :disabled="loading"
+                @click="generateImage()"
+            >
+                {{ loading ? 'Loading...' : 'Save' }}
             </button>
         </section>
     </div>
@@ -80,6 +89,7 @@ export default {
 
     methods: {
         async generateImage () {
+            if (this.loading) return
             if (!this.croppa.img) return
 
             const generatedImage = await this.croppa.promisedBlob('image/png', 1)
@@ -88,6 +98,8 @@ export default {
         },
 
         removeImage () {
+            if (this.loading) return
+
             if (this.croppa) this.croppa.remove()
         },
 

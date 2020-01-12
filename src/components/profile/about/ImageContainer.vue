@@ -2,18 +2,18 @@
     <div class="image-container">
         <section
             class="image-item"
-            :class="{ 'default-image' : !isImageAvailable(key + 1) }"
-            v-for="(val, key) in 6"
+            :class="{ 'default-image' : picture.image === null }"
+            v-for="(picture, key) in this.user.profilePictures"
             :key="key"
         >
             <span class="item-number">
                 {{ key + 1 }}
             </span>
 
-            <section class="img-wrapper" v-if="isImageAvailable(key + 1)">
+            <section class="img-wrapper" v-if="picture.image && picture.image.url">
                 <div
                     class="img-container"
-                    :style="`background-image: url(${setImageSrcByPosition(key + 1)})`"
+                    :style="`background-image: url(${picture.image.url})`"
                 />
             </section>
 
@@ -26,15 +26,23 @@
 
             <button
                 class="_primary"
-                v-if="isImageAvailable(key + 1)"
-                @click="removeImage()"
+                :disabled="updateImageLoading"
+                v-if="picture.image"
+                @click="confirmRemoveImage(picture)"
             />
         </section>
+
+        <transition name="_transition_anim">
+            <section class="loading-wrapper" v-if="updateImageLoading">
+                <loading />
+            </section>
+        </transition>
 
         <transition name="_transition-fixed">
             <modal class="modal" v-if="modalName.includes('image-cropper')">
                <image-cropper
                     title="Crop your picture"
+                    :loading="updateImageLoading"
                     @cancel="closeModal()"
                     @save="saveProfilePicture($event)"
                     :initial-image="cropInitialImage"
@@ -49,19 +57,17 @@
 import { mapFields } from 'vuex-map-fields'
 
 export default {
-    data () {
-        return {
-            activeImagePosition: null,
-        }
-    },
-
     computed: {
         ...mapFields('modal', [
             'modalName'
         ]),
 
         ...mapFields('user', [
-            'user'
+            'user',
+            'updateImageLoading',
+            'activeImagePosition',
+            'isImagePositionAvailable',
+            'isSavingImage'
         ]),
 
         cropInitialImage () {
@@ -82,12 +88,46 @@ export default {
     methods: {
         /* Update Profile Picture Methods */
         async saveProfilePicture (image) {
+            if(!await this.validateSaveProfilePicture()) return 
+
             const form = new FormData()
 
             form.append('images', this.convertBlobToFile(image))
             form.append('position[0]', this.activeImagePosition)
 
-            this.$store.dispatch('user/updateUserImage', form)
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'alert-modal',
+                modalType: 'warning',
+                modalTitle: 'Warning',
+                modalDesc: 'Are you sure you want to update this image?',
+                storeAction: 'user/updateUserImage',
+                storePayload: form
+            })
+        },
+
+        async validateSaveProfilePicture () {
+            if (this.updateImageLoading) return false
+
+            await this.$store.commit('user/checkImagePositionAvailable')
+
+            if (!this.isImagePositionAvailable) {
+                this.isSavingImage = true
+
+                await this.removeImageFromActivePosition()
+
+                return true
+            } else {
+                return true
+            }
+        },
+
+        async removeImageFromActivePosition () {
+            const activePictureObject = this.user.profilePictures
+                                            .find(picture => {
+                                                return parseInt(picture.position) === this.activeImagePosition
+                                            })
+                
+            await this.removeImage(activePictureObject)
         },
 
         convertBlobToFile (blob) {
@@ -96,6 +136,35 @@ export default {
             })
         },
 
+        /* Remove Profile Picture Methods */
+        confirmRemoveImage (image) {
+            if (this.updateImageLoading) return
+
+            const form = new FormData()
+
+            form.append('profilePictures[0][position]', image.position)
+            form.append('profilePictures[0][image]', image.image.publicId)
+
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'alert-modal',
+                modalType: 'warning',
+                modalTitle: 'Warning',
+                modalDesc: 'Are you sure you want to remove this image?',
+                storeAction: 'user/removeUserImage',
+                storePayload: form
+            })
+        },
+
+        async removeImage (image) {
+            const form = new FormData()
+
+            form.append('profilePictures[0][position]', image.position)
+            form.append('profilePictures[0][image]', image.image.publicId)
+
+            await this.$store.dispatch('user/removeUserImage', form)
+        },
+
+        /* Modal Handler Methods */
         openImageCropper (position) {
             this.activeImagePosition = position
 
@@ -107,34 +176,12 @@ export default {
 
             this.$store.dispatch('modal/closeModal')
         },
-
-        /* Remove Profile Picture Methods */
-        removeImage () {
-        },
-
-        /* Template Methods */
-        isImageAvailable (position) {
-            if (!Object.keys(this.user).length) return false
-
-            const positionObject = this.user.profilePictures.find(picture => parseInt(picture.position) === position)
-
-            if (!positionObject) return false
-
-            return positionObject.image !== null
-        },
-
-        setImageSrcByPosition (position) {
-            const positionObject = this.user.profilePictures.find(picture => parseInt(picture.position) === position)
-
-            if (!positionObject) return null
-
-            return positionObject.image.url
-        }
     },
 
     components: {
         Modal: () => import('@/components/global/Modal'),
-        ImageCropper: () => import('@/components/global/ImageCropper')
+        ImageCropper: () => import('@/components/global/ImageCropper'),
+        Loading: () => import('@/components/global/Loading')
     },
 }
 </script>
@@ -146,6 +193,7 @@ export default {
     justify-content: space-between;
     flex-wrap: wrap;
     margin-bottom: 25px;
+    position: relative;
 
     .image-item {
         width: 31.5%;
@@ -153,9 +201,12 @@ export default {
         box-shadow: 0 1px 5px #e4e4e4;
         border-radius: 8px;
         position: relative;
-        margin-bottom: 2.5%;
         background: #ddd;
         cursor: pointer;
+
+        &:nth-child(-n + 3) {
+            margin-bottom: 2.5%;
+        }
 
         &.default-image {
             background-position: center;
@@ -255,6 +306,16 @@ export default {
                 top: -7px;
                 right: -7px;
             }
+        }
+    }
+
+    .loading-wrapper {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+
+        /deep/.loading-container {
+            min-height: unset;
         }
     }
 

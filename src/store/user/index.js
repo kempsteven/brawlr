@@ -28,7 +28,15 @@ export const state = {
         }
     },
 
-    updateLoading: false
+    updateLoading: false,
+
+    updateImageLoading: false,
+    
+    activeImagePosition: null,
+
+    isImagePositionAvailable: false,
+
+    isSavingImage: false
 }
 
 export const actions = {
@@ -90,7 +98,7 @@ export const actions = {
     },
 
     async updateUserImage ({ commit, dispatch }, payload) {
-        state.updateLoading = true
+        state.updateImageLoading = true
 
         const { status, data } = await api('post', '/user/update-user-image', payload)
 
@@ -101,7 +109,8 @@ export const actions = {
                 { root: true }
             )
 
-            state.updateLoading = false
+            state.updateImageLoading = false
+            state.isSavingImage = false
             return
         }
 
@@ -113,15 +122,67 @@ export const actions = {
             modalName: 'alert-modal',
             modalType: 'success',
             modalTitle: 'Success',
-            modalDesc: 'Updated succesfully',
+            modalDesc: 'Updated image succesfully',
         }, { root: true })
 
-        state.updateLoading = false
+        state.updateImageLoading = false
+        state.isSavingImage = false
+    },
+
+    async removeUserImage ({ commit, dispatch }, payload) {
+        state.updateImageLoading = true
+
+        const { status, data } = await api('post', '/user/remove-user-image', payload)
+
+        if (status !== 200) {
+            dispatch(
+                'modal/errorModal',
+                data.message || 'Sorry, Something went wrong.',
+                { root: true }
+            )
+
+            state.updateImageLoading = false
+            return
+        }
+
+        state.user = data
+
+        if (state.isSavingImage) {
+            state.updateImageLoading = false
+
+            return
+        }
+
+        await dispatch('modal/closeModal', {}, { root: true })
+
+        commit('modal/toggleModal', {
+            modalName: 'alert-modal',
+            modalType: 'success',
+            modalTitle: 'Success',
+            modalDesc: 'Removed image succesfully',
+        }, { root: true })
+
+        state.updateImageLoading = false
     }
 }
 
 export const mutations = {
     updateField,
+
+    checkImagePositionAvailable () {
+        state.isImagePositionAvailable = true
+
+        const profilePictures = state.user.profilePictures
+
+        const pictureObject = profilePictures
+                                .find(picture => {
+                                    return parseInt(picture.position) === state.activeImagePosition
+                                })
+
+        if (pictureObject.image !== null) {
+            state.isImagePositionAvailable = false
+        }
+    },
 
     clearUserForm () {
         state.userForm = {
