@@ -5,10 +5,34 @@
 		<swipeable-cards />
 	</section>
 </template>
-
 <script>
+import * as match from '@/store/match/'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
+	
+	beforeCreate () {
+		if (!this.$store._modulesNamespaceMap['match/']) {
+            this.$store.registerModule('match', match.default)
+		}
+    },
+
+	created () {
+		this.getUserList()
+	},
+
+	computed: {
+		...mapFields('match', [
+			'userList'
+		])
+	},
+
+	methods: {
+		getUserList () {
+			this.$store.dispatch('match/getUserList')
+		}
+	},
+
 	components: {
 		SwipeableCards: () => import('@/components/fighters/SwipeableCards')
 	},

@@ -67,7 +67,7 @@ export default {
             'updateImageLoading',
             'activeImagePosition',
             'isImagePositionAvailable',
-            'isSavingImage'
+            'isUpdatingUserImage'
         ]),
 
         cropInitialImage () {
@@ -88,7 +88,7 @@ export default {
     methods: {
         /* Update Profile Picture Methods */
         async saveProfilePicture (image) {
-            if(!await this.validateSaveProfilePicture()) return 
+            if (this.updateImageLoading) return false
 
             const form = new FormData()
 
@@ -103,31 +103,6 @@ export default {
                 storeAction: 'user/updateUserImage',
                 storePayload: form
             })
-        },
-
-        async validateSaveProfilePicture () {
-            if (this.updateImageLoading) return false
-
-            await this.$store.commit('user/checkImagePositionAvailable')
-
-            if (!this.isImagePositionAvailable) {
-                this.isSavingImage = true
-
-                await this.removeImageFromActivePosition()
-
-                return true
-            } else {
-                return true
-            }
-        },
-
-        async removeImageFromActivePosition () {
-            const activePictureObject = this.user.profilePictures
-                                            .find(picture => {
-                                                return parseInt(picture.position) === this.activeImagePosition
-                                            })
-                
-            await this.removeImage(activePictureObject)
         },
 
         convertBlobToFile (blob) {
@@ -153,15 +128,6 @@ export default {
                 storeAction: 'user/removeUserImage',
                 storePayload: form
             })
-        },
-
-        async removeImage (image) {
-            const form = new FormData()
-
-            form.append('profilePictures[0][position]', image.position)
-            form.append('profilePictures[0][image]', image.image.publicId)
-
-            await this.$store.dispatch('user/removeUserImage', form)
         },
 
         /* Modal Handler Methods */
@@ -280,7 +246,6 @@ export default {
             }
 
             @include mobile {
-                opacity: 1;
                 font-size: 12px;
                 border: 1px dashed #fff;
             }

@@ -212,7 +212,14 @@ export default {
             form.append('ageRange[from]', this.ageRange.from)
             form.append('ageRange[to]', this.ageRange.to)
 
-            this.$store.dispatch('user/updateUser', form)
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'alert-modal',
+                modalType: 'warning',
+                modalTitle: 'Warning',
+                modalDesc: 'Are you sure you want to update your settings?',
+                storeAction: 'user/updateUser',
+                storePayload: form
+            })
         },
 
         isAgeRangeValid () {
@@ -253,7 +260,13 @@ export default {
 
         /* Logout */
         logout () {
-            this.$store.dispatch('authentication/logOut')
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'alert-modal',
+                modalType: 'warning',
+                modalTitle: 'Warning',
+                modalDesc: 'Are you sure you want to log out?',
+                storeAction: 'authentication/logOut'
+            })
         }
     },
 }

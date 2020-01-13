@@ -24,6 +24,15 @@
             />
 
             <input-field
+                title="Age"
+                placeholder="Enter Age"
+                type="number"
+
+                :limit="3"
+                v-model="age"
+            />
+
+            <input-field
                 class="text-area"
                 title="About You"
                 placeholder="Enter about you"
@@ -133,6 +142,7 @@ export default {
         ...mapFields('user', [
             'userForm.firstName',
             'userForm.lastName',
+            'userForm.age',
             'userForm.bio',
             'userForm.fighterType',
             'userForm.location',
@@ -147,13 +157,14 @@ export default {
         /* Created Lifecycle Methods */
         setUserForm () {
             const {
-                firstName, lastName, bio,
+                firstName, lastName, age,
                 fighterType, location, gender,
-                organization
+                organization,  bio
             } = this.user
             
             this.firstName = firstName || ''
             this.lastName = lastName || ''
+            this.age = age || ''
             this.bio = bio || ''
             this.fighterType = fighterType || ''
             this.location = location || {id: 0, value: ''}
@@ -167,6 +178,7 @@ export default {
 
             form.append('firstName', this.firstName)
             form.append('lastName', this.lastName)
+            form.append('age', this.age)
             form.append('bio', this.bio)
             form.append('fighterType', this.fighterType)
             form.append('location[id]', this.location.id)
@@ -175,7 +187,14 @@ export default {
             form.append('gender[value]', this.gender.value)
             form.append('organization', this.organization)
 
-            this.$store.dispatch('user/updateUser', form)
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'alert-modal',
+                modalType: 'warning',
+                modalTitle: 'Warning',
+                modalDesc: 'Are you sure you want to update your information?',
+                storeAction: 'user/updateUser',
+                storePayload: form
+            })
         },
 
         /* Close Form Methods */

@@ -212,7 +212,7 @@ export default {
             }
 
             .profile-main-info {
-                top: 70px;
+                top: 45px;
                 position: absolute;
                 margin-left: 50%;
                 transform: translateX(-50%);

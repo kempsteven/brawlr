@@ -3,8 +3,8 @@
         <vue2-interact-draggable
             class="card"
             :class="{ 'disabled' : key !== 0 }"
-            v-for="(card, key) in cards"
-            :key="cards.length - key"
+            v-for="(card, key) in userList"
+            :key="userList.length - key"
             :id="key"
             :style="`z-index: ${cards.length - key}`"
 
@@ -24,12 +24,13 @@
             <section class="detail-container">
                 <img
                     class="fighter-img"
-                    src="@/assets/img/sample-picture.jpg"
+                    :src="card.profilePictures[0].image.url"
                     alt="fighter-image"
+                    v-if="card.profilePictures"
                 >
 
                 <section class="detail-name">
-                    {{ card.name }}
+                    {{ `${card.firstName} | ${card.age} | ${card.gender.value}` }}
                 </section>
             </section>
         </vue2-interact-draggable>
@@ -38,6 +39,7 @@
 
 <script>
 import { Vue2InteractDraggable, InteractEventBus } from 'vue2-interact'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
     data () {
@@ -73,15 +75,21 @@ export default {
 		}, { deep: true })
     },
 
+    computed: {
+		...mapFields('match', [
+			'userList'
+		])
+	},
+
     methods: {
         like (e) {
             // InteractEventBus.$emit('right')
-            setTimeout(() => this.cards.shift(), 300)
+            setTimeout(() => this.userList.shift(), 300)
         },
 
         ignore (e) {
             // InteractEventBus.$emit('left')
-            setTimeout(() => this.cards.shift(), 300)
+            setTimeout(() => this.userList.shift(), 300)
         },
     },
     
@@ -112,7 +120,7 @@ export default {
         overflow: hidden;
         top: 30px;
         touch-action: none;
-        background-color: #202020;
+        background-color: #ddd;
 
         &.disabled {
             pointer-events: none;
@@ -130,7 +138,7 @@ export default {
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            background: black;
+            background-color: #ddd;
 
             .fighter-img {
                 height: 100%;

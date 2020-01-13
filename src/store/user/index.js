@@ -8,6 +8,7 @@ export const state = {
     userForm: {
         firstName: '',
         lastName: '',
+        age: '',
         bio: '',
         fighterType: '',
         location: {},
@@ -36,7 +37,7 @@ export const state = {
 
     isImagePositionAvailable: false,
 
-    isSavingImage: false
+    isUpdatingUserImage: false
 }
 
 export const actions = {
@@ -100,6 +101,12 @@ export const actions = {
     async updateUserImage ({ commit, dispatch }, payload) {
         state.updateImageLoading = true
 
+        if (!await dispatch('checkImagePositionAvailable')) {
+            state.isUpdatingUserImage = true
+            await dispatch('setRemoveUserImage')
+            state.updateImageLoading = true
+        }
+
         const { status, data } = await api('post', '/user/update-user-image', payload)
 
         if (status !== 200) {
@@ -110,7 +117,7 @@ export const actions = {
             )
 
             state.updateImageLoading = false
-            state.isSavingImage = false
+            state.isUpdatingUserImage = false
             return
         }
 
@@ -126,7 +133,34 @@ export const actions = {
         }, { root: true })
 
         state.updateImageLoading = false
-        state.isSavingImage = false
+        state.isUpdatingUserImage = false
+    },
+
+    checkImagePositionAvailable() {
+        const profilePictures = state.user.profilePictures
+
+        const pictureObject = profilePictures.find(picture => {
+                                    return parseInt(picture.position) === state.activeImagePosition
+                                })
+
+        if (pictureObject.image !== null) {
+            return false
+        }
+
+        return true
+    },
+
+    async setRemoveUserImage ({ dispatch }) {
+        const activePictureObject = state.user.profilePictures.find(picture => {
+                                        return parseInt(picture.position) === state.activeImagePosition
+                                    })
+
+        const form = new FormData()
+
+        form.append('profilePictures[0][position]', activePictureObject.position)
+        form.append('profilePictures[0][image]', activePictureObject.image.publicId)
+
+        await dispatch('removeUserImage', form)
     },
 
     async removeUserImage ({ commit, dispatch }, payload) {
@@ -147,7 +181,7 @@ export const actions = {
 
         state.user = data
 
-        if (state.isSavingImage) {
+        if (state.isUpdatingUserImage) {
             state.updateImageLoading = false
 
             return
@@ -168,21 +202,6 @@ export const actions = {
 
 export const mutations = {
     updateField,
-
-    checkImagePositionAvailable () {
-        state.isImagePositionAvailable = true
-
-        const profilePictures = state.user.profilePictures
-
-        const pictureObject = profilePictures
-                                .find(picture => {
-                                    return parseInt(picture.position) === state.activeImagePosition
-                                })
-
-        if (pictureObject.image !== null) {
-            state.isImagePositionAvailable = false
-        }
-    },
 
     clearUserForm () {
         state.userForm = {

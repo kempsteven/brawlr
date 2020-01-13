@@ -26,7 +26,7 @@
         />
 
         <span class="limit-label" v-if="limit">
-            {{ limit - value.length }}
+            {{ remainingCharacters }}
         </span>
     </div>
 </template>
@@ -61,6 +61,12 @@ export default {
         limit: {
             type: Number,
             default: 0
+        }
+    },
+
+    computed: {
+        remainingCharacters () {
+            return this.limit - `${this.value}`.length
         }
     },
 
