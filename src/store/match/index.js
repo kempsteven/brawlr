@@ -8,7 +8,7 @@ export const state = {
 }
 
 export const actions = {
-    async getUserList () {
+    async getUserList ({ dispatch }) {
         state.userListLoading = true
 
         const { status, data } = await api('get', '/match/get-user-list')

@@ -13,8 +13,15 @@
 <script>
 import MessageList from '@/components/messages/MessageList'
 import isMobileMixins from '@/mixins/isMobileMixins'
+import * as message from '@/store/message/'
 
 export default {
+    beforeCreate () {
+        if (!this.$store._modulesNamespaceMap['message/']) {
+            this.$store.registerModule('message', message.default)
+		}
+    },
+
     mounted () {
         this.isMobileViewWidth()
     },

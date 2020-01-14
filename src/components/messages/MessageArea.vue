@@ -1,9 +1,9 @@
 <template>
     <div class="message-area">
-        <ul class="message-list">
+        <ul class="message-list" ref="messageList">
             <li
                 class="list-item"
-                :class="{ 'own-message' : message.userId === 1 }"
+                :class="{ 'own-message' : isUserOwnMessage(message) }"
                 :key="key"
                 v-for="(message, key) in messageList"
             >
@@ -27,13 +27,14 @@
             </li>
         </ul>
 
-        <form class="message-input-container" @input.prevent>
+        <form class="message-input-container" @submit.prevent="sendMessage()">
             <button class="gif-btn" type="button"/>
             
             <section class="input-wrapper">
                 <input-field
                     class="input-field"
                     placeholder="Type a message..."
+                    v-model="message"
                     type="text"
                 />
 
@@ -47,31 +48,104 @@
 
 <script>
 import InputField from '@/components/global/InputField'
+import * as user from '@/store/user/'
+import io from 'socket.io-client'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
     data() {
         return {
-            messageList: [
-                {
-                    userId: 2,
-                    name: 'Manny Pacquiaouaoai',
-                    message: `Good day,
-                        suntukan tayu, Lorem ipsum dolor sit amet.
-                        Lorem ipsum dolor sit, amet consectetur
-                        adipisicing elit. Facilis itaque
-                    `,
-                    userImage: require('@/assets/img/sample-picture.jpg')
-                },
+            message: '',
 
-                {
-                    userId: 1,
-                    name: 'Baki The Grappler',
-                    message: `
-                        Good day manny, tara suntukan
-                    `,
-                    userImage: require('@/assets/img/sample-picture.jpg')
-                },
-            ]
+            socket: io.connect('http://localhost:3000')
+        }
+    },
+
+    beforeCreate () {
+        if (!this.$store._modulesNamespaceMap['user/']) {
+            this.$store.registerModule('user', user.default)
+		}
+    },
+
+    created () {
+        this.getUser()
+    },
+
+    mounted () {
+        this.setSocketListeners()
+    },
+
+    destroyed () {
+        this.removeSocketConnection()
+    },
+
+    computed: {
+        ...mapFields('user', [
+            'user'
+        ]),
+
+        ...mapFields('message', [
+            'messageList'
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
+        ])
+    },
+
+    methods: {
+        /* Created Lifecycle Methods */
+        getUser () {
+            if (!this.online) return
+
+            this.$store.dispatch('user/getUser')
+        },
+
+        setSocketListeners () {
+			this.socket.on("new_message", ({ data }) => {
+				this.messageList.push({
+                    name: data.name,
+                    userId: data.userId,
+                    userImage: data.userImage,
+                    message: data.message
+                })
+
+				setTimeout(() => {
+					this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
+				}, 0)
+			})
+		},
+
+		sendMessage () {
+            if(!this.message) return
+
+            const findUserImage = this.user.profilePictures.find(item => item.image !== null)
+            const userImage = findUserImage.image.url || require('@/assets/img/sample-picture.jpg')
+
+			this.socket.emit('new_message', {
+                name: `${this.user.firstName} ${this.user.lastName}`,
+                userId: this.user._id,
+                userImage: userImage,
+				message: this.message
+			})
+
+			this.message = ''
+
+			setTimeout(() => {
+				this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
+			}, 0)
+        },
+
+        /* Tempalte Methods */
+        isUserOwnMessage (message) {
+            if (!this.user) return false
+
+            return message.userId === this.user._id
+        },
+        
+        /* Destroyed Lifecycle Methods */
+        removeSocketConnection () {
+            this.socket.disconnect()
         }
     },
 
@@ -106,13 +180,9 @@ export default {
         
         .list-item {
             width: 100%;
-            padding: 8px 15px;
+            padding: 5px 15px;
             display: flex;
             align-items: flex-end;
-
-            @include mobile {
-                padding: 8px 10px;
-            }
 
             &.own-message {
                 justify-content: flex-end;
@@ -167,13 +237,18 @@ export default {
                     color: #90949c;
                     margin-bottom: 5px;
                     display: block;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    max-width: 70%;
                 }
 
                 .message-text {
                     font-size: 13px;
                     background-color: #f1f0f0;
                     border-radius: 20px;
-                    padding: 10px 15px;
+                    padding: 10px 18px;
+                    display: inline-block;
                 }
             }
         }

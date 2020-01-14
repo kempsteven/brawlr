@@ -144,6 +144,8 @@ export default {
                     return picture.image.url
                 }
             }
+
+            return require('@/assets/img/avatar-default.png')
         },
 
         fullName () {

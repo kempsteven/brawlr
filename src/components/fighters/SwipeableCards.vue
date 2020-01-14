@@ -65,14 +65,14 @@ export default {
                 draggedRight: 'right',
                 draggedLeft: 'left',
                 draggedUp: 'up'
-            },
+            }
 		}
     },
 
     mounted () {
-        const watcher = this.$watch('activeCardPosition', (val) => {
-			console.log(val)
-		}, { deep: true })
+        // const watcher = this.$watch('activeCardPosition', (val) => {
+		// 	console.log(val)
+		// }, { deep: true })
     },
 
     computed: {
@@ -82,12 +82,12 @@ export default {
 	},
 
     methods: {
-        like (e) {
+        like () {
             // InteractEventBus.$emit('right')
             setTimeout(() => this.userList.shift(), 300)
         },
 
-        ignore (e) {
+        ignore () {
             // InteractEventBus.$emit('left')
             setTimeout(() => this.userList.shift(), 300)
         },
