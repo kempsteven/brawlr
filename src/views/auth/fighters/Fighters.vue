@@ -58,6 +58,14 @@ export default {
 		left: -7%;
 		top: -25%;
 		z-index: 0;
+
+		@include mobile {
+			width: 100%;
+			height: 40%;
+			top: 0;
+			left: 0;
+			transform: rotate(0deg);
+		}
 	}
 }
 </style>

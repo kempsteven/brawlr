@@ -1,39 +1,49 @@
 <template>
     <div class="swipeable-cards">
-        <vue2-interact-draggable
-            class="card"
-            :class="{ 'disabled' : key !== 0 }"
-            v-for="(card, key) in userList"
-            :key="userList.length - key"
-            :id="key"
-            :style="`z-index: ${cards.length - key}`"
+        <transition-group name="_transition-anim">
+            <vue2-interact-draggable
+                class="card"
+                :class="{ 'disabled' : key !== 0 }"
+                v-for="(card, key) in userList"
+                :key="userList.length - key"
+                :id="key"
+                :style="`z-index: ${cards.length - key}`"
 
-            :interact-event-bus-events="interactEventBus"
+                :interact-out-of-sight-x-coordinate="500"
+                :interact-max-rotation="15"
+                :interact-x-threshold="100"
+                :interact-y-threshold="200"
 
-            :interact-out-of-sight-x-coordinate="500"
-            :interact-max-rotation="15"
-            :interact-x-threshold="100"
-            :interact-y-threshold="200"
+                :interactBlockDragDown="true"
 
-            :interactBlockDragDown="true"
+                :interact-event-bus-events="isCurrentCard(key)"
 
-            @draggedRight="like($event)"
-            @draggedLeft="ignore($event)"
-            @draggedUp="ignore($event)"
-        >
-            <section class="detail-container">
-                <img
-                    class="fighter-img"
-                    :src="card.profilePictures[0].image.url"
-                    alt="fighter-image"
-                    v-if="card.profilePictures"
-                >
+                @draggedRight="emitAndNext($event)"
+                @draggedLeft="emitAndNext($event)"
+                @draggedUp="emitAndNext($event)"
+            >
+                <section class="detail-container">
+                    <img
+                        class="fighter-img"
+                        :src="card.profilePictures[0].image.url"
+                        alt="fighter-image"
+                        v-if="card.profilePictures"
+                    >
 
-                <section class="detail-name">
-                    {{ `${card.firstName} | ${card.age} | ${card.gender.value}` }}
+                    <section class="detail-name">
+                        {{ `${card.firstName} | ${card.age} | ${card.gender.value}` | capitalize }}
+                    </section>
                 </section>
-            </section>
-        </vue2-interact-draggable>
+            </vue2-interact-draggable>
+        </transition-group>
+
+        <section class="control-container">
+			<button class="_primary" @click="backButton()"/>
+
+			<button class="_primary" @click="brawlButton()"/>
+
+			<button class="_primary" @click="fightButton()"/>
+		</section>
     </div >
 </template>
 
@@ -46,25 +56,12 @@ export default {
 		return {
 			cards: [
 				{ src: 'karina.jpg', name: 'Karina', age: 7 },
-				{ src: 'alexander.jpg', name: 'Alexander', age: 5 },
-				{ src: 'bona.jpg', name: 'Bona', age: 3 },
-				{ src: 'ichi.jpg', name: 'Ichi', age: 7 },
-				{ src: 'lloyd.jpg', name: 'Lloyd', age: 4 },
-				{ src: 'luiza.jpg', name: 'Luiza', age: 9 },
-				{ src: 'max.jpg', name: 'Max', age: 6 },
-				{ src: 'mona.jpg', name: 'Mona', age: 3 },
-				{ src: 'naru.jpg', name: 'Naru', age: 7 },
-				{ src: 'ramdan.jpg', name: 'Ramdan', age: 8 },
-				{ src: 'rikki-austin.jpg', name: 'Rikki Austin', age: 3 },
-				{ src: 'tucker.jpg', name: 'Tucker', age: 9 },
-				{ src: 'uriel.jpg', name: 'Uriel', age: 6 },
-				{ src: 'zoe.jpg', name: 'Zoe', age: 2 },
             ],
-            
+
             interactEventBus: {
-                draggedRight: 'right',
-                draggedLeft: 'left',
-                draggedUp: 'up'
+                draggedRight: 'fight',
+                draggedLeft: 'back-out',
+                draggedUp: 'brawl'
             }
 		}
     },
@@ -82,19 +79,35 @@ export default {
 	},
 
     methods: {
-        like () {
-            // InteractEventBus.$emit('right')
-            setTimeout(() => this.userList.shift(), 300)
+        backButton () {
+            InteractEventBus.$emit('back-out')
+            // this.emitAndNext()
         },
 
-        ignore () {
+        brawlButton () {
+            InteractEventBus.$emit('brawl')
+            // this.emitAndNext()
+        },
+
+        fightButton () {
+            InteractEventBus.$emit('fight')
+            // this.emitAndNext()
+        },
+
+        emitAndNext () {
             // InteractEventBus.$emit('left')
             setTimeout(() => this.userList.shift(), 300)
         },
+
+        isCurrentCard (position) {
+            return position === 0
+                    ? this.interactEventBus
+                    : {}
+        }
     },
     
     components: {
-        Vue2InteractDraggable: () => import('vue2-interact/src/components/Vue2InteractDraggable')
+        Vue2InteractDraggable
     }
 }
 </script>
@@ -129,7 +142,7 @@ export default {
         @include mobile {
             width: 95%;
             height: 83%;
-            top: 15px;
+            top: 10px;
         }
 
         .detail-container {
@@ -154,8 +167,64 @@ export default {
                 background: rgba(0,0,0,.5);
                 color: #fff;
                 width: 100%;
+                font-size: 24px;
+
+                @include mobile {
+                    font-size: 15px;
+                }
             }
         }
     }
+
+    .control-container {
+		position: absolute;
+		right: 15px;
+		display: flex;
+		flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+		z-index: 99;
+		top: 50%;
+		transform: translateY(-50%);
+
+        @include mobile {
+            top: unset;
+            flex-direction: row;
+            justify-content: space-around;
+            transform: unset;
+            bottom: 12px;
+            width: 100%;
+            right: 0;
+        }
+
+		button {
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-width: unset;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 1px solid darken($red, 5%);
+            box-shadow: 0 1px 5px #414141;
+            opacity: 1;
+
+			&:not(:last-child) {
+				margin-bottom: 75px;
+			}
+
+            &._primary {
+                background-image: url('~@/assets/img/icon/fighter-icon.png');
+            }
+
+            @include mobile {
+                width: 55px;
+                height: 55px;
+
+                &:not(:last-child) {
+                    margin-bottom: 0;
+                }
+            }
+		}
+	}
 }
 </style>

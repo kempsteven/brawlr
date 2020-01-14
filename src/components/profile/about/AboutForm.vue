@@ -10,7 +10,7 @@
                 placeholder="Enter First Name"
                 type="text"
 
-                :limit="50"
+                :limit="25"
                 v-model="firstName"
             />
 
@@ -19,7 +19,7 @@
                 placeholder="Enter Last Name"
                 type="text"
 
-                :limit="50"
+                :limit="25"
                 v-model="lastName"
             />
 
@@ -47,7 +47,7 @@
                 placeholder="Enter Fighter Type e.g. (Boxer, Muay Thai, Taekwondo)"
                 type="text"
 
-                :limit="50"
+                :limit="25"
                 v-model="fighterType"
             />
 
@@ -78,7 +78,7 @@
                 placeholder="Enter School/Company Name"
                 type="text"
 
-                :limit="50"
+                :limit="25"
                 v-model="organization"
             />
         </section>

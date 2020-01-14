@@ -10,7 +10,7 @@
                 placeholder="Enter First Name"
                 type="text"
 
-                :limit="50"
+                :limit="25"
                 v-model="firstName"
             />
 
@@ -19,7 +19,7 @@
                 placeholder="Enter Last Name"
                 type="text"
 
-                :limit="50"
+                :limit="25"
                 v-model="lastName"
             />
 

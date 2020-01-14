@@ -57,7 +57,7 @@ export default {
         return {
             message: '',
 
-            socket: io.connect('http://localhost:3000')
+            socket: io.connect('https://brawlr-backend.herokuapp.com')
         }
     },
 
@@ -186,6 +186,8 @@ export default {
 
             &.own-message {
                 justify-content: flex-end;
+                padding: 2px 15px;
+
 
                 .img-container {
                     display: none;
@@ -241,6 +243,11 @@ export default {
                     text-overflow: ellipsis;
                     white-space: nowrap;
                     max-width: 70%;
+                    min-width: 150px;
+
+                    @include mobile {
+                        min-width: 105px;
+                    }
                 }
 
                 .message-text {

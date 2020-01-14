@@ -72,16 +72,37 @@ export default {
 
     methods: {
         checkValue (event) {
+            const keyCode = event.keyCode
             const inputTag = event.target
-            const isBackSpace = event.keyCode == 8
-            const isSelectAll = event.ctrlKey && event.keyCode === 65
+            const isBackSpace = keyCode == 8
+            const isSelectAll = event.ctrlKey && keyCode === 65
+            const isArrowKeys = [37, 38, 39, 40].includes(keyCode)
+            let highlightedText
+
+            if (window.getSelection) {
+                try {
+                    const activeElement = document.activeElement
+                    
+                    if (activeElement && activeElement.value) {
+                        // firefox bug https://bugzilla.mozilla.org/show_bug.cgi?id=85686
+                        highlightedText = activeElement.value.substring(activeElement.selectionStart, activeElement.selectionEnd);
+                    } else {
+                        highlightedText = window.getSelection().toString();
+                    }
+
+                } catch (e) { }
+            } else if (document.selection && document.selection.type != "Control") {
+                highlightedText = document.selection.createRange().text;
+            }
 
             // Handle limit
             if (
-                this.limit !== 0 &&
-                `${inputTag.value}`.length >= this.limit &&
-                !isBackSpace && 
-                !isSelectAll
+                this.limit !== 0
+                && `${inputTag.value}`.length >= this.limit
+                && !isBackSpace
+                && !isSelectAll
+                && inputTag.value !== highlightedText
+                && !isArrowKeys
             ) {
                 event.preventDefault()
             }
