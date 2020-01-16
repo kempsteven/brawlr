@@ -38,11 +38,11 @@
         </transition-group>
 
         <section class="control-container">
-			<button class="_primary" @click="backButton()"/>
+			<button class="back-out" @click="backButton()"/>
 
-			<button class="_primary" @click="brawlButton()"/>
+			<button class="brawl" @click="brawlButton()"/>
 
-			<button class="_primary" @click="fightButton()"/>
+			<button class="fight" @click="fightButton()"/>
 		</section>
     </div >
 </template>
@@ -66,6 +66,10 @@ export default {
 		}
     },
 
+    created () {
+        this.getUserList()
+    },
+
     mounted () {
         // const watcher = this.$watch('activeCardPosition', (val) => {
 		// 	console.log(val)
@@ -79,6 +83,11 @@ export default {
 	},
 
     methods: {
+        /* Created Lifecycle Methods */
+        getUserList () {
+			this.$store.dispatch('match/getUserList')
+		},
+
         backButton () {
             InteractEventBus.$emit('back-out')
             // this.emitAndNext()
@@ -212,8 +221,16 @@ export default {
 				margin-bottom: 75px;
 			}
 
-            &._primary {
-                background-image: url('~@/assets/img/icon/fighter-icon.png');
+            &.brawl {
+                background-image: url('~@/assets/img/icon/brawl-icon.png');
+            }
+
+            &.fight {
+                background-image: url('~@/assets/img/icon/fight-icon.png');
+            }
+
+            &.back-out {
+                background-image: url('~@/assets/img/icon/back-out-icon.png');
             }
 
             @include mobile {

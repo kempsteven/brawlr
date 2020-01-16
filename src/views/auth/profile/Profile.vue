@@ -86,6 +86,8 @@ import { mapFields } from 'vuex-map-fields'
 import * as user from '@/store/user/'
 import { isMobileRegexFunction } from '@/regex'
 
+
+
 export default {
     data() {
         return {
@@ -99,10 +101,10 @@ export default {
 		}
     },
     
-    created () {
+    async created () {
         if (!this.online) return
         
-        this.getUser()
+        await this.getUser()
     },
 
     mounted () {
@@ -113,7 +115,7 @@ export default {
 
                 bioTextArea.style.height = `${scrollHeight}px`
             }
-		}, { immediate: true })
+        }, { immediate: true })
     },
 
     destroyed () {

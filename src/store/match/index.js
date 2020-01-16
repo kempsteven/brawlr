@@ -4,7 +4,9 @@ import { getField, updateField } from 'vuex-map-fields'
 export const state = {
     userList: [],
 
-    userListLoading: false
+    userListLoading: false,
+
+    matchedObject: {}
 }
 
 export const actions = {

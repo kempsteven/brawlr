@@ -102,7 +102,7 @@ export default {
         },
 
         setSocketListeners () {
-			this.socket.on("new_message", ({ data }) => {
+			this.socket.on('new_message', ({ data }) => {
 				this.messageList.push({
                     name: data.name,
                     userId: data.userId,
@@ -145,6 +145,7 @@ export default {
         
         /* Destroyed Lifecycle Methods */
         removeSocketConnection () {
+            this.socket.removeListener('new_message')
             this.socket.disconnect()
         }
     },
@@ -204,6 +205,8 @@ export default {
                         background: rgb(218,85,85);
                         background: linear-gradient(0deg, rgba(201,73,73,1) 0%, rgba(218,85,85,1) 70%);
                         color: #fff;
+                        width: 100%;
+                        word-break: break-word;
                     }
                 }
             }
@@ -256,6 +259,8 @@ export default {
                     border-radius: 20px;
                     padding: 10px 18px;
                     display: inline-block;
+                    width: 100%;
+                    word-break: break-word;
                 }
             }
         }
