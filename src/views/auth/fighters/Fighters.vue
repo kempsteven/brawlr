@@ -22,7 +22,7 @@ export default {
 	data() {
 		return {
 			idWatcher: null,
-			socket: io.connect('http://localhost:3000')
+			socket: io.connect(process.env.VUE_APP_SOCKET_URL)
 		}
 	},
 
@@ -140,9 +140,12 @@ export default {
 	}
 
 	.match-container {
+		background: rgba(0, 0, 0, 0.7);
+
 		/deep/.modal-container {
 			padding: 0;
 			background: none;
+			box-shadow: 0 1px 5px #aaaaaa;
 
 			@include mobile {
 				width: 100%;

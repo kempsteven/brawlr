@@ -1,5 +1,7 @@
 <template>
     <section class="match-modal">
+        <div class="bg-overlay" />
+
         <section class="close-container">
             <div class="close" @click="closeModal()"/>
         </section>
@@ -35,7 +37,7 @@
                 <section class="img-container">
                     <img
                         class="user-image"
-                        :src="currentUserImage"
+                        :src="matchedUserImage"
                         alt="User Image"
                     >
                 </section>
@@ -83,13 +85,15 @@ export default {
 <style lang="scss" scoped>
 .match-modal {
     width: 595px;
-    height: 638px;
+    min-height: 638px;
     padding: 25px;
+    padding-bottom: 40px;
     position: relative;
     display: flex;
     align-items: center;
     flex-direction: column;
     border-radius: 5px;
+    user-select: none;
 
     background-position: -500px center;
     background-repeat: no-repeat;
@@ -103,6 +107,17 @@ export default {
     @include mobile {
         width: 100%;
         height: 100%;
+        min-height: unset;
+    }
+
+    .bg-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        background: rgba(0, 0, 0, 0.3);
     }
     
     .close {
@@ -112,6 +127,7 @@ export default {
         right: 9px;
         top: 10px;
         cursor: pointer;
+        z-index: 2;
 
         &:after {
             pointer-events: none;
@@ -127,12 +143,15 @@ export default {
     .icon-container {
         margin: 15px 0;
         opacity: 0;
+        z-index: 2;
+        user-select: none;
 
         @include fadeinfromtop(0.4s, 0.1s);
 
         .has-matched-icon {
             width: 150px;
             height: 150px;
+            user-select: none;
 
             @include mobile {
                 width: 120px;
@@ -143,10 +162,12 @@ export default {
 
     .match-label {
         margin-bottom: 35px;
-        font-size: 28px;
+        font-size: 32px;
         color: #fff;
         opacity: 0;
         text-align: center;
+        z-index: 2;
+        user-select: none;
 
         @include fadeinfromtop(0.4s, 0.1s);
 
@@ -159,8 +180,11 @@ export default {
         width: 100%;
         margin-bottom: 60px;
         opacity: 0;
+        z-index: 2;
+        user-select: none;
 
         @include flex-box(center, space-between, '');
+        
         @include fadeinfromtop(0.4s, 0.5s);
 
         @include mobile {
@@ -195,6 +219,7 @@ export default {
                 .user-image {
                     width: 100%;
                     min-height: 100%;
+                    user-select: none;
                 }
             }
 
@@ -209,6 +234,8 @@ export default {
     .control-container {
         width: 100%;
         opacity: 0;
+        z-index: 2;
+        user-select: none;
 
         @include fadeinfromtop(0.4s, 0.9s);
         

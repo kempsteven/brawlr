@@ -57,7 +57,7 @@ export default {
         return {
             message: '',
 
-            socket: io.connect('https://brawlr-backend.herokuapp.com')
+            socket: io.connect(process.env.VUE_APP_SOCKET_URL)
         }
     },
 
