@@ -33,6 +33,10 @@
                 </h3>
             </section>
 
+            <h1 class="vs">
+                VS
+            </h1>
+
             <section class="user-container">
                 <section class="img-container">
                     <img
@@ -108,6 +112,7 @@ export default {
         width: 100%;
         height: 100%;
         min-height: unset;
+        border-radius: 0;
     }
 
     .bg-overlay {
@@ -184,24 +189,31 @@ export default {
         user-select: none;
 
         @include flex-box(center, space-between, '');
-        
+
         @include fadeinfromtop(0.4s, 0.5s);
 
         @include mobile {
             flex: 1 1 auto;
         }
 
+        .vs {
+            flex: 1 1 auto;
+            color: #fff;
+            font-size: 18px;
+            @include flex-box(center, center, '');
+        }
+
         .user-container {
             @include flex-box('', '', column);
 
-            &:first-child {
-                margin-right: 75px;
-            }
+            // &:first-child {
+            //     margin-right: 75px;
+            // }
 
             @include mobile {
-                &:first-child {
-                    margin-right: 40px;
-                }
+                // &:first-child {
+                //     margin-right: 40px;
+                // }
             }
 
             .img-container {

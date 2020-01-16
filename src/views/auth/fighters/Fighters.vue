@@ -22,7 +22,7 @@ export default {
 	data() {
 		return {
 			idWatcher: null,
-			socket: io.connect(process.env.VUE_APP_SOCKET_URL)
+			socket: io.connect(process.env.VUE_APP_SOCKET_URL || 'http://localhost:3000')
 		}
 	},
 
