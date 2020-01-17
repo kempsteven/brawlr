@@ -6,7 +6,11 @@ export const state = {
 
     userListLoading: false,
 
-    matchedObject: {}
+    matchedObject: {},
+
+    viewDetailsObject: {},
+
+    challengeUserLoading: false
 }
 
 export const actions = {
@@ -28,6 +32,25 @@ export const actions = {
         state.userList = data
 
         state.userListLoading = false
+    },
+
+    async challengeUser({ dispatch }, payload) {
+        state.challengeUserLoading = true
+
+        const { status, data } = await api('post', '/match/challenge-user', payload)
+
+        // if error
+        if (status !== 200) {
+            dispatch(
+                'modal/errorModal',
+                data.message || 'Sorry, Something went wrong.',
+                { root: true }
+            )
+
+            return
+        }
+
+        state.challengeUserLoading = false
     }
 }
 

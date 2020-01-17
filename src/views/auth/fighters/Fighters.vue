@@ -5,8 +5,20 @@
 		<swipeable-cards />
 
 		<transition name="_transition-anim">
-			<modal class="match-container" v-if="modalName.includes('match-modal')">
+			<modal
+				class="match-container"
+				v-if="modalName.includes('match-modal')"
+			>
 				<match-modal slot="content"/>
+			</modal>
+		</transition>
+
+		<transition name="_transition-anim">
+			<modal
+				class="view-details-container"
+				v-if="modalName.includes('view-details-modal')"
+			>
+				<view-details slot="content"/>
 			</modal>
 		</transition>
 	</section>
@@ -22,7 +34,7 @@ export default {
 	data() {
 		return {
 			idWatcher: null,
-			socket: io.connect(process.env.VUE_APP_SOCKET_URL || 'http://localhost:3000')
+			socket: io.connect(process.env.VUE_APP_API_URL)
 		}
 	},
 
@@ -30,6 +42,7 @@ export default {
 		if (!this.$store._modulesNamespaceMap['match/']) {
             this.$store.registerModule('match', match.default)
 		}
+		
 
 		if (!this.$store._modulesNamespaceMap['user/']) {
             this.$store.registerModule('user', user.default)
@@ -51,7 +64,7 @@ export default {
 	computed: {
 		...mapFields('match', [
 			'userList',
-			'matchedObject'
+			'matchedObject',
 		]),
 
 		...mapFields('user', [
@@ -105,7 +118,8 @@ export default {
 	components: {
 		SwipeableCards: () => import('@/components/fighters/SwipeableCards'),
 		Modal: () => import('@/components/global/Modal'),
-		MatchModal: () => import('@/components/fighters/MatchModal')
+		MatchModal: () => import('@/components/fighters/MatchModal'),
+		ViewDetails: () => import('@/components/fighters/ViewDetails'),
 	},
 }
 </script>
@@ -146,6 +160,20 @@ export default {
 			padding: 0;
 			background: none;
 			box-shadow: 0 1px 5px #aaaaaa;
+
+			@include mobile {
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+
+	.view-details-container {
+		/deep/.modal-container {
+			padding: 0;
+			background: none;
+			box-shadow: 0 1px 5px #aaaaaa;
+			border: 0;
 
 			@include mobile {
 				width: 100%;

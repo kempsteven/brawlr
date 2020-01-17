@@ -18,11 +18,11 @@
 
                 :interact-event-bus-events="isCurrentCard(key)"
 
-                @draggedRight="emitAndNext($event)"
-                @draggedLeft="emitAndNext($event)"
-                @draggedUp="emitAndNext($event)"
+                @draggedRight="emitAndNext(card, 'fight')"
+                @draggedLeft="emitAndNext(card, 'back-out')"
+                @draggedUp="emitAndNext(card, 'brawlr')"
             >
-                <section class="detail-container">
+                <section class="detail-container" @click="viewDetails(card)">
                     <img
                         class="fighter-img"
                         :src="card.profilePictures[0].image.url"
@@ -38,11 +38,11 @@
         </transition-group>
 
         <section class="control-container">
-			<button class="back-out" @click="backButton()"/>
+			<button class="back-out" @click="backOutButton()"/>
 
-			<button class="brawl" @click="brawlButton()"/>
+			<button class="brawl" @click="brawlButton(card)"/>
 
-			<button class="fight" @click="fightButton()"/>
+			<button class="fight" @click="fightButton(card)"/>
 		</section>
     </div >
 </template>
@@ -78,7 +78,8 @@ export default {
 
     computed: {
 		...mapFields('match', [
-			'userList'
+            'userList',
+            'viewDetailsObject'
 		])
 	},
 
@@ -86,26 +87,57 @@ export default {
         /* Created Lifecycle Methods */
         getUserList () {
 			this.$store.dispatch('match/getUserList')
-		},
+        },
+        
+        /* View Details */
+        viewDetails (userDetails) {
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'view-details-modal',
+            })
 
-        backButton () {
+            this.viewDetailsObject = userDetails
+        },
+
+        /* Swipeable Event Methods */
+        backOutButton () {
             InteractEventBus.$emit('back-out')
-            // this.emitAndNext()
         },
 
-        brawlButton () {
+        async brawlButton (user) {
             InteractEventBus.$emit('brawl')
-            // this.emitAndNext()
+
+            this.challengeUser(user, 1)
         },
 
-        fightButton () {
+        async fightButton (user) {
             InteractEventBus.$emit('fight')
-            // this.emitAndNext()
+
+            this.challengeUser(user, 0)
         },
 
-        emitAndNext () {
-            // InteractEventBus.$emit('left')
+        emitAndNext (user, swipeType) {
             setTimeout(() => this.userList.shift(), 300)
+
+            if (swipeType === 'back-out') return
+
+            switch (swipeType) {
+                case 'brawlr':
+                    this.challengeUser(user, 1)
+                    break;
+            
+                case 'fight':
+                    this.challengeUser(user, 0)
+                    break;
+            }
+        },
+
+        challengeUser (user, challengeType) {
+            const form = new FormData()
+
+            form.append('challengedId', user._id)
+            form.append('challengeType', challengeType)
+
+            this.$store.dispatch('match/challengeUser', form)
         },
 
         isCurrentCard (position) {
@@ -177,6 +209,8 @@ export default {
                 color: #fff;
                 width: 100%;
                 font-size: 24px;
+                pointer-events: all;
+                cursor: pointer;
 
                 @include mobile {
                     font-size: 15px;
@@ -187,7 +221,7 @@ export default {
 
     .control-container {
 		position: absolute;
-		right: 15px;
+		right: 30px;
 		display: flex;
 		flex-direction: column;
         justify-content: flex-start;

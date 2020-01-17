@@ -1,10 +1,8 @@
 <template>
     <section class="match-modal">
         <div class="bg-overlay" />
-
-        <section class="close-container">
-            <div class="close" @click="closeModal()"/>
-        </section>
+        
+        <div class="close" @click="closeModal()"/>
 
         <section class="icon-container">
             <img

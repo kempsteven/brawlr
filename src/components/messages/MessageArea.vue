@@ -57,7 +57,7 @@ export default {
         return {
             message: '',
 
-            socket: io.connect(process.env.VUE_APP_SOCKET_URL)
+            socket: io.connect(process.env.VUE_APP_API_URL)
         }
     },
 
