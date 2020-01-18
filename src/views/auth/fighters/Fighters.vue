@@ -96,7 +96,9 @@ export default {
 		},
 
 		setSocketListeners () {
-			this.socket.on(`${this.user._id}_new_match`, (data) => {
+			this.socket.on(`${this.user._id}_new_match`, async (data) => {
+				await this.$store.dispatch('modal/closeModal', {})
+
 				this.$store.commit('modal/toggleModal', {
 					modalName: 'match-modal',
 				})

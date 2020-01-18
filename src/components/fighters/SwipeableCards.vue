@@ -1,48 +1,63 @@
 <template>
     <div class="swipeable-cards">
-        <transition-group name="_transition-anim">
-            <vue2-interact-draggable
-                class="card"
-                :class="{ 'disabled' : key !== 0 }"
-                v-for="(card, key) in userList"
-                :key="userList.length - key"
-                :id="key"
-                :style="`z-index: ${cards.length - key}`"
+        <transition name="_transition-anim">
+            <loading key="0" v-if="isFightersLoading"/>
+            
+            <section class="empty-state" key="1" v-else-if="isFightersNotAvailable">
+                <img 
+                    class="empty-icon" 
+                    :src="require('@/assets/img/icon/empty-icon.png')" 
+                    alt="Brawlr Empty Icon"
+                >
 
-                :interact-out-of-sight-x-coordinate="500"
-                :interact-max-rotation="15"
-                :interact-x-threshold="100"
-                :interact-y-threshold="200"
+                <h2 class="state-label">
+                    No fighters available yet.
+                </h2>
+            </section>
 
-                :interactBlockDragDown="true"
+            <section class="card-wrapper" key="2" v-else>
+                <vue2-interact-draggable
+                    class="card"
+                    :class="{ 'disabled' : key !== 0 }"
+                    v-for="(card, key) in userList"
+                    :key="userList.length - key"
+                    :style="`z-index: ${userList.length - key}`"
 
-                :interact-event-bus-events="isCurrentCard(key)"
+                    :interact-out-of-sight-x-coordinate="500"
+                    :interact-max-rotation="15"
+                    :interact-x-threshold="100"
+                    :interact-y-threshold="200"
 
-                @draggedRight="emitAndNext(card, 'fight')"
-                @draggedLeft="emitAndNext(card, 'back-out')"
-                @draggedUp="emitAndNext(card, 'brawlr')"
-            >
-                <section class="detail-container" @click="viewDetails(card)">
-                    <img
-                        class="fighter-img"
-                        :src="card.profilePictures[0].image.url"
-                        alt="fighter-image"
-                        v-if="card.profilePictures"
-                    >
+                    :interactBlockDragDown="true"
 
-                    <section class="detail-name">
-                        {{ `${card.firstName} | ${card.age} | ${card.gender.value}` | capitalize }}
+                    :interact-event-bus-events="isCurrentCard(key)"
+
+                    @draggedRight="emitAndNext(card, 'fight')"
+                    @draggedLeft="emitAndNext(card, 'back-out')"
+                    @draggedUp="emitAndNext(card, 'brawlr')"
+                >
+                    <section class="detail-container" @click="viewDetails(card)">
+                        <img
+                            class="fighter-img"
+                            :src="getImage(card.profilePictures)"
+                            alt="fighter-image"
+                            v-if="card.profilePictures"
+                        >
+
+                        <section class="detail-name">
+                            {{ `${card.firstName} | ${card.age} | ${card.gender.value}` | capitalize }}
+                        </section>
                     </section>
-                </section>
-            </vue2-interact-draggable>
-        </transition-group>
+                </vue2-interact-draggable>
+            </section>
+        </transition>
 
         <section class="control-container">
 			<button class="back-out" @click="backOutButton()"/>
 
-			<button class="brawl" @click="brawlButton(card)"/>
+			<button class="brawl" @click="brawlButton()"/>
 
-			<button class="fight" @click="fightButton(card)"/>
+			<button class="fight" @click="fightButton()"/>
 		</section>
     </div >
 </template>
@@ -70,23 +85,38 @@ export default {
         this.getUserList()
     },
 
-    mounted () {
-        // const watcher = this.$watch('activeCardPosition', (val) => {
-		// 	console.log(val)
-		// }, { deep: true })
-    },
-
     computed: {
 		...mapFields('match', [
             'userList',
-            'viewDetailsObject'
-		])
+            'userListLoading',
+            'userListPagination.page',
+            'userListPagination.hasNextPage',
+
+            'viewDetailsObject',
+        ]),
+
+        isFightersLoading () {
+            return this.userList && !this.userList.length && this.userListLoading
+        },
+        
+        isFightersNotAvailable () {
+            return this.userList && !this.userList.length && !this.userListLoading
+        }
 	},
 
     methods: {
         /* Created Lifecycle Methods */
         getUserList () {
 			this.$store.dispatch('match/getUserList')
+        },
+
+        /* Get User List Next Page Handler */
+        getUserListNextPage () {
+            if (!this.hasNextPage || this.userList.length > 0 || this.userListLoading) return
+
+            this.page++
+
+            this.getUserList()
         },
         
         /* View Details */
@@ -100,23 +130,37 @@ export default {
 
         /* Swipeable Event Methods */
         backOutButton () {
+            if (this.isFightersNotAvailable) return
+
             InteractEventBus.$emit('back-out')
         },
 
-        async brawlButton (user) {
+        async brawlButton () {
+            if (this.isFightersNotAvailable) return
+
             InteractEventBus.$emit('brawl')
+
+            const user = this.userList[0]
 
             this.challengeUser(user, 1)
         },
 
-        async fightButton (user) {
+        async fightButton () {
+            if (this.isFightersNotAvailable) return
+
             InteractEventBus.$emit('fight')
+
+            const user = this.userList[0]
 
             this.challengeUser(user, 0)
         },
 
         emitAndNext (user, swipeType) {
-            setTimeout(() => this.userList.shift(), 300)
+            setTimeout(() => {
+                this.userList.shift()
+
+                this.getUserListNextPage()
+            }, 300)
 
             if (swipeType === 'back-out') return
 
@@ -144,41 +188,47 @@ export default {
             return position === 0
                     ? this.interactEventBus
                     : {}
+        },
+
+        /* Get Image */
+        getImage(imageList) {
+            if (!imageList.length) return require('@/assets/img/avatar-default.png')
+
+            const userImage = imageList.find(image => image.image !== null)
+
+            if (!userImage) return require('@/assets/img/avatar-default.png')
+
+            return userImage.image.url
         }
     },
     
     components: {
-        Vue2InteractDraggable
+        Vue2InteractDraggable,
+        Loading: () => import('@/components/global/Loading')
     }
 }
 </script>
 
 <style lang="scss" scoped>
 .swipeable-cards {
-    display: flex;
-    justify-content: center;
     overflow: hidden;
-    position: relative;
     width: 100%;
     height: 100%;
+    position: relative;
 
-    .card {
+    .empty-state {
+        background-color: #d6d6d6;
         border-radius: 15px;
         width: 600px;
         height: 800px;
         position: absolute;
-        left: 0;
-        right: 0;
         margin-left: auto;
         margin-right: auto;
-        overflow: hidden;
+        left: 0;
+        right: 0;
         top: 30px;
-        touch-action: none;
-        background-color: #ddd;
 
-        &.disabled {
-            pointer-events: none;
-        }
+        @include flex-box(center, center, column);
 
         @include mobile {
             width: 95%;
@@ -186,34 +236,86 @@ export default {
             top: 10px;
         }
 
-        .detail-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
+        .empty-icon {
+            flex-shrink: 0;
+            width: 150px;
+            margin-bottom: 35px;
+
+            @include mobile {
+                width: 80px;
+            }
+        }
+
+        .state-label {
+            color: #fff;
+
+            @include mobile {
+                font-size: 18px;
+            }
+        }
+    }
+
+
+    .card-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        position: relative;
+
+        .card {
+            border-radius: 15px;
+            width: 600px;
+            height: 800px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden;
+            top: 30px;
+            touch-action: none;
             background-color: #ddd;
 
-            .fighter-img {
-                height: 100%;
-                margin-left: 50%;
-                transform: translateX(-50%);
-                transition: 1s;
+            &.disabled {
+                pointer-events: none;
             }
-            
-            .detail-name {
-                position: absolute;
-                bottom: 0;
-                padding: 15px;
-                background: rgba(0,0,0,.5);
-                color: #fff;
-                width: 100%;
-                font-size: 24px;
-                pointer-events: all;
-                cursor: pointer;
 
-                @include mobile {
-                    font-size: 15px;
+            @include mobile {
+                width: 95%;
+                height: 83%;
+                top: 10px;
+            }
+
+            .detail-container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 0;
+                background-color: #ddd;
+
+                .fighter-img {
+                    height: 100%;
+                    margin-left: 50%;
+                    transform: translateX(-50%);
+                    transition: 1s;
+                }
+                
+                .detail-name {
+                    position: absolute;
+                    bottom: 0;
+                    padding: 15px;
+                    background: rgba(0,0,0,.5);
+                    color: #fff;
+                    width: 100%;
+                    font-size: 24px;
+                    pointer-events: all;
+                    cursor: pointer;
+
+                    @include mobile {
+                        font-size: 15px;
+                    }
                 }
             }
         }

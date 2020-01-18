@@ -1,5 +1,5 @@
 <template>
-    <div class="message-view-details">
+    <div class="main-view-details">
         <section class="main-details">
             <span class="detail-item">
                 <h4 class="item-title">
@@ -27,7 +27,7 @@
                 </h4>
 
                 <span class="item-value">
-                    {{ viewDetailsObject.figterType }}
+                    {{ viewDetailsObject.fighterType | null }}
                 </span>
             </span>
 
@@ -57,7 +57,7 @@
                 </h4>
 
                 <span class="item-value">
-                    {{ viewDetailsObject.organization }}
+                    {{ viewDetailsObject.organization | null }}
                 </span>
             </span>
 
@@ -66,9 +66,12 @@
                     Bio:
                 </h4>
 
-                <span class="item-value">
-                    {{ viewDetailsObject.bio }}
-                </span>
+                <textarea
+                    class="item-value-area"
+                    :value="viewDetailsObject.bio | null"
+                    ref="bioTextArea"
+                    readonly
+                />
             </span>
         </section>
     </div>
@@ -77,6 +80,17 @@
 <script>
 import { mapFields } from 'vuex-map-fields'
 export default {
+    mounted () {
+        this.bioWatcher = this.$watch('viewDetailsObject.bio', (val) => {
+            if (val !== '-' && val) {
+                const bioTextArea = this.$refs.bioTextArea
+                const scrollHeight = bioTextArea.scrollHeight
+
+                bioTextArea.style.height = `${scrollHeight}px`
+            }
+        }, { immediate: true })
+    },
+
     computed: {
         ...mapFields('match', [
 			'viewDetailsObject',
@@ -86,16 +100,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.message-view-details {
+.main-view-details {
     width: 100%;
     height: 100%;
     overflow: auto;
     background: #fff;
+    max-height: 410px;
 
     .main-details {
         display: flex;
         padding: 15px;
         flex-direction: column;
+        width: 100%;
 
         .detail-item {
             width: 100%;
@@ -108,6 +124,15 @@ export default {
 
             .item-value {
                 color: #888888;
+            }
+
+            .item-value-area {
+                width: 100%;
+                padding: 15px 0;
+                text-align: left;
+                border: 0;
+                resize: none;
+                outline: none;
             }
         }
     }

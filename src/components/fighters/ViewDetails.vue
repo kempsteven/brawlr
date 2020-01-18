@@ -125,6 +125,7 @@ export default {
         height: 480px;
         border-radius: 5px 5px 0 0;
         position: relative;
+        border-bottom: 1px solid #ddd;
 
         @include mobile {
             height: 290px;

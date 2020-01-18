@@ -14,7 +14,6 @@
 
                 <textarea
                     class="item-value-area"
-                    v-bind="$attrs"
                     :value="user.bio"
                     readonly
                 />

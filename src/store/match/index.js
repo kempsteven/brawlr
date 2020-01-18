@@ -4,6 +4,11 @@ import { getField, updateField } from 'vuex-map-fields'
 export const state = {
     userList: [],
 
+    userListPagination: {
+        page: 1,
+        hasNextPage: false
+    },
+
     userListLoading: false,
 
     matchedObject: {},
@@ -17,7 +22,7 @@ export const actions = {
     async getUserList ({ dispatch }) {
         state.userListLoading = true
 
-        const { status, data } = await api('get', '/match/get-user-list')
+        const { status, data } = await api('get', `/match/get-user-list?page=${state.userListPagination.page}`)
 
         // if error
         if (status !== 200) {
@@ -29,7 +34,12 @@ export const actions = {
             return
         }
 
-        state.userList = data
+        state.userList = [
+            ...state.userList,
+            ...data.docs
+        ]
+
+        state.userListPagination.hasNextPage = data.hasNextPage
 
         state.userListLoading = false
     },

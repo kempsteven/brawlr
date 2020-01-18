@@ -31,7 +31,6 @@
                 class="bio-container"
                 readonly
                 :value="user.bio || '-'"
-                @paste="test()"
                 ref="bioTextArea"
             />
 

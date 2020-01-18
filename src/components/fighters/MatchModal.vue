@@ -235,8 +235,13 @@ export default {
 
             .user-name {
                 text-align: center;
+                margin: 0 auto;
                 margin-top: 15px;
                 color: #fff;
+                max-width: 160px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
     }
