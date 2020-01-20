@@ -138,21 +138,17 @@ export default {
         async brawlButton () {
             if (this.isFightersNotAvailable) return
 
-            InteractEventBus.$emit('brawl')
-
             const user = this.userList[0]
 
-            this.challengeUser(user, 1)
+            InteractEventBus.$emit('brawl', {user, swipeType: 'brawl'})
         },
 
         async fightButton () {
             if (this.isFightersNotAvailable) return
 
-            InteractEventBus.$emit('fight')
-
             const user = this.userList[0]
 
-            this.challengeUser(user, 0)
+            InteractEventBus.$emit('fight', { user, swipeType: 'fight' })
         },
 
         emitAndNext (user, swipeType) {
