@@ -159,7 +159,7 @@ export default {
         },
 
 		isMobile () {
-			return isMobileRegexFunction ? '' : '_transition-anim'
+			return isMobileRegexFunction ? '' : '_profile-transition-anim'
 		}
     },
     
@@ -492,9 +492,6 @@ export default {
             display: flex;
             background: #fff;
             will-change: height;
-            transform: translateZ(0);
-            overflow: hidden;
-            backface-visibility: hidden;
         }
     }
 }

@@ -121,6 +121,19 @@ a {
 	opacity: 0;
 }
 
+._profile-transition-anim-enter-active, ._profile-transition-anim-leave-active {
+    transition: 0.5s ease;
+    pointer-events: none;
+	position: absolute;
+	top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+._profile-transition-anim-enter, ._profile-transition-anim-leave-to{
+	opacity: 0;
+}
+
 ._transition-fixed-enter-active, ._transition-fixed-leave-active {
     transition: 0.5s ease;
     pointer-events: none;
