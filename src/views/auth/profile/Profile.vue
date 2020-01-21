@@ -73,7 +73,12 @@
         </section>
 
         <section class="profile-content">
-            <transition :name="isMobile">
+            <transition
+                :name="isMobile"
+                @enter="enter"
+                @after-enter="afterEnter"
+                @leave="leave"
+            >
                 <router-view class="content-view"/>
             </transition>
         </section>
@@ -165,7 +170,54 @@ export default {
 
         removeWatcher () {
             this.bioWatcher()
-        }
+        },
+
+        /* Transition Handlers */
+        enter (element) {
+            const width = getComputedStyle(element).width;
+
+            element.style.width = width;
+            element.style.position = 'absolute';
+            element.style.visibility = 'hidden';
+            element.style.height = 'auto';
+
+            const height = getComputedStyle(element).height;
+
+            element.style.width = null;
+            element.style.position = null;
+            element.style.visibility = null;
+
+            // Force repaint to make sure the
+            // animation is triggered correctly.
+            getComputedStyle(element).height;
+
+            // Trigger the animation.
+            // We use `setTimeout` because we need
+            // to make sure the browser has finished
+            // painting after setting the `height`
+            // to `0` in the line above.
+            setTimeout(() => {
+                element.style.height = height;
+            });
+        },
+
+        afterEnter (element) {
+            element.style.height = 'auto';
+        },
+
+        leave (element) {
+            const height = getComputedStyle(element).height;
+            
+            element.style.height = height;
+
+            // Force repaint to make sure the
+            // animation is triggered correctly.
+            getComputedStyle(element).height;
+
+            setTimeout(() => {
+                element.style.height = 0;
+            });
+        },
     },
 }
 </script>
@@ -425,6 +477,7 @@ export default {
         position: relative;
         width: 50%;
         box-shadow: 0 1px 5px #e4e4e4;
+        margin-bottom: 15px;
 
         @include mobile {
             min-width: unset;
@@ -438,6 +491,10 @@ export default {
             border-radius: 5px;
             display: flex;
             background: #fff;
+            will-change: height;
+            transform: translateZ(0);
+            overflow: hidden;
+            backface-visibility: hidden;
         }
     }
 }
