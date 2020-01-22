@@ -45,6 +45,7 @@
         </section>
 
         <paginate
+            :class="{ 'disabled' : matchListLoading }"
             :page-count="totalPages"
             :click-handler="changePage"
             :prev-text="'Prev'"
@@ -284,6 +285,10 @@ export default {
                 }
             }
         }
+    }
+
+    .disabled {
+        pointer-events: none;
     }
 
     .pagination {

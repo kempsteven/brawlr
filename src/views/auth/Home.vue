@@ -26,7 +26,7 @@ export default {
 		LayoutHeader
 	}
 }
-</script>
+</script>	 
 
 <style lang="scss" scoped>
 .home {
