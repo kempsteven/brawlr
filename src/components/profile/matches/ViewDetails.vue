@@ -82,7 +82,7 @@ export default {
 <style lang="scss" scoped>
 .view-details {
     width: 595px;
-    min-height: 850px;
+    height: 850px;
     position: relative;
     display: flex;
     align-items: center;
@@ -90,6 +90,7 @@ export default {
     border-radius: 5px;
     background: #fff;
     opacity: 0;
+    overflow: auto;
 
     @include fadeinfromtop(0.2s, 0.1s);
 

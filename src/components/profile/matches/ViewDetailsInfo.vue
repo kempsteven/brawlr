@@ -103,9 +103,7 @@ export default {
 .main-view-details {
     width: 100%;
     height: 100%;
-    overflow: auto;
     background: #fff;
-    max-height: 410px;
 
     .main-details {
         display: flex;
