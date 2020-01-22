@@ -72,7 +72,7 @@ export default {
     components: {
         Carousel,
         Slide,
-        ViewDetailsInfo: () => import('@/components/fighters/ViewDetailsInfo'),
+        ViewDetailsInfo: () => import('@/components/profile/matches/ViewDetailsInfo'),
     },
 
     mixins: [isMobileMixins]

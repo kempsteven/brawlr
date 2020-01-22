@@ -66,6 +66,7 @@ export default {
 		...mapFields('match', [
 			'userList',
 			'matchedObject',
+			'viewDetailsObject'
 		]),
 
 		...mapFields('user', [
@@ -74,7 +75,7 @@ export default {
 		
 		...mapFields('modal', [
             'modalName',
-		]),
+		])
 	},
 
 	methods: {
@@ -126,7 +127,7 @@ export default {
 		SwipeableCards: () => import('@/components/fighters/SwipeableCards'),
 		Modal: () => import('@/components/global/Modal'),
 		MatchModal: () => import('@/components/fighters/MatchModal'),
-		ViewDetails: () => import('@/components/fighters/ViewDetails'),
+		ViewDetails: () => import('@/components/profile/matches/ViewDetails'),
 	},
 }
 </script>

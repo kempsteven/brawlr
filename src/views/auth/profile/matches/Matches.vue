@@ -26,7 +26,7 @@
                             </section>
                         </section>
 
-                        <section class="primary-info">
+                        <section class="primary-info" @click="viewDetails(match)">
                             <h4 class="name">
                                 {{ fullName(match) }}
                             </h4>
@@ -53,6 +53,15 @@
             :page-class="'page-item'"
             :page-range="pageRange"
         />
+
+        <transition name="_transition-anim">
+			<modal
+				class="view-details-container"
+				v-if="modalName.includes('view-details-modal')"
+			>
+				<view-details slot="content"/>
+			</modal>
+		</transition>
     </section>
 </template>
 
@@ -79,6 +88,8 @@ export default {
             'matchListPagination.page',
             'matchListPagination.hasNextPage',
             'matchListPagination.totalPages',
+
+            'viewDetailsObject'
         ]),
         
 		...mapFields('modal', [
@@ -126,7 +137,16 @@ export default {
 
             this.getMatchList()
         },
-        
+
+        /* View Match Details */
+        viewDetails (userDetails) {
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'view-details-modal',
+            })
+
+            this.viewDetailsObject = userDetails
+        },
+
         /* Template Methods */
         getUserImage (match) {
             if (!match || match.profilePictures.every(x => x.image === null)) return require('@/assets/img/avatar-default.png')
@@ -147,6 +167,8 @@ export default {
         Paginate: () => import('vuejs-paginate'),
         Loading: () => import('@/components/global/Loading'),
         EmptyState: () => import('@/components/global/EmptyState'),
+        Modal: () => import('@/components/global/Modal'),
+        ViewDetails: () => import('@/components/profile/matches/ViewDetails')
     },
 
     mixins: [ isMobileMixins ]
@@ -238,10 +260,11 @@ export default {
                 .primary-info {
                     position: absolute;
                     left: 0px;
-                    bottom: 10px;
-                    padding: 0 10px;
+                    bottom: 0;
+                    padding: 0 10px 10px 10px;
                     width: 100%;
                     z-index: 3;
+                    cursor: pointer;
 
                     h4, h5 {
                         color: #ffffff;
@@ -333,5 +356,19 @@ export default {
             }
         }
     }
+
+    .view-details-container {
+		/deep/.modal-container {
+			padding: 0;
+			background: none;
+			box-shadow: 0 1px 5px #aaaaaa;
+			border: 0;
+
+			@include mobile {
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
 }
 </style>
