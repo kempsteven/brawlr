@@ -74,7 +74,7 @@ export default {
     background: #fff;
     box-shadow: 0 1px 5px #3a3a3a;
     // position: fixed;
-    z-index: 10;
+    z-index: 11;
     position: -webkit-sticky;
     position: sticky;
     top: 0;
