@@ -3,7 +3,7 @@
         <section class="message-img-slider">
             <img
                 class="slider-img"
-                src="@/assets/img/sample-picture.jpg"
+                src="@/assets/img/avatar-default.png"
                 alt="user-message-image"
             >
         </section>

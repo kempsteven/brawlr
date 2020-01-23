@@ -35,15 +35,6 @@ export default {
             this.windowWidth = window.innerWidth
         },
 
-        isMobileViewWidth () {
-            if (
-                this.windowWidth > 768
-                && this.$route.name !== 'message-view'
-            ) {
-                this.$router.push('/messages/view')
-            }
-        },
-
         /* Destroyed Lifecycle Methods */
         removeWindowWidthListener() {
             window.removeEventListener('resize', this.onWindowResize)

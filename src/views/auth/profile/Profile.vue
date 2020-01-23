@@ -87,7 +87,7 @@
 
 <script>
 import { mapFields } from 'vuex-map-fields'
-import * as user from '@/store/user/'
+
 import { isMobileRegexFunction } from '@/regex'
 
 
@@ -97,18 +97,6 @@ export default {
         return {
             bioWatcher: null
         }
-    },
-
-    beforeCreate () {
-		if (!this.$store._modulesNamespaceMap['user/']) {
-            this.$store.registerModule('user', user.default)
-		}
-    },
-    
-    async created () {
-        if (!this.online) return
-        
-        await this.getUser()
     },
 
     mounted () {
@@ -129,10 +117,6 @@ export default {
     computed: {
         ...mapFields('user', [
             'user'
-        ]),
-
-        ...mapFields('connection-status', [
-            'online'
         ]),
         
         profilePicture () {
@@ -164,10 +148,6 @@ export default {
     },
     
     methods: {
-        getUser () {
-            this.$store.dispatch('user/getUser')
-        },
-
         removeWatcher () {
             this.bioWatcher()
         },

@@ -82,6 +82,10 @@ export default {
         this.getMatchList()
     },
 
+    destroyed () {
+        this.clearMatchList()
+    },
+
     computed: {
 		...mapFields('match', [
 			'matchList',
@@ -161,6 +165,11 @@ export default {
             if (!match.firstName || !match.lastName) return null
 
             return `${match.firstName} ${match.lastName}`
+        },
+
+        /* Destroyed Lifecycle Methods */
+        clearMatchList () {
+            this.commit('match/clearMatchList')
         }
     },
 

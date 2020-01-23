@@ -11,74 +11,57 @@
                 type="text"
             />
 
-            <section class="see-all-container">
-                <span class="see-all">
-                    See More
-                </span>
-            </section>
+            <match-list/>
+        </section>
 
-            <section class="match-list scroll-visible">
-                <router-link
-                    class="list-item"
+        <section class="list-container">
+            <empty-state
+                text="No message available yet"
+                v-if="isConversationEmpty"
+            />
+
+            <section class="message-list">
+                <section
+                    class="message-item"
+                    :class="{ 'active' : activeMessageId === conversation._id }"
                     :key="key"
-                    v-for="(item, key) in 15"
-                    :to="`/messages/view?id=${key}`"
-                    @click.native="viewMessage(item, key)"
+                    v-for="(conversation, key) in conversationList"
+                    @click="viewMessage(conversation, conversation._id)"
                 >
                     <section class="img-container">
+                            <!-- src="@/assets/img/sample-picture.jpg" -->
                         <img
                             class="item-img"
-                            src="@/assets/img/sample-picture.jpg"
+                            :src="setUserPicture(conversation)"
                             alt="user-message-image"
                         >
                     </section>
 
-                    <span class="item-name">
-                        Manny
-                    </span>
-                </router-link>
-            </section>
-        </section>
-        
-        <section class="message-list">
-            <router-link
-                class="message-item"
-                :class="{ 'active' : activeMessage === key }"
-                :key="key"
-                v-for="(item, key) in 15"
-                :to="`/messages/view?id=${key}`"
-                @click.native="viewMessage(item, key)"
-            >
-                <section class="img-container">
-                    <img
-                        class="item-img"
-                        src="@/assets/img/sample-picture.jpg"
-                        alt="user-message-image"
-                    >
-                </section>
-
-                <section class="item-message">
-                    <h4 class="message-name">
-                        Manny Pacquiaouaoai
-                    </h4>
-
-                    <section class="message-details">
-                        <h4 class="detail-message">
-                            Good day, Suntukan Tayu, amet consectetur adipisicing
+                    <section class="item-message">
+                        <h4 class="message-name">
+                            {{ setUserName(conversation) }}
                         </h4>
 
-                        <section class="message-time">
-                            Dec 7
+                        <section class="message-details">
+                            <h4 class="detail-message">
+                                {{ `${conversation.lastMessage.senderName}: ${conversation.lastMessage.message}` }}
+                            </h4>
+
+                            <section class="message-time">
+                                {{ setMessageDate(conversation.updatedAt) }}
+                            </section>
                         </section>
                     </section>
                 </section>
-            </router-link>
+            </section>
         </section>
     </section>
 </template>
 
 <script>
 import InputField from '@/components/global/InputField'
+import { mapFields } from 'vuex-map-fields'
+import moment from 'moment'
 
 export default {
     data() {
@@ -87,14 +70,88 @@ export default {
         }
     },
 
+    computed: {
+        ...mapFields('message', [
+            'conversationList',
+            'conversationListLoading',
+            'conversationListPagination',
+
+            'messageList',
+
+            'userInfoLoading',
+
+            'activeMessageId',
+
+            'messageView'
+        ]),
+
+        ...mapFields('match', [
+            'matchList',
+            'viewDetailsObject'
+        ]),
+
+        ...mapFields('user', [
+            'user'
+        ]),
+
+        isConversationEmpty () {
+            return !this.conversationList.length && !this.conversationListLoading
+        }
+    },
+
     methods: {
-        viewMessage (item, key) {
-            this.activeMessage = key
+        async viewMessage ({ userOneId, userTwoId }, id) {
+            if (this.userInfoLoading) return
+
+            const currentUserId = this.user._id
+
+            /* Set which id is not yours in the conversation object */
+            const userId = userOneId === currentUserId
+                                                ? userTwoId
+                                                : userOneId
+            
+
+            await this.getUserInfo(userId)
+
+            this.activeMessageId = id
+
+            this.viewDetailsObject = this.messageView
+
+            if (this.$route.name === 'message-view') return
+
+            this.$router.push('/messages/view')
+        },  
+
+        async getUserInfo (userId) {
+            await this.$store.dispatch('message/getUserInfo', userId)
+        },
+
+        /* Template Functions */
+        setUserPicture (conversation) {
+            const currentUser = conversation.userOneId !== this.user._id 
+                                    ? 'userOne'
+                                    : 'userTwo'
+
+            return conversation[`${currentUser}Picture`] || require('@/assets/img/avatar-default.png')
+        },
+
+        setUserName (conversation) {
+            const currentUser = conversation.userOneId === this.user._id 
+                                    ? 'userOne'
+                                    : 'userTwo'
+
+            return conversation[`${currentUser}Name`] || '-'
+        },
+
+        setMessageDate (date) {
+            return date ? moment(new Date(date)).format('MMM DD') : '-'
         }
     },
 
     components: {
-        InputField  
+        InputField,
+        MatchList: () => import('@/components/messages/MatchList'),
+        EmptyState: () => import('@/components/global/EmptyState')
     }
 }
 </script>
@@ -111,6 +168,7 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-right: 1px solid #ddd;
 
     @include mobile {
         min-width: unset;
@@ -141,44 +199,45 @@ export default {
                 padding: 8px 15px;
                 background-color: #fcfcfc;
             }
-        }
+        } 
+    }
 
-        .see-all-container {
-            margin-top: 15px;
-            padding-top: 5px;
-            border-top: 1px solid #ddd;
-            margin-bottom: 5px;
+    .list-container {
+        position: relative;
+        flex: 1 1 auto;
 
-            @include flex-box(flex-end, '', '');
+        /deep/.empty-state {
+            border-radius: 0;
+            background-color: #f9f9f9;
 
-            .see-all {
-                color: $blue;
-                cursor: pointer;
+            .empty-icon {
+                width: 90px;
+            }
+
+            .state-label {
+                font-size: 18px;
+                color: #949494;
             }
         }
 
-        .match-list {
+        .message-list {
             display: flex;
-            width: 100%;
-            overflow-y: hidden;
-            overflow-x: auto;
-            position: relative;
+            flex-direction: column;
+            overflow: auto;
 
-            @include mobile {
-                &::-webkit-scrollbar {  
-                    width: 0px;
-                    height: 0px;
-                }
-            }
-
-            .list-item {
-                flex-shrink: 0;
+            .message-item {
+                display: flex;
+                padding: 15px 20px;
+                transition: 0.2s;
                 cursor: pointer;
 
-                @include flex-box ('', center, column);
+                @include mobile {
+                    padding: 10px 15px;
+                }
 
-                &:not(:last-child) {
-                    margin-right: 10px;
+                &.active {
+                    border-radius: 15px;
+                    background: rgba(0, 0, 0, .05);
                 }
 
                 .img-container {
@@ -186,13 +245,9 @@ export default {
                     height: 50px;
                     border-radius: 50%;
                     overflow: hidden;
+                    margin-right: 12px;
                     position: relative;
                     flex-shrink: 0;
-
-                    @include mobile {
-                        width: 40px;
-                        height: 40px;
-                    }
 
                     .item-img {
                         width: 100%;
@@ -203,89 +258,38 @@ export default {
                     }      
                 }
 
-                .item-name {
-                    max-width: 70px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                .item-message {
+                    flex: 1 1 auto;
 
-                    @include mobile {
-                        font-size: 13spx;
+                    .message-name {
+                        margin-bottom: 5px;
                     }
-                }
-            }
-        }
-    }
 
-    .message-list {
-        display: flex;
-        flex-direction: column;
-        overflow: auto;
+                    .message-details {
+                        display: flex;
+                        width: 100%;
+                        justify-content: space-between;
 
-        .message-item {
-            display: flex;
-            padding: 15px 20px;
-            transition: 0.2s;
-            cursor: pointer;
+                        .detail-message {
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            width: 240px;
+                            flex-shrink: 1;
 
-            @include mobile {
-                padding: 10px 15px;
-            }
-
-            &.active {
-                border-radius: 15px;
-                background: rgba(0, 0, 0, .05);
-            }
-
-            .img-container {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                overflow: hidden;
-                margin-right: 12px;
-                position: relative;
-                flex-shrink: 0;
-
-                .item-img {
-                    width: 100%;
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translateY(-50%) translateX(-50%);
-                }      
-            }
-
-            .item-message {
-                flex: 1 1 auto;
-
-                .message-name {
-                    margin-bottom: 5px;
-                }
-
-                .message-details {
-                    display: flex;
-                    width: 100%;
-                    justify-content: space-between;
-
-                    .detail-message {
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                        width: 240px;
-                        flex-shrink: 1;
-
-                        @include mobile {
-                            width: 180px;
-                            min-width: unset;
+                            @include mobile {
+                                width: 180px;
+                                min-width: unset;
+                            }
                         }
-                    }
 
-                    .message-time {
-                        color: #999999;
-                        font-size: 13px;
-                        line-height: 23px;
-                        flex-shrink: 0;
-                        padding-left: 12px;
+                        .message-time {
+                            color: #999999;
+                            font-size: 13px;
+                            line-height: 23px;
+                            flex-shrink: 0;
+                            padding-left: 12px;
+                        }
                     }
                 }
             }

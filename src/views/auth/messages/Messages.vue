@@ -3,9 +3,18 @@
         <section class="message-section">
             <message-list />
 
-            <transition :name="transitionAnim">
-                <router-view class="message-view"/>
-            </transition>
+            <section class="view-container">
+                <transition :name="transitionAnim">
+                    <router-view class="message-view"/>
+                </transition>
+
+                <transition :name="transitionAnim">
+                    <empty-state
+                        text="No message selected"
+                        v-if="!Object.keys(messageView).length && !isMobileViewPort"
+                    />
+                </transition>
+            </section>
         </section>
     </div>
 </template>
@@ -14,28 +23,121 @@
 import MessageList from '@/components/messages/MessageList'
 import isMobileMixins from '@/mixins/isMobileMixins'
 import * as message from '@/store/message/'
+import * as match from '@/store/match/'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
+    data() {
+        return {
+            routeNameWatcher: null
+        }
+    },
+
     beforeCreate () {
         if (!this.$store._modulesNamespaceMap['message/']) {
             this.$store.registerModule('message', message.default)
+        }
+        
+        if (!this.$store._modulesNamespaceMap['match/']) {
+            this.$store.registerModule('match', match.default)
 		}
     },
 
-    mounted () {
+    async created () {
+        await this.getConversationList()
+
+        this.setRouteNameWatcher()
+        
         this.isMobileViewWidth()
     },
 
-    watch: {
-        '$route.name' (val) {
-            if (val === 'messages') {
-                this.isMobileViewWidth()
+    destroyed () {
+        this.removeWatcher()
+    },
+
+    computed: {
+        ...mapFields('message', [
+            'conversationList',
+            'conversationListLoading',
+
+            'activeMessageId',
+
+            'messageView'
+        ]),
+
+        ...mapFields('match', [
+            'viewDetailsObject'
+        ]),
+
+        ...mapFields('user', [
+            'user'
+        ]),
+
+        isConversationEmpty () {
+            return !this.conversationList.length && !this.conversationListLoading
+        }
+    },
+
+    methods: {
+        /* Created Lifecycle Methods */
+        async getConversationList () {
+            await this.$store.dispatch('message/getConversationList')
+        },
+
+        setRouteNameWatcher () {
+            this.routeNameWatcher = this.$watch('$route.name', (val) => {
+                if (val === 'messages') {
+                    this.isMobileViewWidth()
+                }
+            }, { immediate: true })
+        },
+
+        isMobileViewWidth () {
+            if (
+                this.windowWidth > 768
+                && this.$route.name !== 'message-view'
+            ) {
+                this.setMessageView()
             }
+        },
+
+        async setMessageView () {
+            if (this.isConversationEmpty) return
+
+            if (this.conversationList.length) {
+                const currentUserId = this.user._id
+                const { userOneId, userTwoId, _id } = this.conversationList[0]
+
+                this.activeMessageId = _id
+
+                /* Set which id is not yours in the conversation object */
+                const userId = userOneId === currentUserId
+                                                    ? userTwoId
+                                                    : userOneId
+            
+
+                await this.getUserInfo(userId)
+
+                this.viewDetailsObject = this.messageView
+            }
+            
+
+            if (this.$route.name !== 'message-view') this.$router.push('/messages/view')
+        },
+
+        async getUserInfo (userId) {
+            await this.$store.dispatch('message/getUserInfo', userId)
+        },
+
+        /* Destroyed Methods */
+        removeWatcher () {
+            if (this.routeNameWatcher) this.routeNameWatcher()
         }
     },
 
     components: {
-        MessageList
+        MessageList,
+        EmptyState: () => import('@/components/global/EmptyState')
     },
 
     mixins: [isMobileMixins]
@@ -60,13 +162,42 @@ export default {
         display: flex;
         align-items: center;
 
-        .message-view {
+        .view-container {
+            background: #fff;
+            box-shadow: 3px 1px 5px #d1d1d1;
+            height: 94.5%;
+            width: 100%;
+            position: relative;
+
             @include mobile {
-                position: fixed;
-                width: 100vw;
-                height: 100vh;
-                z-index: 99;
-                top: 0;
+                position: unset;
+                width: 0;
+            }
+
+            /deep/.empty-state {
+                border-radius: 0;
+                // background-color: #fafafa;
+                background-color: #f9f9f9;
+
+                .empty-icon {
+                    width: 90px;
+                }
+
+                .state-label {
+                    font-size: 18px;
+                    color: #949494;
+                }
+            }
+
+            .message-view {
+                @include mobile {
+                    position: fixed;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: 99;
+                    top: 0;
+                    left: 0;
+                }
             }
         }
     }

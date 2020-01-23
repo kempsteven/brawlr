@@ -16,14 +16,14 @@
                 
                 <section class="img-container">
                     <img
-                        src="@/assets/img/sample-picture.jpg"
+                        :src="userViewImage"
                         class="user-img"
                         alt="user-message-image"
                     >
                 </section>
 
                 <h3 class="header-name">
-                    Manny Pacquiaouaoai
+                    {{ userName }}
                 </h3>
             </section>
 
@@ -39,7 +39,12 @@
         <section class="view-content">
             <message-area />
             
-            <message-view-details :class="{ 'show-info' : showInfo }"/>
+            <!-- <message-view-details /> -->
+
+            <view-details
+                class="view-details"
+                :class="{ 'show-info' : showInfo }"
+            />
         </section>
     </div>
 </template>
@@ -48,6 +53,7 @@
 import MessageArea from '@/components/messages/MessageArea'
 import MessageViewDetails from '@/components/messages/MessageViewDetails'
 import isMobileMixins from '@/mixins/isMobileMixins'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
     data() {
@@ -55,8 +61,40 @@ export default {
             showInfo: false
         }
     },
+
+    mounted () {
+        this.checkMessageView()
+    },
+    
+    destroyed () {
+        this.messageView = {}
+    },
+
+    computed: {
+        ...mapFields('message', [
+            'messageView'
+        ]),
+
+        userName () {
+            return Object.keys(this.messageView).length ? `${this.messageView.firstName} ${this.messageView.lastName}` : ''
+        },
+
+        userViewImage () {
+            if (!Object.keys(this.messageView).length || (this.messageView.profilePictures && this.messageView.profilePictures.every(x => x.image === null))) {
+                return require('@/assets/img/avatar-default.png')
+            }
+
+            return this.messageView.profilePictures.find(x => x.image !== null).image.url
+        }
+    },
     
     methods: {
+        checkMessageView () {
+            if (!Object.keys(this.messageView).length) {
+                this.goBackToMessages()
+            }
+        },
+
         goBackToMessages () {
             this.$router.push('/messages')
         }
@@ -64,7 +102,8 @@ export default {
 
     components: {
         MessageArea,
-        MessageViewDetails
+        MessageViewDetails,
+        ViewDetails: () => import('@/components/profile/matches/ViewDetails')
     },
 
     mixins: [isMobileMixins]
@@ -73,10 +112,9 @@ export default {
 
 <style lang="scss" scoped>
 .message-view {
-    background: #fff;
-    box-shadow: 3px 1px 5px #d1d1d1;
-    height: 94.5%;
+    height: 100%;
     width: 100%;
+    background: #fff;
 
     .view-header {
         width: 100%;
@@ -156,8 +194,37 @@ export default {
             height: calc(100% - 58px);
         }
 
-        .show-info {
-            left: 0;
+        .view-details {
+            width: 30%;
+            height: 100%;
+            min-width: 300px;
+            border-left: 1px solid #ddd;
+            overflow: auto;
+            background: #fff;
+            opacity: 1;
+            animation: unset;
+            border-radius: 0;
+
+            @include mobile {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                left: 100%;
+                top: 0;
+                transition: 0.1s;
+            }
+
+            /deep/.image-slider {
+                height: 330px;
+
+                @include mobile {
+                    height: 300px;
+                }
+            }
+
+            &.show-info {
+                left: 0;
+            }
         }
     }
 }

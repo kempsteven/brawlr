@@ -7,7 +7,7 @@
         <carousel
             class="image-slider"
             :perPage="1"
-            :paginationSize="isMobileViewPort ? 10 : 15"
+            :paginationSize="10"
 
             navigationNextLabel=""
             navigationPrevLabel=""

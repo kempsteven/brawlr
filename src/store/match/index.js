@@ -134,7 +134,19 @@ export const actions = {
 }
 
 export const mutations = {
-    updateField
+    updateField,
+
+    clearMatchList () {
+        state.matchList = [],
+
+        state.matchListPagination = {
+            page: 1,
+            totalPages: 1,
+            hasNextPage: false
+        }
+
+        state.matchListLoading = false
+    }
 }
 
 const getters = {

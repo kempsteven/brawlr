@@ -4,7 +4,7 @@
 
 		<section class="main-content">
 			<transition :name="isMobile">
-				<router-view/>
+				<router-view v-if="user._id"/>
 			</transition>
 		</section>
 	</div>
@@ -14,13 +14,42 @@
 
 import LayoutHeader from '@/components/home/LayoutHeader'
 import { isMobileRegexFunction } from '@/regex'
+import * as user from '@/store/user/'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
+	beforeCreate () {
+		if (!this.$store._modulesNamespaceMap['user/']) {
+			this.$store.registerModule('user', user.default)
+		}
+	},
+
+	created () {
+        if (!this.online) return
+        
+        this.getUser()
+    },
+
 	computed: {
 		isMobile () {
 			return isMobileRegexFunction ? '' : '_transition-anim'
+		},
+
+		...mapFields('user', [
+            'user'
+		]),
+		
+		...mapFields('connection-status', [
+            'online'
+        ]),
+	},
+
+	methods: {
+		getUser () {
+			this.$store.dispatch('user/getUser')
 		}
 	},
+
 
 	components: {
 		LayoutHeader
