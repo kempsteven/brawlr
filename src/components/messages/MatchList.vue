@@ -53,6 +53,7 @@ export default {
 
         ...mapFields('message', [
             'messageView',
+            'activeMessageId',
 
             'conversationList'
         ]),
@@ -76,6 +77,8 @@ export default {
 
         /* View Message */
         viewMessage (userInfo) {
+            this.activeMessageId = null
+
             this.messageView = userInfo
             
             this.viewDetailsObject = userInfo

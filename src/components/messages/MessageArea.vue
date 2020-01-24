@@ -3,21 +3,26 @@
         <ul class="message-list" ref="messageList">
             <li
                 class="list-item"
-                :class="{ 'own-message' : isUserOwnMessage(message) }"
+                :class="{
+                    'own-message' : isUserOwnMessage(message),
+                    'is-first-message' : isFirstMessage(isUserOwnMessage(message), key),
+                    'is-last-message' : isLastMessage(isUserOwnMessage(message), key),
+                    'is-between-message' : isBetweenMessage(isUserOwnMessage(message), key),
+                }"
                 :key="key"
                 v-for="(message, key) in messageList"
             >
-                <section class="img-container">
+                <section class="img-container" v-if="!isUserOwnMessage(message)">
                     <img
-                        :src="message.userImage"
+                        :src="otherUserImage"
                         class="user-img"
                         alt="user-message-image"
                     >
                 </section>
 
                 <section class="message-details">
-                    <span class="message-name">
-                        {{ message.name }}
+                    <span class="message-name" v-if="!isUserOwnMessage(message)">
+                        {{ otherUserName }}
                     </span>
                     
                     <section class="message-text">
@@ -67,8 +72,9 @@ export default {
 		}
     },
 
-    created () {
-        this.getUser()
+    async created () {
+        // await this.getUser()
+        this.getMessageList()
     },
 
     mounted () {
@@ -77,6 +83,7 @@ export default {
 
     destroyed () {
         this.removeSocketConnection()
+        this.clearMessageList()
     },
 
     computed: {
@@ -85,28 +92,47 @@ export default {
         ]),
 
         ...mapFields('message', [
-            'messageList'
+            'messageView',
+            
+            'messageList',
+            'activeMessageId'
         ]),
 
         ...mapFields('connection-status', [
             'online'
-        ])
+        ]),
+
+        otherUserName () {
+            return `${this.messageView.firstName} ${this.messageView.lastName}`
+        },
+
+        otherUserImage () {
+            if (!this.messageView || this.messageView.profilePictures.every(x => x.image === null)) {
+                return require('@/assets/img/avatar-default.png')
+            }
+
+            return this.messageView.profilePictures.find(x => x.image !== null).image.url
+        }
     },
 
     methods: {
         /* Created Lifecycle Methods */
-        getUser () {
-            if (!this.online) return
+        async getMessageList () {
+            if (!this.activeMessageId) return
 
-            this.$store.dispatch('user/getUser')
+            await this.$store.dispatch('message/getMessageList', this.activeMessageId)
+
+            setTimeout(() => {
+                this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
+            }, 0)
         },
 
         setSocketListeners () {
 			this.socket.on('new_message', ({ data }) => {
-				this.messageList.push({
+				this.messageList.push({ 
                     name: data.name,
-                    userId: data.userId,
-                    userImage: data.userImage,
+                    senderId: data.senderId,
+                    receiverId: data.receiverId,
                     message: data.message
                 })
 
@@ -116,16 +142,24 @@ export default {
 			})
 		},
 
-		sendMessage () {
+		async sendMessage () {
             if(!this.message) return
+            
+            const form = new FormData()
 
-            const findUserImage = this.user.profilePictures.find(item => item.image !== null)
-            const userImage = findUserImage.image.url || require('@/assets/img/sample-picture.jpg')
+            if (this.activeMessageId) {
+                form.append('conversationId', this.activeMessageId)
+            }
+
+            form.append('receiverId', this.messageView._id)
+            form.append('message', this.message)
+
+            await this.$store.dispatch('message/sendMessage', form)
 
 			this.socket.emit('new_message', {
                 name: `${this.user.firstName} ${this.user.lastName}`,
-                userId: this.user._id,
-                userImage: userImage,
+                senderId: this.user._id,
+                receiverId: this.messageView._id,
 				message: this.message
 			})
 
@@ -140,13 +174,75 @@ export default {
         isUserOwnMessage (message) {
             if (!this.user) return false
 
-            return message.userId === this.user._id
+            return message.senderId === this.user._id
+        },
+
+        isFirstMessage (isOwnMessage, key) {
+            const messageBefore = this.messageList[key - 1] || ''
+            const currentMessage = this.messageList[key]
+            const messageAfter = this.messageList[key + 1] || ''
+
+            const senderPropertyIdName = isOwnMessage ? 'senderId' : 'receiverId'
+
+            if (
+                this.messageList.length > 1
+                && messageAfter
+                && currentMessage[senderPropertyIdName] !== messageBefore[senderPropertyIdName]
+                && currentMessage[senderPropertyIdName] === messageAfter[senderPropertyIdName]
+            ) {
+                return true
+            }
+
+            return false
+        },
+
+        isLastMessage (isOwnMessage, key) {
+            const messageBefore = this.messageList[key - 1] || ''
+            const currentMessage = this.messageList[key]
+            const messageAfter = this.messageList[key + 1] || ''
+
+            const senderPropertyIdName = isOwnMessage ? 'senderId' : 'receiverId'
+
+            if (
+                this.messageList.length > 1
+                && (!messageAfter
+                || currentMessage[senderPropertyIdName] !== messageAfter[senderPropertyIdName])
+                && currentMessage[senderPropertyIdName] === messageBefore[senderPropertyIdName]
+            ) {
+                return true
+            }
+
+            return false
+        },
+
+        isBetweenMessage (isOwnMessage, key) {
+            const messageBefore = this.messageList[key - 1] || ''
+            const currentMessage = this.messageList[key]
+            const messageAfter = this.messageList[key + 1] || ''
+
+            const senderPropertyIdName = isOwnMessage ? 'senderId' : 'receiverId'
+
+            if (
+                messageBefore
+                && messageAfter
+                && currentMessage[senderPropertyIdName] === messageAfter[senderPropertyIdName]
+                && currentMessage[senderPropertyIdName] === messageBefore[senderPropertyIdName]
+            ) {
+                return true
+            }
+
+            return false
         },
         
         /* Destroyed Lifecycle Methods */
         removeSocketConnection () {
             this.socket.removeListener('new_message')
             this.socket.disconnect()
+        },
+
+        clearMessageList () {
+            this.messageList = []
+            this.activeMessageId = null
         }
     },
 
@@ -181,14 +277,13 @@ export default {
         
         .list-item {
             width: 100%;
-            padding: 5px 15px;
+            padding: 0px 15px;
             display: flex;
             align-items: flex-end;
 
             &.own-message {
                 justify-content: flex-end;
                 padding: 2px 15px;
-
 
                 .img-container {
                     display: none;
@@ -207,6 +302,25 @@ export default {
                         color: #fff;
                         width: 100%;
                         word-break: break-word;
+                        border-radius: 20px 20px 20px 20px;
+                    }
+                }
+
+                &.is-first-message {
+                    .message-text {
+                        border-radius: 20px 20px 0px 20px;
+                    }
+                }
+
+                &.is-last-message {
+                    .message-text {
+                        border-radius: 20px 0px 20px 20px;
+                    }
+                }
+
+                &.is-between-message {
+                    .message-text {
+                        border-radius: 20px 0px 0px 20px;
                     }
                 }
             }
@@ -256,11 +370,52 @@ export default {
                 .message-text {
                     font-size: 13px;
                     background-color: #f1f0f0;
-                    border-radius: 20px;
+                    border-radius: 20px 20px 20px 20px;
                     padding: 10px 18px;
                     display: inline-block;
-                    width: 100%;
                     word-break: break-word;
+                }
+            }
+
+            &.is-first-message {
+                .img-container {
+                    opacity: 0;
+                }
+
+                .message-text {
+                    border-radius: 20px 20px 20px 0px;
+                }
+
+                .message-name {
+                    display: block;
+                }
+            }
+
+            &.is-last-message {
+                .img-container {
+                    opacity: 1;
+                }
+
+                .message-text {
+                    border-radius: 0px 20px 20px 20px;
+                }
+
+                .message-name {
+                    display: none;
+                }
+            }
+
+            &.is-between-message {
+                .img-container {
+                    opacity: 0;
+                }
+
+                .message-text {
+                    border-radius: 0px 20px 20px 0px;
+                }
+
+                .message-name {
+                    display: none;
                 }
             }
         }

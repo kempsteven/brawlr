@@ -2,10 +2,12 @@
     <section class="matches">
         <section class="match-container">
             <transition name="_transition-anim">
+                <loading v-if="matchListLoading"/>
+
                 <empty-state
                     key="1"
                     text="No matches available yet."
-                    v-if="isMatchesAvailable"
+                    v-else-if="isMatchesAvailable"
                 />
 
                 <section class="match-list" key="2" v-else>
@@ -38,8 +40,6 @@
 
                         <button class="_primary" @click="unMatch(match)"/>
                     </section>
-
-                    <loading v-if="matchListLoading"/>
                 </section>
             </transition>
         </section>
@@ -169,7 +169,7 @@ export default {
 
         /* Destroyed Lifecycle Methods */
         clearMatchList () {
-            this.commit('match/clearMatchList')
+            this.$store.commit('match/clearMatchList')
         }
     },
 
@@ -202,7 +202,7 @@ export default {
 
         .match-list {
             width: 100%;
-            height: 100%;
+            // height: 100%;
             display: flex;
             flex-wrap: wrap;
             justify-items: flex-start;

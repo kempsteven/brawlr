@@ -29,7 +29,6 @@
                     @click="viewMessage(conversation, conversation._id)"
                 >
                     <section class="img-container">
-                            <!-- src="@/assets/img/sample-picture.jpg" -->
                         <img
                             class="item-img"
                             :src="setUserPicture(conversation)"
@@ -137,8 +136,8 @@ export default {
 
         setUserName (conversation) {
             const currentUser = conversation.userOneId === this.user._id 
-                                    ? 'userOne'
-                                    : 'userTwo'
+                                    ? 'userTwo'
+                                    : 'userOne'
 
             return conversation[`${currentUser}Name`] || '-'
         },

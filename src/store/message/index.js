@@ -29,7 +29,10 @@ export const state = {
     messageView: {},
 
     /* Get User Info State */
-    userInfoLoading: false
+    userInfoLoading: false,
+
+    /* Send Message State */
+    sendMessageLoading: false
 }
 
 export const actions = {
@@ -73,6 +76,52 @@ export const actions = {
         state.messageView = data
 
         state.userInfoLoading = false
+    },
+
+    async getMessageList ({ dispatch }, payload) {
+        state.userInfoLoading = true
+
+        const { status, data } = await api('get', `/message/get-message-list?conversationId=${payload}&page=${state.messageListPagination.page}`)
+
+        if (status !== 200) {
+            dispatch(
+                'modal/errorModal',
+                data.message || 'Sorry, Something went wrong.',
+                { root: true }
+            )
+            return
+        }
+
+        state.messageList = [
+            ...state.messageList,
+            ...data.docs.reverse()
+        ]
+
+        state.messageListPagination.totalPages = data.totalPages
+        state.messageListPagination.hasNextPage = data.hasNextPage
+
+        state.userInfoLoading = false
+    },
+
+    async sendMessage({ dispatch }, payload) {
+        state.sendMessageLoading = true
+
+        const { status, data } = await api('post', `/message/send-message`, payload)
+
+        if (status !== 200 && status !== 204) {
+            dispatch(
+                'modal/errorModal',
+                data.message || 'Sorry, Something went wrong.',
+                { root: true }
+            )
+            return
+        }
+
+        if (state === 200) {
+            state.activeMessageId = data.conversationId
+        }
+
+        state.sendMessageLoading = false
     }
 }
 

@@ -38,8 +38,6 @@
 
         <section class="view-content">
             <message-area />
-            
-            <!-- <message-view-details /> -->
 
             <view-details
                 class="view-details"
@@ -51,7 +49,6 @@
 
 <script>
 import MessageArea from '@/components/messages/MessageArea'
-import MessageViewDetails from '@/components/messages/MessageViewDetails'
 import isMobileMixins from '@/mixins/isMobileMixins'
 import { mapFields } from 'vuex-map-fields'
 
@@ -72,7 +69,9 @@ export default {
 
     computed: {
         ...mapFields('message', [
-            'messageView'
+            'messageView',
+
+            'activeMessageId'
         ]),
 
         userName () {
@@ -96,13 +95,14 @@ export default {
         },
 
         goBackToMessages () {
+            this.activeMessageId = null
+            
             this.$router.push('/messages')
         }
     },
 
     components: {
         MessageArea,
-        MessageViewDetails,
         ViewDetails: () => import('@/components/profile/matches/ViewDetails')
     },
 
