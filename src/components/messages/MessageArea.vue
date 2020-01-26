@@ -1,6 +1,8 @@
 <template>
     <div class="message-area">
-        <ul class="message-list" ref="messageList">
+        <ul class="message-list" ref="messageList" @scroll="getMessageListNextPage()">
+            <Loading v-if="isMessageListLoading"/>
+
             <li
                 class="list-item"
                 :class="{
@@ -94,13 +96,21 @@ export default {
         ...mapFields('message', [
             'messageView',
             
+            'activeMessageId',
+
             'messageList',
-            'activeMessageId'
+            'messageListLoading',
+            'messageListPagination.page',
+            'messageListPagination.hasNextPage'
         ]),
 
         ...mapFields('connection-status', [
             'online'
         ]),
+
+        isMessageListLoading () {
+            return this.messageListLoading && this.page !== 1
+        },
 
         otherUserName () {
             return `${this.messageView.firstName} ${this.messageView.lastName}`
@@ -123,10 +133,20 @@ export default {
             await this.$store.dispatch('message/getMessageList', this.activeMessageId)
 
             setTimeout(() => {
-                this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
+                if (!this.$refs.messageList || !this.$refs.messageList.scrollHeight) return
+
+                // When scrolling for next page set
+                if (this.page !== 1) {
+                    this.$refs.messageList.scrollTop = 812
+
+                    return
+                }
+
+                this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight
             }, 0)
         },
 
+        /* Mounted Lifecycle Methods */
         setSocketListeners () {
 			this.socket.on('new_message', ({ data }) => {
 				this.messageList.push({ 
@@ -137,13 +157,29 @@ export default {
                 })
 
 				setTimeout(() => {
-					this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
+                    if (!this.$refs.messageList || !this.$refs.messageList.scrollHeight) return
+
+					this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight
 				}, 0)
 			})
-		},
+        },
+        
+        /* Get Message List Next Page */
+        getMessageListNextPage () {
+            const shouldGetNextPage = this.$refs.messageList.scrollTop === 0
+            
+            if (!shouldGetNextPage || !this.hasNextPage) return
 
+            this.page++
+
+            this.getMessageList()
+        },
+
+        /* Send Message */
 		async sendMessage () {
             if(!this.message) return
+
+            const messageTemp = this.message
             
             const form = new FormData()
 
@@ -154,23 +190,23 @@ export default {
             form.append('receiverId', this.messageView._id)
             form.append('message', this.message)
 
+            this.message = ''
+
             await this.$store.dispatch('message/sendMessage', form)
 
 			this.socket.emit('new_message', {
                 name: `${this.user.firstName} ${this.user.lastName}`,
                 senderId: this.user._id,
                 receiverId: this.messageView._id,
-				message: this.message
+				message: messageTemp
 			})
-
-			this.message = ''
 
 			setTimeout(() => {
 				this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
 			}, 0)
         },
 
-        /* Tempalte Methods */
+        /* Template Methods */
         isUserOwnMessage (message) {
             if (!this.user) return false
 
@@ -241,13 +277,13 @@ export default {
         },
 
         clearMessageList () {
-            this.messageList = []
-            this.activeMessageId = null
+            this.$store.commit('message/resetUserMessageList')
         }
     },
 
     components: {
-        InputField  
+        InputField,
+        Loading: () => import('@/components/global/Loading')
     }
 }
 </script>
@@ -266,7 +302,7 @@ export default {
     }
     
     .message-list {
-        padding: 15px 0;
+        padding: 15px 0 15px 0;
         flex: 1 1 auto;
         display: flex;
         justify-content: flex-start;
@@ -274,6 +310,27 @@ export default {
         flex-direction: column;
         height: 100%;
         overflow: auto;
+        position: relative;
+
+        /deep/.loading-container {
+            position: initial;
+            min-height: unset;
+            padding: 25px 0 35px 0;
+            height: 25px;
+            // background: #f7f7f7;
+
+            .lds-dual-ring {
+                width: 30px;
+                height: 30px;
+
+                &:after {
+                    width: 20px;
+                    height: 20px;
+                    border: 4px solid #949494;
+                    border-color: #949494 transparent #949494 transparent;
+                }
+            }
+        }
         
         .list-item {
             width: 100%;
@@ -326,8 +383,8 @@ export default {
             }
 
             .img-container {
-                width: 50px;
-                height: 50px;
+                width: 40px;
+                height: 40px;
                 border-radius: 50%;
                 overflow: hidden;
                 margin-right: 10px;
@@ -424,6 +481,7 @@ export default {
     .message-input-container {
         padding: 15px;
         display: flex;
+        box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.1);
 
         button {
             width: 35px;

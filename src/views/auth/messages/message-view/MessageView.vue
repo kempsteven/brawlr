@@ -1,5 +1,9 @@
 <template>
     <div class="message-view">
+        <transition name="_transition-anim">
+            <loading v-if="userInfoLoading"/>
+        </transition>
+
         <section class="view-header">
             <section class="header-left">
                 <section
@@ -37,7 +41,7 @@
         </section>
 
         <section class="view-content">
-            <message-area />
+            <message-area :key="activeMessageId" />
 
             <view-details
                 class="view-details"
@@ -71,7 +75,10 @@ export default {
         ...mapFields('message', [
             'messageView',
 
-            'activeMessageId'
+            'activeMessageId',
+
+            'userInfoLoading',
+            'messageListLoading'
         ]),
 
         userName () {
@@ -103,7 +110,8 @@ export default {
 
     components: {
         MessageArea,
-        ViewDetails: () => import('@/components/profile/matches/ViewDetails')
+        ViewDetails: () => import('@/components/profile/matches/ViewDetails'),
+        Loading: () => import('@/components/global/Loading')
     },
 
     mixins: [isMobileMixins]
@@ -115,6 +123,22 @@ export default {
     height: 100%;
     width: 100%;
     background: #fff;
+
+    /deep/.loading-container {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 0;
+
+        .lds-dual-ring {
+            &:after {
+                border: 5px solid #949494;
+                border-color: #949494 transparent #949494 transparent;
+            }
+        }
+
+        @include mobile {
+            min-height: unset;
+        }
+    }
 
     .view-header {
         width: 100%;
@@ -199,11 +223,12 @@ export default {
             height: 100%;
             min-width: 300px;
             border-left: 1px solid #ddd;
-            overflow: auto;
+            overflow-y: auto;
             background: #fff;
             opacity: 1;
             animation: unset;
             border-radius: 0;
+            overflow-x: hidden;
 
             @include mobile {
                 position: absolute;

@@ -11,7 +11,7 @@
                 <transition :name="transitionAnim">
                     <empty-state
                         text="No message selected"
-                        v-if="!Object.keys(messageView).length && !isMobileViewPort"
+                        v-if="isThereNoSelectedMessage"
                     />
                 </transition>
             </section>
@@ -72,6 +72,10 @@ export default {
         ...mapFields('user', [
             'user'
         ]),
+
+        isThereNoSelectedMessage () {
+            return !Object.keys(this.messageView).length && !this.isMobileViewPort && !this.conversationListLoading
+        },
 
         isConversationEmpty () {
             return !this.conversationList.length && !this.conversationListLoading

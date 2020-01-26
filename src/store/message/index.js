@@ -24,6 +24,17 @@ export const state = {
 
     messageListLoading: false,
 
+    /* Match List State */
+    matchList: [],
+
+    matchListPagination: {
+        page: 1,
+        totalPages: 1,
+        hasNextPage: false
+    },
+
+    matchListLoading: false,
+
     /* Message View State */
     activeMessageId: null,
     messageView: {},
@@ -74,12 +85,10 @@ export const actions = {
         }
 
         state.messageView = data
-
-        state.userInfoLoading = false
     },
 
     async getMessageList ({ dispatch }, payload) {
-        state.userInfoLoading = true
+        state.messageListLoading = true
 
         const { status, data } = await api('get', `/message/get-message-list?conversationId=${payload}&page=${state.messageListPagination.page}`)
 
@@ -93,14 +102,42 @@ export const actions = {
         }
 
         state.messageList = [
-            ...state.messageList,
-            ...data.docs.reverse()
+            ...data.docs.reverse(),
+            ...state.messageList
         ]
 
         state.messageListPagination.totalPages = data.totalPages
         state.messageListPagination.hasNextPage = data.hasNextPage
 
+        state.messageListLoading = false
+
         state.userInfoLoading = false
+    },
+
+    async getMatchList ({ dispatch }) {
+        state.matchListLoading = true
+
+        const { status, data } = await api('get', `/match/match-list?page=${2}`)
+
+        // if error
+        if (status !== 200) {
+            dispatch(
+                'modal/errorModal',
+                data.message || 'Sorry, Something went wrong.',
+                { root: true }
+            )
+            return
+        }
+
+        state.matchList = [
+            ...state.matchList,
+            ...data.docs
+        ]
+
+        state.matchListPagination.totalPages = data.totalPages
+        state.matchListPagination.hasNextPage = data.hasNextPage
+
+        state.matchListLoading = false
     },
 
     async sendMessage({ dispatch }, payload) {
@@ -126,7 +163,19 @@ export const actions = {
 }
 
 export const mutations = {
-    updateField
+    updateField,
+
+    resetUserMessageList () {
+        state.messageList = []
+
+        state.messageListPagination = {
+            page: 1,
+            totalPages: 1,
+            hasNextPage: false
+        },
+
+        state.messageListLoading = false
+    }
 }
 
 const getters = {

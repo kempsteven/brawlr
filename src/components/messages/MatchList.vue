@@ -6,7 +6,7 @@
             </span>
         </section>
 
-        <section class="match-list scroll-visible" v-if="parsedMatchList.length">
+        <section class="match-list scroll-visible" v-if="parsedMatchList.length" ref="matchList" @scroll="getMatchListNextPage($event)">
             <section
                 class="list-item"
                 :key="key"
@@ -25,6 +25,8 @@
                     {{ match.firstName }}
                 </span>
             </section>
+
+            <loading width="69px" v-if="isMatchListLoading"/>
         </section>
     </section>
 </template>
@@ -43,11 +45,6 @@ export default {
 
     computed: {
         ...mapFields('match', [
-			'matchList',
-            'matchListLoading',
-            'matchListPagination.page',
-            'matchListPagination.hasNextPage',
-
             'viewDetailsObject',
         ]),
 
@@ -55,7 +52,12 @@ export default {
             'messageView',
             'activeMessageId',
 
-            'conversationList'
+            'conversationList',
+
+            'matchList',
+            'matchListLoading',
+            'matchListPagination.page',
+            'matchListPagination.hasNextPage',
         ]),
 
         parsedMatchList () {
@@ -66,26 +68,46 @@ export default {
 
                 return result
             }, [])
+        },
+
+        isMatchListLoading () {
+            return this.matchList.length && this.matchListLoading
         }
     },
 
     methods: {
         /* Created Lifecycle Methods */
         getMatchList () {
-            this.$store.dispatch('match/getMatchList')
+            this.$store.dispatch('message/getMatchList')
         },
 
         /* View Message */
-        viewMessage (userInfo) {
+        async viewMessage (userInfo) {
             this.activeMessageId = null
 
             this.messageView = userInfo
             
             this.viewDetailsObject = userInfo
 
+            await this.$store.commit('message/resetUserMessageList')
+
             if (this.$route.name === 'message-view') return
 
             this.$router.push('/messages/view')
+        },
+
+        /* Get Match List Next Page */
+        getMatchListNextPage () {
+            const matchList = this.$refs.matchList
+            const matchListScrollLeft = matchList.scrollLeft
+            const matchListMaxScroll = matchList.scrollWidth - matchList.clientWidth
+            const shouldGetNextPage = matchListMaxScroll === matchListScrollLeft
+
+            if (!shouldGetNextPage || !this.hasNextPage || this.matchListLoading) return
+
+            this.page++
+
+            this.getMatchList()
         },
 
         /* Template Methods */
@@ -104,18 +126,23 @@ export default {
             this.messageView = {}
         }
     },
+
+    components: {
+        Loading: () => import('@/components/global/Loading'),
+    },
 }
 </script>
 
 <style lang="scss" scoped>
 .match-container {
     width: 100%;
+    background: #fff;
+    margin-bottom: 15px;
 
     .see-all-container {
-        margin-top: 15px;
         padding-top: 5px;
-        border-top: 1px solid #ddd;
-        margin-bottom: 5px;
+        margin-bottom: 10px;
+        padding-right: 10px;
 
         @include flex-box(flex-end, '', '');
 
@@ -152,6 +179,14 @@ export default {
 
             @include flex-box ('', center, column);
 
+            &:first-child {
+                padding-left: 15px;
+            }
+
+            &:last-child {
+                padding-right: 15px;
+            }
+
             &:not(:last-child) {
                 margin-right: 10px;
             }
@@ -186,6 +221,27 @@ export default {
 
                 @include mobile {
                     font-size: 13spx;
+                }
+            }
+        }
+
+        /deep/.loading-container {
+            position: initial;
+            min-height: unset;
+            padding: 0;
+            height: 69px;
+            background: transparent;
+            flex-shrink: 0;
+
+            .lds-dual-ring {
+                width: 30px;
+                height: 30px;
+
+                &:after {
+                    width: 20px;
+                    height: 20px;
+                    border: 4px solid #949494;
+                    border-color: #949494 transparent #949494 transparent;
                 }
             }
         }

@@ -10,17 +10,19 @@
                 placeholder="Search Messages"
                 type="text"
             />
-
-            <match-list/>
         </section>
 
         <section class="list-container">
+            <loading v-if="isMessageListLoading"/>
+
             <empty-state
                 text="No message available yet"
-                v-if="isConversationEmpty"
+                v-else-if="isConversationEmpty"
             />
 
-            <section class="message-list">
+            <section class="message-list" v-else>
+                <match-list/>
+                
                 <section
                     class="message-item"
                     :class="{ 'active' : activeMessageId === conversation._id }"
@@ -70,19 +72,21 @@ export default {
     },
 
     computed: {
-        ...mapFields('message', [
-            'conversationList',
-            'conversationListLoading',
-            'conversationListPagination',
+        ...mapFields('message', {
+            conversationList: 'conversationList',
+            conversationListLoading: 'conversationListLoading',
+            conversationListPagination: 'conversationListPagination',
 
-            'messageList',
+            userInfoLoading: 'userInfoLoading',
 
-            'userInfoLoading',
+            activeMessageId: 'activeMessageId',
 
-            'activeMessageId',
+            messageView: 'messageView',
 
-            'messageView'
-        ]),
+            messageList: 'messageList',
+            messageListPage: 'messageListPagination.page',
+            messageListHasNextPage: 'messageListPagination.hasNextPage'
+        }),
 
         ...mapFields('match', [
             'matchList',
@@ -93,6 +97,10 @@ export default {
             'user'
         ]),
 
+        isMessageListLoading () {
+            return !this.conversationList.length && this.conversationListLoading
+        },
+
         isConversationEmpty () {
             return !this.conversationList.length && !this.conversationListLoading
         }
@@ -100,7 +108,7 @@ export default {
 
     methods: {
         async viewMessage ({ userOneId, userTwoId }, id) {
-            if (this.userInfoLoading) return
+            if (this.userInfoLoading || this.activeMessageId === id) return
 
             const currentUserId = this.user._id
 
@@ -109,6 +117,7 @@ export default {
                                                 ? userTwoId
                                                 : userOneId
             
+            await this.$store.commit('message/resetUserMessageList')
 
             await this.getUserInfo(userId)
 
@@ -119,7 +128,7 @@ export default {
             if (this.$route.name === 'message-view') return
 
             this.$router.push('/messages/view')
-        },  
+        },
 
         async getUserInfo (userId) {
             await this.$store.dispatch('message/getUserInfo', userId)
@@ -150,7 +159,8 @@ export default {
     components: {
         InputField,
         MatchList: () => import('@/components/messages/MatchList'),
-        EmptyState: () => import('@/components/global/EmptyState')
+        EmptyState: () => import('@/components/global/EmptyState'),
+        Loading: () => import('@/components/global/Loading')
     }
 }
 </script>
@@ -177,7 +187,8 @@ export default {
 
     .navigation-header {
         padding: 15px 20px;
-        box-shadow: 0 -5px 15px #d1d1d1;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+        z-index: 2;
 
         @include mobile {
             padding: 10px 10px;
@@ -204,6 +215,23 @@ export default {
     .list-container {
         position: relative;
         flex: 1 1 auto;
+        overflow: auto;
+
+        /deep/.loading-container {
+            border-radius: 0;
+            background-color: #f9f9f9;
+
+            .lds-dual-ring {
+                &:after {
+                    border: 5px solid #949494;
+                    border-color: #949494 transparent #949494 transparent;
+                }
+            }
+
+            @include mobile {
+                min-height: unset;
+            }
+        }
 
         /deep/.empty-state {
             border-radius: 0;
@@ -222,7 +250,6 @@ export default {
         .message-list {
             display: flex;
             flex-direction: column;
-            overflow: auto;
 
             .message-item {
                 display: flex;
