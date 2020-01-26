@@ -43,7 +43,8 @@ export const state = {
     userInfoLoading: false,
 
     /* Send Message State */
-    sendMessageLoading: false
+    sendMessageLoading: false,
+    hasSendMessage: false
 }
 
 export const actions = {
@@ -117,7 +118,7 @@ export const actions = {
     async getMatchList ({ dispatch }) {
         state.matchListLoading = true
 
-        const { status, data } = await api('get', `/match/match-list?page=${2}`)
+        const { status, data } = await api('get', `/match/match-list?page=${state.matchListPagination.page}`)
 
         // if error
         if (status !== 200) {
@@ -151,6 +152,8 @@ export const actions = {
                 data.message || 'Sorry, Something went wrong.',
                 { root: true }
             )
+
+            state.hasSendMessage = false
             return
         }
 
@@ -159,6 +162,7 @@ export const actions = {
         }
 
         state.sendMessageLoading = false
+        state.hasSendMessage = true
     }
 }
 

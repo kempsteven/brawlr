@@ -94,6 +94,8 @@ export default {
         ]),
 
         ...mapFields('message', [
+            'hasSendMessage',
+
             'messageView',
             
             'activeMessageId',
@@ -194,12 +196,16 @@ export default {
 
             await this.$store.dispatch('message/sendMessage', form)
 
-			this.socket.emit('new_message', {
+            if (!this.hasSendMessage) return
+
+			await this.socket.emit('new_message', {
                 name: `${this.user.firstName} ${this.user.lastName}`,
                 senderId: this.user._id,
                 receiverId: this.messageView._id,
 				message: messageTemp
-			})
+            })
+            
+            this.hasSendMessage = false
 
 			setTimeout(() => {
 				this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;

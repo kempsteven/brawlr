@@ -1,16 +1,16 @@
 <template>
     <section class="match-container">
-        <section class="see-all-container" v-if="parsedMatchList.length">
+        <section class="see-all-container" v-if="matchList.length">
             <span class="see-all" @click="$router.push('/profile/matches')">
                 See More
             </span>
         </section>
 
-        <section class="match-list scroll-visible" v-if="parsedMatchList.length" ref="matchList" @scroll="getMatchListNextPage($event)">
+        <section class="match-list scroll-visible" v-if="matchList.length" ref="matchList" @scroll="getMatchListNextPage($event)">
             <section
                 class="list-item"
                 :key="key"
-                v-for="(match, key) in parsedMatchList"
+                v-for="(match, key) in matchList"
                 @click="viewMessage(match)"
             >
                 <section class="img-container">
@@ -59,16 +59,6 @@ export default {
             'matchListPagination.page',
             'matchListPagination.hasNextPage',
         ]),
-
-        parsedMatchList () {
-            return this.matchList.reduce((result, item) => {
-                if (!this.conversationList.find(x => x.userOneId === item._id || x.userTwoId === item._id)) {
-                    result.push(item)
-                }
-
-                return result
-            }, [])
-        },
 
         isMatchListLoading () {
             return this.matchList.length && this.matchListLoading
