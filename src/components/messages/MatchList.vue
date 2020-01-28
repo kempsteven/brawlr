@@ -1,12 +1,12 @@
 <template>
-    <section class="match-container">
-        <section class="see-all-container" v-if="matchList.length">
+    <section class="match-container" v-if="matchList.length">
+        <section class="see-all-container">
             <span class="see-all" @click="$router.push('/profile/matches')">
                 See More
             </span>
         </section>
 
-        <section class="match-list scroll-visible" v-if="matchList.length" ref="matchList" @scroll="getMatchListNextPage($event)">
+        <section class="match-list scroll-visible" ref="matchList" @scroll="getMatchListNextPage($event)">
             <section
                 class="list-item"
                 :key="key"

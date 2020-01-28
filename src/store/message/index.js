@@ -63,7 +63,10 @@ export const actions = {
             return
         }
 
-        state.conversationList = data.docs
+        state.conversationList = [
+            ...state.conversationList,
+            ...data.docs
+        ]
         
         state.conversationListPagination.totalPages = data.totalPages
         state.conversationListPagination.hasNextPage = data.hasNextPage
@@ -115,10 +118,10 @@ export const actions = {
         state.userInfoLoading = false
     },
 
-    async getMatchList ({ dispatch }) {
+    async getMatchList ({ dispatch }, clearMatchList = false) {
         state.matchListLoading = true
 
-        const { status, data } = await api('get', `/match/match-list?page=${state.matchListPagination.page}`)
+        const { status, data } = await api('get', `/match/match-list?page=${state.matchListPagination.page}&removeWithConversation=true`)
 
         // if error
         if (status !== 200) {
@@ -129,11 +132,15 @@ export const actions = {
             )
             return
         }
-
-        state.matchList = [
-            ...state.matchList,
-            ...data.docs
-        ]
+        
+        if (!clearMatchList) {
+            state.matchList = [
+                ...state.matchList,
+                ...data.docs
+            ]
+        } else {
+            state.matchList = data.docs
+        }
 
         state.matchListPagination.totalPages = data.totalPages
         state.matchListPagination.hasNextPage = data.hasNextPage
@@ -141,7 +148,7 @@ export const actions = {
         state.matchListLoading = false
     },
 
-    async sendMessage({ dispatch }, payload) {
+    async sendMessage({ dispatch, commit }, payload) {
         state.sendMessageLoading = true
 
         const { status, data } = await api('post', `/message/send-message`, payload)
@@ -157,8 +164,11 @@ export const actions = {
             return
         }
 
-        if (state === 200) {
+        if (status === 200) {
             state.activeMessageId = data.conversationId
+
+            await commit('resetUserMatchListPagination')
+            dispatch('getMatchList', true)
         }
 
         state.sendMessageLoading = false
@@ -179,6 +189,40 @@ export const mutations = {
         },
 
         state.messageListLoading = false
+    },
+
+    resetUserMatchList () {
+        state.matchList = []
+
+        state.matchListPagination = {
+            page: 1,
+            totalPages: 1,
+            hasNextPage: false
+        }
+
+        state.matchListLoading = false
+    },
+
+    resetUserMatchListPagination () {
+        state.matchListPagination = {
+            page: 1,
+            totalPages: 1,
+            hasNextPage: false
+        }
+
+        state.matchListLoading = false
+    },
+
+    resetConversationList () {
+        state.conversationList = []
+
+        state.conversationListPagination = {
+            page: 1,
+            totalPages: 1,
+            hasNextPage: false
+        },
+
+        state.conversationListLoading = false
     }
 }
 

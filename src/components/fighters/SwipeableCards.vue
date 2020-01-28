@@ -106,17 +106,17 @@ export default {
 
     methods: {
         /* Created Lifecycle Methods */
-        getUserList () {
-			this.$store.dispatch('match/getUserList')
+        async getUserList () {
+			await this.$store.dispatch('match/getUserList')
         },
 
         /* Get User List Next Page Handler */
-        getUserListNextPage () {
+        async getUserListNextPage () {
             if (!this.hasNextPage || this.userList.length > 0 || this.userListLoading) return
 
             this.page++
 
-            this.getUserList()
+            await this.getUserList()
         },
         
         /* View Details */
@@ -151,27 +151,27 @@ export default {
             InteractEventBus.$emit('fight', { user, swipeType: 'fight' })
         },
 
-        emitAndNext (user, swipeType) {
-            setTimeout(() => {
-                this.userList.shift()
+        async emitAndNext (user, swipeType) {
+            setTimeout(async () => {
+                const removedUser = this.userList.shift()
 
-                this.getUserListNextPage()
+                await this.getUserListNextPage()
+
+                if (swipeType === 'back-out' || !removedUser) return
+
+                switch (swipeType) {
+                    case 'brawlr':
+                        this.challengeUser(removedUser, 1)
+                        break;
+                
+                    case 'fight':
+                        this.challengeUser(removedUser, 0)
+                        break;
+                }
             }, 300)
-
-            if (swipeType === 'back-out') return
-
-            switch (swipeType) {
-                case 'brawlr':
-                    this.challengeUser(user, 1)
-                    break;
-            
-                case 'fight':
-                    this.challengeUser(user, 0)
-                    break;
-            }
         },
 
-        challengeUser (user, challengeType) {
+        async challengeUser (user, challengeType) {
             const form = new FormData()
 
             form.append('challengedId', user._id)

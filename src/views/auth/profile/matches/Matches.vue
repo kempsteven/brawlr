@@ -60,7 +60,7 @@
 				class="view-details-container"
 				v-if="modalName.includes('view-details-modal')"
 			>
-				<view-details slot="content"/>
+				<view-details slot="content" @close="closeViewDetails()"/>
 			</modal>
 		</transition>
     </section>
@@ -101,6 +101,10 @@ export default {
             'modalName',
         ]),
 
+        ...mapFields('user', [
+            'user'
+        ]),
+
         isMatchesAvailable () {
             return this.matchList && !this.matchList.length && !this.matchListLoading
         },
@@ -124,7 +128,8 @@ export default {
         unMatch (match) {
             const form = new FormData()
             
-            form.append('matchId', match.matchId)
+            form.append('userOneId', this.user._id)
+            form.append('userTwoId', match._id)
 
             this.$store.commit('modal/toggleModal', {
                 modalName: 'alert-modal',
@@ -132,7 +137,7 @@ export default {
                 modalTitle: 'Warning',
                 modalDesc: 'Are you sure you want to unmatch this user?',
                 storeAction: 'match/unMatch',
-                storePayload: form
+                storePayload: { form }
             })
         },
 
@@ -151,6 +156,12 @@ export default {
 
             this.viewDetailsObject = userDetails
         },
+
+        /* Close View Details */
+		closeViewDetails () {
+			this.viewDetailsObject = {}
+            this.$store.dispatch('modal/closeModal', {})
+		},
 
         /* Template Methods */
         getUserImage (match) {

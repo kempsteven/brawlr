@@ -1,7 +1,7 @@
 <template>
     <div class="message-area">
         <ul class="message-list" ref="messageList" @scroll="getMessageListNextPage()">
-            <Loading v-if="isMessageListLoading"/>
+            <loading v-if="isMessageListLoading"/>
 
             <li
                 class="list-item"
@@ -198,7 +198,7 @@ export default {
 
             if (!this.hasSendMessage) return
 
-			await this.socket.emit('new_message', {
+			this.socket.emit('new_message', {
                 name: `${this.user.firstName} ${this.user.lastName}`,
                 senderId: this.user._id,
                 receiverId: this.messageView._id,
@@ -206,10 +206,6 @@ export default {
             })
             
             this.hasSendMessage = false
-
-			setTimeout(() => {
-				this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
-			}, 0)
         },
 
         /* Template Methods */

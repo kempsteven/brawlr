@@ -46,7 +46,11 @@
             <view-details
                 class="view-details"
                 :class="{ 'show-info' : showInfo }"
-            />
+            >
+                <button class="_primary" slot="close" @click="unMatch()">
+                    Unmatch
+                </button>
+            </view-details>
         </section>
     </div>
 </template>
@@ -81,6 +85,10 @@ export default {
             'messageListLoading'
         ]),
 
+        ...mapFields('user', [
+            'user'
+        ]),
+
         userName () {
             return Object.keys(this.messageView).length ? `${this.messageView.firstName} ${this.messageView.lastName}` : ''
         },
@@ -105,6 +113,22 @@ export default {
             this.activeMessageId = null
             
             this.$router.push('/messages')
+        },
+
+        unMatch () {
+            const form = new FormData()
+            
+            form.append('userOneId', this.user._id)
+            form.append('userTwoId', this.messageView._id)
+
+            this.$store.commit('modal/toggleModal', {
+                modalName: 'alert-modal',
+                modalType: 'warning',
+                modalTitle: 'Warning',
+                modalDesc: 'Are you sure you want to unmatch this user?',
+                storeAction: 'match/unMatch',
+                storePayload: { form, shouldGetConversation: true }
+            })
         }
     },
 
@@ -229,6 +253,16 @@ export default {
             animation: unset;
             border-radius: 0;
             overflow-x: hidden;
+            position: relative;
+
+            ._primary {
+                position: absolute;
+                z-index: 2;
+                right: 7px;
+                top: 10px;
+                min-width: unset;
+                padding: 10px 15px;
+            }
 
             @include mobile {
                 position: absolute;

@@ -18,7 +18,7 @@
 				class="view-details-container"
 				v-if="modalName.includes('view-details-modal')"
 			>
-				<view-details slot="content"/>
+				<view-details slot="content" @close="closeViewDetails()"/>
 			</modal>
 		</transition>
 	</section>
@@ -109,6 +109,12 @@ export default {
 			})
 		},
 
+		/* Close View Details */
+		closeViewDetails () {
+			this.viewDetailsObject = {}
+            this.$store.dispatch('modal/closeModal', {})
+		},
+		
 		/* Destroyed Lifecycle Method */
 		clearUserList () {
 			this.userList = []

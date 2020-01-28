@@ -12,7 +12,9 @@
             />
         </section>
 
-        <section class="list-container">
+        <section class="list-container" ref="conversationList" @scroll="getConversationNextPage()">
+            <match-list/>
+            
             <loading v-if="isMessageListLoading"/>
 
             <empty-state
@@ -21,8 +23,6 @@
             />
 
             <section class="message-list" v-else>
-                <match-list/>
-                
                 <section
                     class="message-item"
                     :class="{ 'active' : activeMessageId === conversation._id }"
@@ -54,6 +54,10 @@
                         </section>
                     </section>
                 </section>
+
+                <transition name="_transition-anim">
+                    <loading v-if="isMessageListGettingNextPage"/>
+                </transition>
             </section>
         </section>
     </section>
@@ -71,11 +75,16 @@ export default {
         }
     },
 
+    destroyed () {
+        this.clearConversationList()
+    },
+
     computed: {
         ...mapFields('message', {
             conversationList: 'conversationList',
             conversationListLoading: 'conversationListLoading',
-            conversationListPagination: 'conversationListPagination',
+            conversationListPage: 'conversationListPagination.page',
+            conversationListHasNextPage: 'conversationListPagination.hasNextPage',
 
             userInfoLoading: 'userInfoLoading',
 
@@ -97,6 +106,10 @@ export default {
             'user'
         ]),
 
+        isMessageListGettingNextPage () {
+            return this.conversationList.length && this.conversationListLoading
+        },
+
         isMessageListLoading () {
             return !this.conversationList.length && this.conversationListLoading
         },
@@ -107,6 +120,7 @@ export default {
     },
 
     methods: {
+        /* View Message Methods */
         async viewMessage ({ userOneId, userTwoId }, id) {
             if (this.userInfoLoading || this.activeMessageId === id) return
 
@@ -134,6 +148,22 @@ export default {
             await this.$store.dispatch('message/getUserInfo', userId)
         },
 
+        /* Get Conversation List Next Page */
+        getConversationNextPage () {
+            const { scrollTop, scrollHeight, clientHeight } = this.$refs.conversationList
+            const isScrolledToBottom = scrollTop === scrollHeight - clientHeight
+
+            if (
+                isScrolledToBottom
+                && this.conversationListHasNextPage
+                && !this.conversationListLoading
+            ) {
+                this.conversationListPage++
+                
+                this.$store.dispatch('message/getConversationList')
+            }
+        },
+
         /* Template Functions */
         setUserPicture (conversation) {
             const currentUser = conversation.userOneId !== this.user._id 
@@ -152,7 +182,23 @@ export default {
         },
 
         setMessageDate (date) {
-            return date ? moment(new Date(date)).format('MMM DD') : '-'
+            if (!date) return '-'
+
+            const messageDateSent = moment(new Date(date)).format('MM-DD-YYYY')
+            const dateToday = moment(new Date()).format('MM-DD-YYYY')
+            const isMessageNotToday = moment(messageDateSent).isBefore(dateToday)
+
+            const dateFormat = isMessageNotToday
+                                ? moment(new Date(date)).format('MMM DD')
+                                : moment(new Date(date)).format('HH:mm')
+
+
+            return dateFormat
+        },
+
+        /* Destroyed Lifecycle Methods */
+        clearConversationList () {
+            this.conversationList = []
         }
     },
 
@@ -316,6 +362,26 @@ export default {
                             flex-shrink: 0;
                             padding-left: 12px;
                         }
+                    }
+                }
+            }
+
+            /deep/.loading-container {
+                position: initial;
+                min-height: unset;
+                padding: 25px 0 25px 0;
+                height: 25px;
+                background: #fff;
+
+                .lds-dual-ring {
+                    width: 30px;
+                    height: 30px;
+
+                    &:after {
+                        width: 20px;
+                        height: 20px;
+                        border: 4px solid #949494;
+                        border-color: #949494 transparent #949494 transparent;
                     }
                 }
             }

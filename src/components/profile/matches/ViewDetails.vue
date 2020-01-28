@@ -1,7 +1,9 @@
 <template>
     <div class="view-details">
         <section class="close-container">
-            <div class="close" @click="closeModal()"/>
+            <slot name="close">
+                <div class="close" @click="closeModal()"/>
+            </slot>
         </section>
 
         <carousel
@@ -64,8 +66,7 @@ export default {
 
     methods: {
         closeModal () {
-            this.viewDetailsObject = {}
-            this.$store.dispatch('modal/closeModal', {})
+            this.$emit('close')
         }
     },
 

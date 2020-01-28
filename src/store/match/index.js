@@ -104,10 +104,10 @@ export const actions = {
         state.challengeUserLoading = false
     },
 
-    async unMatch({ dispatch, commit }, payload) {
+    async unMatch({ dispatch, commit }, { form, shouldGetConversation }) {
         state.unMatchLoading = true
 
-        const { status, data } = await api('post', '/match/un-match', payload)
+        const { status, data } = await api('post', '/match/un-match', form)
 
         // if error
         if (status !== 200) {
@@ -126,8 +126,13 @@ export const actions = {
             modalTitle: 'Success',
             modalDesc: 'Unmatched user succesfully',
         }, { root: true })
-
-        dispatch('getMatchList')
+        
+        if (shouldGetConversation) {
+            await commit('message/resetConversationList', null, { root: true })
+            dispatch('message/getConversationList', null, { root: true })
+        } else {
+            dispatch('getMatchList')
+        }
 
         state.unMatchLoading = false
     }
