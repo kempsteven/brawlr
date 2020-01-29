@@ -57,11 +57,13 @@
 import InputField from '@/components/global/InputField'
 import * as user from '@/store/user/'
 import { mapFields } from 'vuex-map-fields'
+// import io from 'socket.io-client'
 
 export default {
     data() {
         return {
             message: '',
+            // socket: io.connect(process.env.VUE_APP_API_URL, { query: { token: this.$store.state.authentication.token } })
         }
     },
 
@@ -72,7 +74,6 @@ export default {
     },
 
     async created () {
-        // await this.getUser()
         this.getMessageList()
     },
 
@@ -151,7 +152,10 @@ export default {
 
         /* Mounted Lifecycle Methods */
         setSocketListeners () {
-			this.socket.on('new_message', ({ data }) => {
+            if(!this.activeMessageId) return
+
+			this.socket.on(`${this.activeMessageId}_new_message`, ({ data }) => {
+                
 				this.messageList.push({ 
                     name: data.name,
                     senderId: data.senderId,
@@ -200,6 +204,7 @@ export default {
             if (!this.hasSendMessage) return
 
 			this.socket.emit('new_message', {
+                conversationId: this.activeMessageId,
                 name: `${this.user.firstName} ${this.user.lastName}`,
                 senderId: this.user._id,
                 receiverId: this.messageView._id,
@@ -276,7 +281,6 @@ export default {
         /* Destroyed Lifecycle Methods */
         removeSocketConnection () {
             this.socket.removeListener('new_message')
-            this.socket.disconnect()
         },
 
         clearMessageList () {

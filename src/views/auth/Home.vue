@@ -19,20 +19,22 @@ import * as socket from '@/store/socket/'
 import { mapFields } from 'vuex-map-fields'
 
 export default {
-	beforeCreate () {
+	async beforeCreate () {
 		if (!this.$store._modulesNamespaceMap['user/']) {
 			this.$store.registerModule('user', user.default)
 		}
 
 		if (!this.$store._modulesNamespaceMap['socket/']) {
-			this.$store.registerModule('socket', socket.default)
+			await this.$store.registerModule('socket', socket.default)
 		}
+
+		this.$store.commit('socket/setSocketConnection')
 	},
 
 	created () {
         if (!this.online) return
         
-        this.getUser()
+		this.getUser()
     },
 
 	computed: {

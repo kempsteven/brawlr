@@ -15,6 +15,16 @@ import { isMobileRegexFunction } from '@/regex'
 import { mapFields } from 'vuex-map-fields'
 
 export default {
+	mounted () {
+		window.addEventListener('offline', () => {
+			this.online = false
+		})
+
+		window.addEventListener('online', () => {
+			this.online = true
+		})
+	},
+
 	computed: {
 		...mapFields('modal', [
             'modalName',
@@ -27,16 +37,6 @@ export default {
 		isMobile () {
 			return isMobileRegexFunction ? '' : '_transition-anim'
 		}
-	},
-
-	mounted () {
-		window.addEventListener('offline', () => {
-			this.online = false
-		})
-
-		window.addEventListener('online', () => {
-			this.online = true
-		})
 	},
 
 	components: {

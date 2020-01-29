@@ -126,8 +126,6 @@ export default {
 			if (this.user._id) {
 				this.socket.removeListener(`${this.user._id}_new_match`)
 			}
-
-			this.socket.disconnect()
 		}
 	},
 
