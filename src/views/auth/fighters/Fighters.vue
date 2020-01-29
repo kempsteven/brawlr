@@ -28,13 +28,11 @@ import * as match from '@/store/match/'
 import * as user from '@/store/user/'
 
 import { mapFields } from 'vuex-map-fields'
-import io from 'socket.io-client'
 
 export default {
 	data() {
 		return {
-			idWatcher: null,
-			socket: io.connect(process.env.VUE_APP_API_URL)
+			idWatcher: null
 		}
 	},
 
@@ -63,6 +61,10 @@ export default {
 	},
 
 	computed: {
+		...mapFields('socket', [
+            'socket'
+		]),
+
 		...mapFields('match', [
 			'userList',
 			'matchedObject',

@@ -1,6 +1,6 @@
 <template>
     <div class="not-found">
-        <h2>Page Not Found :(</h2>
+        <h1>Page not found 😰</h1>
     </div>
 </template>
 
@@ -14,5 +14,7 @@
 .not-found {
     width: 100%;
     height: 100%;
+
+    @include flex-box(center, center, '');
 }
 </style>

@@ -56,15 +56,12 @@
 <script>
 import InputField from '@/components/global/InputField'
 import * as user from '@/store/user/'
-import io from 'socket.io-client'
 import { mapFields } from 'vuex-map-fields'
 
 export default {
     data() {
         return {
             message: '',
-
-            socket: io.connect(process.env.VUE_APP_API_URL)
         }
     },
 
@@ -89,6 +86,10 @@ export default {
     },
 
     computed: {
+        ...mapFields('socket', [
+            'socket'
+        ]),
+
         ...mapFields('user', [
             'user'
         ]),

@@ -15,12 +15,17 @@
 import LayoutHeader from '@/components/home/LayoutHeader'
 import { isMobileRegexFunction } from '@/regex'
 import * as user from '@/store/user/'
+import * as socket from '@/store/socket/'
 import { mapFields } from 'vuex-map-fields'
 
 export default {
 	beforeCreate () {
 		if (!this.$store._modulesNamespaceMap['user/']) {
 			this.$store.registerModule('user', user.default)
+		}
+
+		if (!this.$store._modulesNamespaceMap['socket/']) {
+			this.$store.registerModule('socket', socket.default)
 		}
 	},
 
