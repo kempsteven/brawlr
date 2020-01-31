@@ -13,7 +13,7 @@ const router = new Router({
 
 const guestMiddleware = (next, token, isLoggedIn) => {
     if (token && isLoggedIn) {
-        next({ name: 'home' })
+        next({ name: 'profile' })
     } else {
         next()
     }
@@ -43,7 +43,7 @@ const offlineMiddleware = async (next, routeMiddleware) => {
             return
         }
 
-        next({ name: 'home' })
+        next({ name: 'profile' })
     } else {
         next({ name: 'login' })
     }

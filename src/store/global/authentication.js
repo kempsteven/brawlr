@@ -34,7 +34,7 @@ export const actions = {
         cookies.set('token', data.token, { expires: 36500 })
         state.token = data.token
 
-        await router.push({ name: 'home' })
+        await router.push({ name: 'profile' })
         commit('clearLogin')
         
         state.loading = false
