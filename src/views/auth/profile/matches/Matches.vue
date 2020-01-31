@@ -137,7 +137,7 @@ export default {
                 modalTitle: 'Warning',
                 modalDesc: 'Are you sure you want to unmatch this user?',
                 storeAction: 'match/unMatch',
-                storePayload: { form }
+                storePayload: { form, shouldGetMatchList: true }
             })
         },
 

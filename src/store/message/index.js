@@ -40,11 +40,13 @@ export const state = {
     messageView: {},
 
     /* Get User Info State */
+    userInfo: {},
     userInfoLoading: false,
 
     /* Send Message State */
     sendMessageLoading: false,
-    hasSendMessage: false
+    hasSendMessage: false,
+    hasSentFirstMessage: false
 }
 
 export const actions = {
@@ -88,7 +90,7 @@ export const actions = {
             return
         }
 
-        state.messageView = data
+        state.userInfo = data
     },
 
     async getMessageList ({ dispatch }, payload) {
@@ -148,7 +150,7 @@ export const actions = {
         state.matchListLoading = false
     },
 
-    async sendMessage({ dispatch, commit }, payload) {
+    async sendMessage({ dispatch }, payload) {
         state.sendMessageLoading = true
 
         const { status, data } = await api('post', `/message/send-message`, payload)
@@ -165,14 +167,30 @@ export const actions = {
         }
 
         if (status === 200) {
-            state.activeMessageId = data.conversationId
+            await dispatch('removeMatchById', state.messageView._id)
 
-            await commit('resetUserMatchListPagination')
-            dispatch('getMatchList', true)
+            state.hasSentFirstMessage = true
+            state.activeMessageId = data.conversationId
         }
 
         state.sendMessageLoading = false
         state.hasSendMessage = true
+    },
+
+    removeConversationById ({}, conversationId) {
+        const conversationIdsIndex = state.conversationList.findIndex(x => x._id === conversationId)
+        
+        if (conversationIdsIndex === -1) return
+
+        state.conversationList.splice(conversationIdsIndex, 1)
+    },
+
+    removeMatchById({}, userId) {
+        const matchIndex = state.matchList.findIndex(x => x._id === userId)
+
+        if (matchIndex == -1) return
+
+        state.matchList.splice(matchIndex, 1)
     }
 }
 
@@ -223,6 +241,11 @@ export const mutations = {
         },
 
         state.conversationListLoading = false
+    },
+
+    resetMessageView () {
+        state.activeMessageId = null
+        state.messageView = {}
     }
 }
 

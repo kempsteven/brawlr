@@ -36,6 +36,12 @@ export default {
 		}
 	},
 
+	async beforeRouteLeave (to, from, next) {
+		await this.removeSocketListener()
+
+		next();
+	},
+
 	beforeCreate () {
 		if (!this.$store._modulesNamespaceMap['match/']) {
             this.$store.registerModule('match', match.default)
@@ -57,7 +63,6 @@ export default {
 
 	destroyed () {
 		this.clearUserList()
-		this.removeSocketListener()
 	},
 
 	computed: {
@@ -100,14 +105,14 @@ export default {
 		},
 
 		setSocketListeners () {
-			this.socket.on(`${this.user._id}_new_match`, async (data) => {
+			this.socket.on(`${this.user._id}_new_match`, async ({ socketResponse }) => {
 				await this.$store.dispatch('modal/closeModal', {})
 
 				this.$store.commit('modal/toggleModal', {
 					modalName: 'match-modal',
 				})
 
-				this.matchedObject = data
+				this.matchedObject = socketResponse
 			})
 		},
 
@@ -122,10 +127,9 @@ export default {
 			this.userList = []
 		},
 
-		removeSocketListener () {
-			if (this.user._id) {
-				this.socket.removeListener(`${this.user._id}_new_match`)
-			}
+		/* Before Route Leave Methods */
+		async removeSocketListener () {
+			await this.socket.removeListener(`${this.user._id}_new_match`)
 		}
 	},
 
@@ -173,7 +177,7 @@ export default {
 		/deep/.modal-container {
 			padding: 0;
 			background: none;
-			box-shadow: 0 1px 5px #aaaaaa;
+			// box-shadow: 0 1px 5px #aaaaaa;
 
 			@include mobile {
 				width: 100%;

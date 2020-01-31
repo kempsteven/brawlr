@@ -82,7 +82,9 @@ export default {
             'activeMessageId',
 
             'userInfoLoading',
-            'messageListLoading'
+            'messageListLoading',
+
+            'conversationList'
         ]),
 
         ...mapFields('user', [
@@ -115,11 +117,11 @@ export default {
             this.$router.push('/messages')
         },
 
-        unMatch () {
+        async unMatch () {
             const form = new FormData()
             
-            form.append('userOneId', this.user._id)
-            form.append('userTwoId', this.messageView._id)
+            // form.append('userOneId', this.user._id)
+            form.append('userId', this.messageView._id)
 
             this.$store.commit('modal/toggleModal', {
                 modalName: 'alert-modal',
@@ -127,7 +129,9 @@ export default {
                 modalTitle: 'Warning',
                 modalDesc: 'Are you sure you want to unmatch this user?',
                 storeAction: 'match/unMatch',
-                storePayload: { form, shouldGetConversation: true }
+                storePayload: {
+                    form
+                }
             })
         }
     },

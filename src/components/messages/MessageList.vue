@@ -69,14 +69,14 @@ import { mapFields } from 'vuex-map-fields'
 import moment from 'moment'
 
 export default {
-    data() {
-        return {
-            activeMessage: null
-        }
+    created () {
+        this.setSocketListeners()
     },
 
     destroyed () {
         this.clearConversationList()
+        this.clearMatchList()
+        this.clearSocketListeners()
     },
 
     computed: {
@@ -94,16 +94,23 @@ export default {
 
             messageList: 'messageList',
             messageListPage: 'messageListPagination.page',
-            messageListHasNextPage: 'messageListPagination.hasNextPage'
+            messageListHasNextPage: 'messageListPagination.hasNextPage',
+
+            matchList: 'matchList',
+
+            userInfo: 'userInfo'
         }),
 
         ...mapFields('match', [
-            'matchList',
             'viewDetailsObject'
         ]),
 
         ...mapFields('user', [
             'user'
+        ]),
+
+        ...mapFields('socket', [
+            'socket'
         ]),
 
         isMessageListGettingNextPage () {
@@ -120,6 +127,45 @@ export default {
     },
 
     methods: {
+        /* Created Lifecycle Methods */
+        setSocketListeners () {
+            this.socket.on(`${this.user._id}_update_conversation`, async ({ updatedConversation, isNewConversation }) => {
+                const conversationIndexToBeUpdated = this.conversationList
+                                                        .findIndex(x => x._id === updatedConversation._id)
+
+                const doesConversationExist = conversationIndexToBeUpdated > - 1
+
+                if (doesConversationExist) {
+                    this.conversationList.splice(conversationIndexToBeUpdated, 1)
+                }
+
+                this.conversationList.unshift(updatedConversation)
+
+                if (isNewConversation) {
+                    await this.resetMatchList()
+                    this.setActiveMessageId(updatedConversation)
+                }
+            })
+        },
+
+        async resetMatchList () {
+            await this.$store.commit('message/resetUserMatchList')
+            await this.$store.dispatch('message/getMatchList')
+        },
+
+        setActiveMessageId ({ _id, userOneId, userTwoId }) {
+            const currentUserId = this.user._id
+
+            /* Set which id is not yours in the conversation object */
+            const userId = userOneId === currentUserId
+                                                ? userTwoId
+                                                : userOneId
+            
+            const isOpenenedMessageViewUpdated = userId === this.messageView._id
+            
+            if (isOpenenedMessageViewUpdated) this.activeMessageId = _id
+        },
+
         /* View Message Methods */
         async viewMessage ({ userOneId, userTwoId }, id) {
             if (this.userInfoLoading || this.activeMessageId === id) return
@@ -137,7 +183,9 @@ export default {
 
             this.activeMessageId = id
 
-            this.viewDetailsObject = this.messageView
+            this.messageView = this.userInfo
+
+            this.viewDetailsObject = this.userInfo
 
             if (this.$route.name === 'message-view') return
 
@@ -184,13 +232,14 @@ export default {
         setMessageDate (date) {
             if (!date) return '-'
 
-            const messageDateSent = moment(new Date(date)).format('MM-DD-YYYY')
-            const dateToday = moment(new Date()).format('MM-DD-YYYY')
-            const isMessageNotToday = moment(messageDateSent).isBefore(dateToday)
+            const messageDateSent = moment(new Date(date), moment.ISO_8601).format('MM-DD-YYYY')
+            const dateToday = moment(new Date(), moment.ISO_8601).format('MM-DD-YYYY')
+            const isMessageNotToday = moment(new Date(dateToday), moment.ISO_8601).isBefore(new Date(messageDateSent))
+            // const isMessageNotToday = false
 
             const dateFormat = isMessageNotToday
-                                ? moment(new Date(date)).format('MMM DD')
-                                : moment(new Date(date)).format('HH:mm')
+                                ? moment(new Date(date), moment.ISO_8601).format('MMM DD')
+                                : moment(new Date(date), moment.ISO_8601).format('HH:mm')
 
 
             return dateFormat
@@ -199,6 +248,16 @@ export default {
         /* Destroyed Lifecycle Methods */
         clearConversationList () {
             this.conversationList = []
+        },
+
+        clearMatchList () {
+            this.$store.commit('message/resetUserMatchList')
+        },
+
+        clearSocketListeners () {
+            if (this.user._id) {
+				this.socket.removeListener(`${this.user._id}_update_conversation`)
+			}
         }
     },
 
@@ -331,7 +390,8 @@ export default {
                 }
 
                 .item-message {
-                    flex: 1 1 auto;
+                    width: calc(100% - 50px);
+                    overflow: hidden;
 
                     .message-name {
                         margin-bottom: 5px;
@@ -346,8 +406,7 @@ export default {
                             overflow: hidden;
                             text-overflow: ellipsis;
                             white-space: nowrap;
-                            width: 240px;
-                            flex-shrink: 1;
+                            width: calc(100% - 52px);
 
                             @include mobile {
                                 width: 180px;
@@ -360,7 +419,9 @@ export default {
                             font-size: 13px;
                             line-height: 23px;
                             flex-shrink: 0;
-                            padding-left: 12px;
+                            margin-left: 12px;
+                            width: 40px;
+                            text-align: right;
                         }
                     }
                 }

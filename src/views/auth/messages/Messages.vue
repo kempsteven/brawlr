@@ -62,7 +62,9 @@ export default {
 
             'activeMessageId',
 
-            'messageView'
+            'messageView',
+
+            'userInfo'
         ]),
 
         ...mapFields('match', [
@@ -122,7 +124,9 @@ export default {
 
                 await this.getUserInfo(userId)
 
-                this.viewDetailsObject = this.messageView
+                this.messageView = this.userInfo
+
+                this.viewDetailsObject = this.userInfo
             }
             
 

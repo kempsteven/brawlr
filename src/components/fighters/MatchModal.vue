@@ -51,7 +51,7 @@
         </section>
 
         <section class="control-container">
-            <button class="_primary">
+            <button class="_primary" @click="messageUser()">
                 Message User
             </button>
         </section>
@@ -60,11 +60,25 @@
 
 <script>
 import { mapFields } from 'vuex-map-fields'
+import * as message from '@/store/message/'
 
 export default {
+    beforeCreate () {
+        if (!this.$store._modulesNamespaceMap['message/']) {
+            this.$store.registerModule('message', message.default)
+        }
+    },
+
     computed: {
         ...mapFields('match', [
-			'matchedObject'
+            'matchedObject',
+            'viewDetailsObject'
+        ]),
+
+        ...mapFields('message', [
+            'messageView',
+            'userInfoLoading',
+            'userInfo'
         ]),
         
         currentUserImage () {
@@ -77,6 +91,22 @@ export default {
     },
 
     methods: {
+        async messageUser () {
+            await this.getUserInfo(this.matchedObject.matchedUserId)
+
+            this.userInfoLoading = false
+
+            this.viewDetailsObject = this.userInfo
+
+            if (this.$route.name === 'message-view') return
+
+            this.$router.push('/messages/view')
+        },
+
+        async getUserInfo (userId) {
+            await this.$store.dispatch('message/getUserInfo', userId)
+        },
+
         closeModal () {
             this.$store.dispatch('modal/closeModal', {})
         }

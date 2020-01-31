@@ -97,6 +97,7 @@ export default {
 
         ...mapFields('message', [
             'hasSendMessage',
+            'hasSentFirstMessage',
 
             'messageView',
             
@@ -134,6 +135,12 @@ export default {
         async getMessageList () {
             if (!this.activeMessageId) return
 
+            if (this.hasSentFirstMessage) {
+                this.hasSentFirstMessage = false
+
+                return
+            }
+
             await this.$store.dispatch('message/getMessageList', this.activeMessageId)
 
             setTimeout(() => {
@@ -155,7 +162,6 @@ export default {
             if(!this.activeMessageId) return
 
 			this.socket.on(`${this.activeMessageId}_new_message`, ({ data }) => {
-                
 				this.messageList.push({ 
                     name: data.name,
                     senderId: data.senderId,
@@ -281,6 +287,10 @@ export default {
         /* Destroyed Lifecycle Methods */
         removeSocketConnection () {
             this.socket.removeListener('new_message')
+
+            if (this.activeMessageId) {
+                this.socket.removeListener(`${this.activeMessageId}_new_message`)
+            }
         },
 
         clearMessageList () {
@@ -341,13 +351,12 @@ export default {
         
         .list-item {
             width: 100%;
-            padding: 0px 15px;
+            padding: 0px 15px 2px 15px;
             display: flex;
             align-items: flex-end;
 
             &.own-message {
                 justify-content: flex-end;
-                padding: 2px 15px;
 
                 .img-container {
                     display: none;
@@ -383,6 +392,8 @@ export default {
                 }
 
                 &.is-between-message {
+                    
+
                     .message-text {
                         border-radius: 20px 0px 0px 20px;
                     }
@@ -390,18 +401,13 @@ export default {
             }
 
             .img-container {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
                 border-radius: 50%;
                 overflow: hidden;
                 margin-right: 10px;
                 position: relative;
                 flex-shrink: 0;
-
-                @include mobile {
-                    width: 40px;
-                    height: 40px;
-                }
 
                 .user-img {
                     width: 100%;
@@ -435,7 +441,7 @@ export default {
                     font-size: 13px;
                     background-color: #f1f0f0;
                     border-radius: 20px 20px 20px 20px;
-                    padding: 10px 18px;
+                    padding: 10px 15px;
                     display: inline-block;
                     word-break: break-word;
                 }
@@ -456,6 +462,8 @@ export default {
             }
 
             &.is-last-message {
+                padding-top: 0px;
+
                 .img-container {
                     opacity: 1;
                 }
@@ -470,6 +478,8 @@ export default {
             }
 
             &.is-between-message {
+                // padding-bottom: 2px;
+
                 .img-container {
                     opacity: 0;
                 }

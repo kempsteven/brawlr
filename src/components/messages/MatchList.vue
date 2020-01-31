@@ -37,10 +37,16 @@ import { mapFields } from 'vuex-map-fields'
 export default {
     created () {
         this.getMatchList()
+        this.setSocketListeners()
     },
+
+    // mounted () {
+        
+    // },
 
     destroyed () {
         this.resetMessageView()
+        this.removeSocketListeners()
     },
 
     computed: {
@@ -60,6 +66,14 @@ export default {
             'matchListPagination.hasNextPage',
         ]),
 
+        ...mapFields('socket', [
+            'socket'
+        ]),
+
+        ...mapFields('user', [
+            'user'
+        ]),
+
         isMatchListLoading () {
             return this.matchList.length && this.matchListLoading
         }
@@ -69,6 +83,22 @@ export default {
         /* Created Lifecycle Methods */
         getMatchList () {
             this.$store.dispatch('message/getMatchList')
+        },
+
+        setSocketListeners () {
+            this.socket.on(`${this.user._id}_new_match`, ({ matchedUser }) => {
+				this.matchList.unshift(matchedUser)
+            })
+            
+            this.socket.on(`${this.user._id}_unmatch` , ({ conversationId, unMatchedUserId }) => {
+                if (conversationId) this.$store.dispatch('message/removeConversationById', conversationId)
+
+                this.$store.dispatch('message/removeMatchById', unMatchedUserId, { root: true })
+
+                this.$store.commit('message/resetMessageView', null, { root: true })
+                
+                if (this.$route.name !== 'messages') this.$router.push('/messages')
+            })
         },
 
         /* View Message */
@@ -114,6 +144,11 @@ export default {
         /* Destroyed Lifecycle Methods */
         resetMessageView () {
             this.messageView = {}
+        },
+
+        removeSocketListeners () {
+            this.socket.removeListener(`${this.user._id}_new_match`)
+            this.socket.removeListener(`${this.user._id}_unmatch`)
         }
     },
 

@@ -26,7 +26,6 @@ export default [
 	// ...middleware('*', [
 		{
 			path: '/',
-			name: 'guest',
 			component: Guest,
 
 			children: [
@@ -49,7 +48,6 @@ export default [
 	// ...middleware('*', [
 		{
 			path: '/',
-			name: 'home',
 			component: Home,
 			redirect: '/profile',
 
