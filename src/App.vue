@@ -13,8 +13,17 @@
 <script>
 import { isMobileRegexFunction } from '@/regex'
 import { mapFields } from 'vuex-map-fields'
+import * as socket from '@/store/socket/'
 
 export default {
+	async beforeCreate () {
+		if (!this.$store._modulesNamespaceMap['socket/']) {
+			await this.$store.registerModule('socket', socket.default)
+		}
+
+		this.$store.commit('socket/setSocketConnection')
+	},
+
 	mounted () {
 		window.addEventListener('offline', () => {
 			this.online = false
