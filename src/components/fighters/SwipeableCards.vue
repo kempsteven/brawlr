@@ -2,8 +2,14 @@
     <div class="swipeable-cards">
         <transition name="_transition-anim">
             <loading key="0" v-if="isFightersLoading"/>
+
+            <empty-state
+                key="1"
+                :text="online ? 'No fighters available yet.' : 'No internet connection.'"
+                v-else-if="isFightersNotAvailable"
+            />
             
-            <section class="empty-state" key="1" v-else-if="isFightersNotAvailable">
+            <!-- <section class="empty-state" key="1" v-else-if="isFightersNotAvailable">
                 <img 
                     class="empty-icon" 
                     :src="require('@/assets/img/icon/empty-icon.png')" 
@@ -13,7 +19,7 @@
                 <h2 class="state-label">
                     {{ online ? 'No fighters available yet.' : 'No internet connection.'}}
                 </h2>
-            </section>
+            </section> -->
 
             <section class="card-wrapper" key="2" v-else>
                 <vue2-interact-draggable

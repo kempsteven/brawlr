@@ -50,7 +50,9 @@ export default {
     }
 
     .state-label {
-        color: #fff;
+        // color: #fff;
+
+        color: #949494;
 
         @include mobile {
             font-size: 18px;
