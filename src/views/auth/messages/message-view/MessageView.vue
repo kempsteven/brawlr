@@ -71,8 +71,10 @@ export default {
         this.checkMessageView()
     },
     
-    destroyed () {
+    beforeDestroy () {
         this.messageView = {}
+
+        this.activeMessageId = null
     },
 
     computed: {

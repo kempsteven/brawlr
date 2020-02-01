@@ -57,13 +57,11 @@
 import InputField from '@/components/global/InputField'
 import * as user from '@/store/user/'
 import { mapFields } from 'vuex-map-fields'
-// import io from 'socket.io-client'
 
 export default {
     data() {
         return {
             message: '',
-            // socket: io.connect(process.env.VUE_APP_API_URL, { query: { token: this.$store.state.authentication.token } })
         }
     },
 
