@@ -85,7 +85,7 @@ export default {
         this.setSocketListeners()
     },
 
-    destroyed () {
+    beforeDestroy () {
         this.clearMessageList()
 
         if (!this.online) return
@@ -291,7 +291,7 @@ export default {
             return false
         },
         
-        /* Destroyed Lifecycle Methods */
+        /* beforeDestroy Lifecycle Methods */
         clearMessageList () {
             this.$store.commit('message/resetUserMessageList')
         },

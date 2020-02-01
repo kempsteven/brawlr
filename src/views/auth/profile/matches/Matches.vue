@@ -138,8 +138,7 @@ export default {
         unMatch (match) {
             const form = new FormData()
             
-            form.append('userOneId', this.user._id)
-            form.append('userTwoId', match._id)
+            form.append('userId', match._id)
 
             this.$store.commit('modal/toggleModal', {
                 modalName: 'alert-modal',

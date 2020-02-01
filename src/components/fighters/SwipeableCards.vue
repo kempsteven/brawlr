@@ -4,22 +4,11 @@
             <loading key="0" v-if="isFightersLoading"/>
 
             <empty-state
+                class="empty-state"
                 key="1"
-                :text="online ? 'No fighters available yet.' : 'No internet connection.'"
                 v-else-if="isFightersNotAvailable"
+                :text="emptyStateText"
             />
-            
-            <!-- <section class="empty-state" key="1" v-else-if="isFightersNotAvailable">
-                <img 
-                    class="empty-icon" 
-                    :src="require('@/assets/img/icon/empty-icon.png')" 
-                    alt="Brawlr Empty Icon"
-                >
-
-                <h2 class="state-label">
-                    {{ online ? 'No fighters available yet.' : 'No internet connection.'}}
-                </h2>
-            </section> -->
 
             <section class="card-wrapper" key="2" v-else>
                 <vue2-interact-draggable
@@ -102,6 +91,10 @@ export default {
         ...mapFields('connection-status', [
             'online'
         ]),
+
+        emptyStateText () {
+            return this.online ? 'No fighters available yet.' : 'No internet connection.'
+        },
 
         isFightersLoading () {
             return this.userList && !this.userList.length && this.userListLoading
@@ -208,7 +201,8 @@ export default {
     
     components: {
         Vue2InteractDraggable,
-        Loading: () => import('@/components/global/Loading')
+        Loading: () => import('@/components/global/Loading'),
+        EmptyState: () => import('@/components/global/EmptyState')
     }
 }
 </script>
@@ -221,41 +215,18 @@ export default {
     position: relative;
 
     .empty-state {
-        background-color: #d6d6d6;
-        border-radius: 15px;
         width: 600px;
         height: 800px;
-        position: absolute;
         margin-left: auto;
         margin-right: auto;
         left: 0;
         right: 0;
         top: 30px;
 
-        @include flex-box(center, center, column);
-
         @include mobile {
             width: 95%;
             height: 83%;
             top: 10px;
-        }
-
-        .empty-icon {
-            flex-shrink: 0;
-            width: 150px;
-            margin-bottom: 35px;
-
-            @include mobile {
-                width: 80px;
-            }
-        }
-
-        .state-label {
-            color: #fff;
-
-            @include mobile {
-                font-size: 18px;
-            }
         }
     }
 
