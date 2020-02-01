@@ -44,6 +44,8 @@ export default {
     },
 
     async created () {
+        if (!this.online) return
+        
         await this.getConversationList()
 
         this.setRouteNameWatcher()
@@ -75,6 +77,10 @@ export default {
 
         ...mapFields('user', [
             'user'
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
         ]),
 
         isThereNoSelectedMessage () {

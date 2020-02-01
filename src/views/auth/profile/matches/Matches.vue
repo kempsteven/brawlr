@@ -79,6 +79,8 @@ export default {
     },
 
     created () {
+        if (!this.online) return
+        
         this.getMatchList()
     },
 
@@ -103,6 +105,10 @@ export default {
 
         ...mapFields('user', [
             'user'
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
         ]),
 
         isMatchesAvailable () {

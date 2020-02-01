@@ -37,7 +37,7 @@ export default {
 	},
 
 	async beforeRouteLeave (to, from, next) {
-		await this.removeSocketListener()
+		if (this.online) await this.removeSocketListener()
 
 		next();
 	},
@@ -54,10 +54,14 @@ export default {
     },
 
 	created () {
+		if (!this.online) return
+
 		this.getUser()
 	},
 
 	mounted () {
+		if (!this.online) return
+
 		this.watchUserId()
 	},
 
@@ -82,7 +86,11 @@ export default {
 		
 		...mapFields('modal', [
             'modalName',
-		])
+		]),
+
+		...mapFields('connection-status', [
+            'online'
+        ]),
 	},
 
 	methods: {

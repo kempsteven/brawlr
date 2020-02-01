@@ -72,12 +72,17 @@ import moment from 'moment'
 
 export default {
     created () {
+        if (!this.online) return
+
         this.setSocketListeners()
     },
 
     beforeDestroy () {
         this.clearConversationList()
         this.clearMatchList()
+
+        if (!this.online) return
+        
         this.clearSocketListeners()
     },
 
@@ -114,6 +119,10 @@ export default {
 
         ...mapFields('socket', [
             'socket'
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
         ]),
 
         isMessageListGettingNextPage () {
@@ -195,7 +204,7 @@ export default {
                 this.conversationListLoading = false
                 this.conversationListPage = 1
                 this.conversationListHasNextPage = false
-                
+
                 this.$store.dispatch('message/getConversationList')
 			}, 500)
         },

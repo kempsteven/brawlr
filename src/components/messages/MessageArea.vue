@@ -74,16 +74,23 @@ export default {
     },
 
     async created () {
+        if (!this.online) return
+
         this.getMessageList()
     },
 
     mounted () {
+        if (!this.online) return
+
         this.setSocketListeners()
     },
 
     destroyed () {
-        this.removeSocketConnection()
         this.clearMessageList()
+
+        if (!this.online) return
+
+        this.removeSocketConnection()
     },
 
     computed: {
@@ -285,16 +292,16 @@ export default {
         },
         
         /* Destroyed Lifecycle Methods */
+        clearMessageList () {
+            this.$store.commit('message/resetUserMessageList')
+        },
+
         removeSocketConnection () {
             this.socket.removeListener('new_message')
 
             if (this.activeMessageId) {
                 this.socket.removeListener(`${this.activeMessageId}_new_message`)
             }
-        },
-
-        clearMessageList () {
-            this.$store.commit('message/resetUserMessageList')
         }
     },
 

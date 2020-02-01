@@ -36,16 +36,17 @@ import { mapFields } from 'vuex-map-fields'
 
 export default {
     created () {
+        if (!this.online) return
+
         this.getMatchList()
         this.setSocketListeners()
     },
 
-    // mounted () {
-        
-    // },
-
     destroyed () {
         this.resetMessageView()
+
+        if (!this.online) return
+
         this.removeSocketListeners()
     },
 
@@ -72,6 +73,10 @@ export default {
 
         ...mapFields('user', [
             'user'
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
         ]),
 
         isMatchListLoading () {

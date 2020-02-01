@@ -69,10 +69,6 @@ import { mapFields } from 'vuex-map-fields'
 export default {
     data () {
 		return {
-			cards: [
-				{ src: 'karina.jpg', name: 'Karina', age: 7 },
-            ],
-
             interactEventBus: {
                 draggedRight: 'fight',
                 draggedLeft: 'back-out',
@@ -82,6 +78,8 @@ export default {
     },
 
     created () {
+        if (!this.online) return
+
         this.getUserList()
     },
 
@@ -93,6 +91,10 @@ export default {
             'userListPagination.hasNextPage',
 
             'viewDetailsObject',
+        ]),
+
+        ...mapFields('connection-status', [
+            'online'
         ]),
 
         isFightersLoading () {

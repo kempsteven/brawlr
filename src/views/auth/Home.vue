@@ -4,7 +4,7 @@
 
 		<section class="main-content">
 			<transition :name="isMobile">
-				<router-view v-if="Object.keys(user).length"/>
+				<router-view v-if="Object.keys(user).length || !this.online"/>
 			</transition>
 		</section>
 	</div>
@@ -23,17 +23,17 @@ export default {
 		if (!this.$store._modulesNamespaceMap['user/']) {
 			this.$store.registerModule('user', user.default)
 		}
-
+		
 		if (!this.$store._modulesNamespaceMap['socket/']) {
 			await this.$store.registerModule('socket', socket.default)
 		}
-
-		this.$store.commit('socket/setSocketConnection')
 	},
 
 	created () {
-        if (!this.online) return
-        
+		if (!this.online) return
+		
+		this.$store.commit('socket/setSocketConnection')
+
 		this.getUser()
     },
 
