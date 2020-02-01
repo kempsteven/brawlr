@@ -162,6 +162,7 @@ export default {
 .match-container {
     width: 100%;
     background: #fff;
+    margin-bottom: 15px;
 
     .see-all-container {
         padding-top: 5px;

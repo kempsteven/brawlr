@@ -100,7 +100,9 @@ export default {
 
             if (this.$route.name === 'message-view') return
 
-            this.$router.push('/messages/view')
+            await this.$router.push('/messages/view')
+
+            this.$store.dispatch('modal/closeModal', {})
         },
 
         async getUserInfo (userId) {

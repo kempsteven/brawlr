@@ -5,6 +5,8 @@ export const state = {
     /* Conversation List State */
     conversationList: [],
 
+    conversationListKeyword: '',
+
     conversationListPagination: {
         page: 1,
         totalPages: 1,
@@ -53,7 +55,11 @@ export const actions = {
     async getConversationList ({ dispatch }) {
         state.conversationListLoading = true
 
-        const { status, data } = await api('get', `/message/get-conversation-list?page=${state.conversationListPagination.page}`)
+        let getConversationUrl = `/message/get-conversation-list?page=${state.conversationListPagination.page}`
+
+        if (state.conversationListKeyword) getConversationUrl += `&keyword=${state.conversationListKeyword}`
+
+        const { status, data } = await api('get', getConversationUrl)
 
         // if error
         if (status !== 200) {
@@ -65,10 +71,14 @@ export const actions = {
             return
         }
 
-        state.conversationList = [
-            ...state.conversationList,
-            ...data.docs
-        ]
+        const isConversationEmpty = !state.conversationList.length
+        
+        state.conversationList = isConversationEmpty
+                                    ? data.docs
+                                    : [
+                                        ...state.conversationList,
+                                        ...data.docs
+                                    ]
         
         state.conversationListPagination.totalPages = data.totalPages
         state.conversationListPagination.hasNextPage = data.hasNextPage
@@ -233,6 +243,8 @@ export const mutations = {
 
     resetConversationList () {
         state.conversationList = []
+
+        state.conversationListKeyword = ''
 
         state.conversationListPagination = {
             page: 1,

@@ -9,6 +9,8 @@
                 class="input-field"
                 placeholder="Search Messages"
                 type="text"
+                v-model="conversationListKeyword"
+                @input="searchConversationList()"
             />
         </section>
 
@@ -82,6 +84,7 @@ export default {
     computed: {
         ...mapFields('message', {
             conversationList: 'conversationList',
+            conversationListKeyword: 'conversationListKeyword',
             conversationListLoading: 'conversationListLoading',
             conversationListPage: 'conversationListPagination.page',
             conversationListHasNextPage: 'conversationListPagination.hasNextPage',
@@ -148,9 +151,10 @@ export default {
             })
         },
 
+        /* Update Conversation Socket Listener Methods */
         async resetMatchList () {
-            await this.$store.commit('message/resetUserMatchList')
-            await this.$store.dispatch('message/getMatchList')
+            await this.$store.commit('message/resetUserMatchListPagination')
+            await this.$store.dispatch('message/getMatchList', true)
         },
 
         setActiveMessageId ({ _id, userOneId, userTwoId }) {
@@ -164,6 +168,36 @@ export default {
             const isOpenenedMessageViewUpdated = userId === this.messageView._id
             
             if (isOpenenedMessageViewUpdated) this.activeMessageId = _id
+        },
+
+        /* Get Conversation List Next Page */
+        getConversationNextPage () {
+            const { scrollTop, scrollHeight, clientHeight } = this.$refs.conversationList
+            const isScrolledToBottom = scrollTop === scrollHeight - clientHeight
+
+            if (
+                isScrolledToBottom
+                && this.conversationListHasNextPage
+                && !this.conversationListLoading
+            ) {
+                this.conversationListPage++
+                
+                this.$store.dispatch('message/getConversationList')
+            }
+        },
+
+        /* Search Conversation List */
+        searchConversationList () {
+            clearTimeout(this.timeout)
+
+			this.timeout = setTimeout(() => {
+                this.conversationList = []
+                this.conversationListLoading = false
+                this.conversationListPage = 1
+                this.conversationListHasNextPage = false
+                
+                this.$store.dispatch('message/getConversationList')
+			}, 500)
         },
 
         /* View Message Methods */
@@ -194,22 +228,6 @@ export default {
 
         async getUserInfo (userId) {
             await this.$store.dispatch('message/getUserInfo', userId)
-        },
-
-        /* Get Conversation List Next Page */
-        getConversationNextPage () {
-            const { scrollTop, scrollHeight, clientHeight } = this.$refs.conversationList
-            const isScrolledToBottom = scrollTop === scrollHeight - clientHeight
-
-            if (
-                isScrolledToBottom
-                && this.conversationListHasNextPage
-                && !this.conversationListLoading
-            ) {
-                this.conversationListPage++
-                
-                this.$store.dispatch('message/getConversationList')
-            }
         },
 
         /* Template Functions */
@@ -245,9 +263,9 @@ export default {
             return dateFormat
         },
 
-        /* Destroyed Lifecycle Methods */
+        /* Before Destroy Lifecycle Methods */
         clearConversationList () {
-            this.conversationList = []
+            this.$store.commit('message/resetConversationList')
         },
 
         clearMatchList () {

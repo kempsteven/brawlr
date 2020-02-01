@@ -89,8 +89,6 @@ export default {
     methods: {
         /* Created Lifecycle Methods */
         async getConversationList () {
-            this.conversationList = []
-            
             await this.$store.dispatch('message/getConversationList')
         },
 
