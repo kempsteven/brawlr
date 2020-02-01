@@ -201,6 +201,8 @@ export default {
 
         /* Search Conversation List */
         searchConversationList () {
+            if (!this.online) return
+            
             clearTimeout(this.timeout)
 
 			this.timeout = setTimeout(() => {

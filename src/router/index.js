@@ -45,6 +45,12 @@ const offlineMiddleware = async (next, routeMiddleware) => {
 
         next({ name: 'profile' })
     } else {
+        if (routeMiddleware === 'guest') {
+            next()
+
+            return
+        }
+
         next({ name: 'login' })
     }
 }
