@@ -10,7 +10,7 @@
 
                 <transition :name="transitionAnim">
                     <empty-state
-                        text="No message selected"
+                        :text="emptyStateText"
                         v-if="isThereNoSelectedMessage"
                     />
                 </transition>
@@ -45,7 +45,7 @@ export default {
 
     async created () {
         if (!this.online) return
-        
+
         await this.getConversationList()
 
         this.setRouteNameWatcher()
@@ -82,6 +82,10 @@ export default {
         ...mapFields('connection-status', [
             'online'
         ]),
+
+        emptyStateText () {
+            return this.online ? 'No message selected.' : 'No internet connection.'
+        },
 
         isThereNoSelectedMessage () {
             return !Object.keys(this.messageView).length && !this.isMobileViewPort && !this.conversationListLoading

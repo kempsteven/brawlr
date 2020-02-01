@@ -20,7 +20,7 @@
             <loading v-if="isMessageListLoading"/>
 
             <empty-state
-                text="No message available yet"
+                :text="emptyStateText"
                 v-else-if="isConversationEmpty"
             />
 
@@ -82,7 +82,7 @@ export default {
         this.clearMatchList()
 
         if (!this.online) return
-        
+
         this.clearSocketListeners()
     },
 
@@ -124,6 +124,10 @@ export default {
         ...mapFields('connection-status', [
             'online'
         ]),
+
+        emptyStateText () {
+            return this.online ? 'No message available yet.' : 'No internet connection.'
+        },
 
         isMessageListGettingNextPage () {
             return this.conversationList.length && this.conversationListLoading

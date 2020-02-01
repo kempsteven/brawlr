@@ -11,7 +11,7 @@
                 >
 
                 <h2 class="state-label">
-                    No fighters available yet.
+                    {{ online ? 'No fighters available yet.' : 'No internet connection.'}}
                 </h2>
             </section>
 

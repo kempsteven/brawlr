@@ -6,7 +6,7 @@
 
                 <empty-state
                     key="1"
-                    text="No matches available yet."
+                    :text="emptyStateText"
                     v-else-if="isMatchesAvailable"
                 />
 
@@ -80,7 +80,7 @@ export default {
 
     created () {
         if (!this.online) return
-        
+
         this.getMatchList()
     },
 
@@ -110,6 +110,10 @@ export default {
         ...mapFields('connection-status', [
             'online'
         ]),
+
+        emptyStateText () {
+            return this.online ? 'No matches available yet.' : 'No internet connection.'
+        },
 
         isMatchesAvailable () {
             return this.matchList && !this.matchList.length && !this.matchListLoading
