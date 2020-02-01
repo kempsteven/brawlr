@@ -294,12 +294,10 @@ export default {
             this.$store.commit('message/resetUserMessageList')
         },
 
-        removeSocketConnection () {
-            this.socket.removeListener('new_message')
+        async removeSocketConnection () {
+            await this.socket.removeListener(`${this.activeMessageId}_new_message`)
 
-            if (this.activeMessageId) {
-                this.socket.removeListener(`${this.activeMessageId}_new_message`)
-            }
+            this.activeMessageId = null
         }
     },
 
