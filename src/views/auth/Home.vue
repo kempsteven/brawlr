@@ -4,7 +4,7 @@
 
 		<section class="main-content">
 			<transition :name="isMobile">
-				<router-view v-if="user._id"/>
+				<router-view v-if="Object.keys(user).length"/>
 			</transition>
 		</section>
 	</div>
