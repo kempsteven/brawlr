@@ -30,7 +30,8 @@ export default {
 
 <style lang="scss" scoped>
 .empty-state {
-    background-color: #d6d6d6;
+    background-color: #f9f9f9;
+    // background-color: #d6d6d6;
     border-radius: 15px;
     width: 100%;
     height: 100%;
