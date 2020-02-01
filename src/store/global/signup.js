@@ -3,13 +3,13 @@ import { getField, updateField } from 'vuex-map-fields'
 
 export const state = {
     signup: {
-        firstName: 'Steven',
-        lastName: 'Frost',
-        email: 'hehe@mailinator.com',
-        password: '123123',
-        confirmPassword: '123123',
-        gender: { "id": 0, "value": "Male" },
-        age: 99
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        gender: {},
+        age: ''
     },
 
     loading: false

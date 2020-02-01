@@ -64,7 +64,9 @@ export default {
 
             'messageView',
 
-            'userInfo'
+            'userInfo',
+
+            'userInfoLoading'
         ]),
 
         ...mapFields('match', [
@@ -130,7 +132,9 @@ export default {
             }
             
 
-            if (this.$route.name !== 'message-view') this.$router.push('/messages/view')
+            if (this.$route.name !== 'message-view' && this.$route.name === 'messages') {
+                this.$router.push('/messages/view')
+            }
         },
 
         async getUserInfo (userId) {

@@ -148,7 +148,7 @@ export default {
 
                 // When scrolling for next page set
                 if (this.page !== 1) {
-                    this.$refs.messageList.scrollTop = 812
+                    this.$refs.messageList.scrollTop = 790
 
                     return
                 }

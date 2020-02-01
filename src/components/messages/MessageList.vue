@@ -73,7 +73,7 @@ export default {
         this.setSocketListeners()
     },
 
-    destroyed () {
+    beforeDestroy () {
         this.clearConversationList()
         this.clearMatchList()
         this.clearSocketListeners()
