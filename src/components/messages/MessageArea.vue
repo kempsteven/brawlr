@@ -296,8 +296,6 @@ export default {
 
         async removeSocketConnection () {
             await this.socket.removeListener(`${this.activeMessageId}_new_message`)
-
-            this.activeMessageId = null
         }
     },
 

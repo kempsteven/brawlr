@@ -117,10 +117,14 @@ export const actions = {
             return
         }
 
-        state.messageList = [
-            ...data.docs.reverse(),
-            ...state.messageList
-        ]
+        const isPageOne = state.messageListPagination.page === 1
+
+        state.messageList = isPageOne
+                                ? data.docs.reverse()
+                                : [
+                                    ...data.docs.reverse(),
+                                    ...state.messageList
+                                ]
 
         state.messageListPagination.totalPages = data.totalPages
         state.messageListPagination.hasNextPage = data.hasNextPage
