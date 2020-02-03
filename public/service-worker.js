@@ -64,7 +64,6 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('push', e => {
     const data = e.data.json()
-    console.log(e)
     console.log('Push Received')
 
     self.registration.showNotification(data.title, {
