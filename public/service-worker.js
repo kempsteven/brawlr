@@ -68,8 +68,8 @@ self.addEventListener('push', e => {
     console.log('Push Received')
 
     self.registration.showNotification(data.title, {
-        body: 'Yow yow niggaz, you are Notified',
-        icon: 'https://brawlr.netlify.com/img/icons/favicon-32x32.png'
+        body: data.message,
+        icon: data.url
     })
 
     self.addEventListener('notificationclick', function (event) {
