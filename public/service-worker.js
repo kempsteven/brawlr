@@ -69,7 +69,7 @@ self.addEventListener('push', e => {
 
     self.registration.showNotification(data.title, {
         body: data.message,
-        icon: data.url
+        icon: '/img/icons/favicon-32x32.png'
     })
 
     self.addEventListener('notificationclick', function (event) {
