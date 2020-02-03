@@ -60,3 +60,38 @@ self.addEventListener('activate', (event) => {
         })
     }
 })
+
+
+self.addEventListener('push', e => {
+    const data = e.data.json()
+    console.log(e)
+    console.log('Push Received')
+
+    self.registration.showNotification(data.title, {
+        body: 'Yow yow niggaz, you are Notified',
+        icon: 'https://brawlr.netlify.com/img/icons/favicon-32x32.png'
+    })
+
+    self.addEventListener('notificationclick', function (event) {
+        var found = false;
+        event.waitUntil(
+            clients.matchAll().then(function (clientsArr) {
+                for (i = 0; i < clientsArr.length; i++) {
+                    if (clientsArr[i].url === data.url) {
+                        // We already have a window to use, focus it.
+                        found = true;
+                        clientsArr[i].focus();
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    // Create a new window.
+                    clients.openWindow(data.url).then(function (windowClient) {
+                        // do something with the windowClient.
+                    });
+                }
+            })
+        );
+    });
+})
