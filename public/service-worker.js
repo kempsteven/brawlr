@@ -29,13 +29,6 @@ workbox.routing.registerRoute(
     })
 );
 
-// install new service worker when ok, then reload page.
-// self.addEventListener("message", msg => {
-//     if (msg.data.action == 'skipWaiting') {
-//         self.skipWaiting()
-//     }
-// })
-
 workbox.skipWaiting()
 workbox.clientsClaim()
 
@@ -72,8 +65,8 @@ self.addEventListener('push', e => {
     })
 
     self.addEventListener('notificationclick', (event) => {
-        console.log(event.data.json())
         var found = false;
+
         event.waitUntil(
             clients.matchAll().then(function (clientsArr) {
                 for (i = 0; i < clientsArr.length; i++) {
