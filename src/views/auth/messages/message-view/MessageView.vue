@@ -93,6 +93,10 @@ export default {
             'user'
         ]),
 
+        ...mapFields('socket', [
+            'socket'
+        ]),
+
         userName () {
             return Object.keys(this.messageView).length ? `${this.messageView.firstName} ${this.messageView.lastName}` : ''
         },
@@ -113,7 +117,9 @@ export default {
             }
         },
 
-        goBackToMessages () {
+        async goBackToMessages () {
+            await this.removeSocketConnection()
+            
             this.activeMessageId = null
             
             this.$router.push('/messages')
@@ -135,6 +141,10 @@ export default {
                     form
                 }
             })
+        },
+
+        async removeSocketConnection () {
+            await this.socket.removeListener(`${this.activeMessageId}_new_message`)
         }
     },
 
