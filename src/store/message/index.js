@@ -71,7 +71,7 @@ export const actions = {
             return
         }
 
-        const isConversationEmpty = !state.conversationList.length
+        const isConversationEmpty = state.conversationListPagination.page === 1
         
         state.conversationList = isConversationEmpty
                                     ? data.docs
