@@ -35,7 +35,10 @@ workbox.clientsClaim()
 const LATEST_VERSION = Math.random().toString(36).substr(2, 9)
 
 self.addEventListener('activate', async (event) => {
-    console.log(`%c ${LATEST_VERSION} `, 'background: #ddd; color: #0000ff')
+    console.log(
+        `%c ${LATEST_VERSION} `,
+        'background: #ddd; color: #0000ff'
+    )
 
     if (!caches) return
 
@@ -47,16 +50,7 @@ self.addEventListener('activate', async (event) => {
         const matchedOpenedCache = await openedCacheKey.match('version')
 
         if (!matchedOpenedCache) {
-            openedCacheKey.put(
-                'version',
-                new Response(
-                    LATEST_VERSION,
-                    { 
-                        status: 200,
-                        statusText: LATEST_VERSION
-                    }
-                )
-            )
+            openedCacheKey.put('version', new Response(LATEST_VERSION, { status: 200, statusText: LATEST_VERSION }))
 
             return
         }
@@ -65,7 +59,10 @@ self.addEventListener('activate', async (event) => {
             try {
                 await caches.delete(key)
 
-                console.log(`%c Cleared Cache ${LATEST_VERSION}`, 'background: #333; color: #ff0000')
+                console.log(
+                    `%c Cleared Cache ${LATEST_VERSION}`,
+                    'background: #333; color: #ff0000'
+                )
             } catch (error) {
                 console.log(error)
             }
@@ -73,7 +70,10 @@ self.addEventListener('activate', async (event) => {
             return
         }
 
-        console.log(`%c Great you have the latest version ${LATEST_VERSION}`, 'background: #333; color: #00ff00')
+        console.log(
+            `%c Great you have the latest version ${LATEST_VERSION}`,
+            'background: #333; color: #00ff00'
+        )
     })
     
 })
