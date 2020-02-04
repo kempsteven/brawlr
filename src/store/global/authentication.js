@@ -34,7 +34,7 @@ export const actions = {
 
         const cookieOptions = isInDevelopment
                                 ? { expires: 36500 }
-                                : { expires: 36500, secure: true, samesite: 'strict' }
+                                : { expires: 36500, secure: true, samesite: 'none' }
 
         //setting of token
         cookies.set('token', data.token, cookieOptions)
