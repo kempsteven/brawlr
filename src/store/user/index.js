@@ -205,10 +205,13 @@ export const mutations = {
 
     clearUserForm () {
         state.userForm = {
+            firstName: '',
+            lastName: '',
+            age: '',
             bio: '',
             fighterType: '',
-            location: {},
-            gender: {},
+            location: { },
+            gender: { },
             organization: ''
         }
     }
