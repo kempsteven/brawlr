@@ -267,8 +267,7 @@ export default {
 
             const messageDateSent = moment(new Date(date), moment.ISO_8601).format('MM-DD-YYYY')
             const dateToday = moment(new Date(), moment.ISO_8601).format('MM-DD-YYYY')
-            const isMessageNotToday = moment(new Date(dateToday), moment.ISO_8601).isBefore(new Date(messageDateSent))
-            // const isMessageNotToday = false
+            const isMessageNotToday = dateToday !== messageDateSent
 
             const dateFormat = isMessageNotToday
                                 ? moment(new Date(date), moment.ISO_8601).format('MMM DD')
