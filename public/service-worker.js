@@ -71,8 +71,8 @@ self.addEventListener('push', e => {
         icon: '/favicon.png'
     })
 
-    self.addEventListener('notificationclick', function (event) {
-        console.log(event)
+    self.addEventListener('notificationclick', (event) => {
+        console.log(event.data.json())
         var found = false;
         event.waitUntil(
             clients.matchAll().then(function (clientsArr) {
