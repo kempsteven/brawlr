@@ -47,7 +47,7 @@ self.addEventListener('activate', async (event) => {
         const matchedOpenedCache = await openedCacheKey.match('version')
 
         if (!matchedOpenedCache) {
-            cache.put(
+            openedCacheKey.put(
                 'version',
                 new Response(
                     LATEST_VERSION,
