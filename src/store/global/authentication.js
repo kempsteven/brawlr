@@ -30,8 +30,15 @@ export const actions = {
             return
         }
 
+        const isInDevelopment = process.env.NODE_ENV === 'development'
+
+        const cookieOptions = isInDevelopment
+                                ? { expires: 36500 }
+                                : { expires: 36500, secure: true }
+
         //setting of token
-        cookies.set('token', data.token, { expires: 36500 })
+        cookies.set('token', data.token, cookieOptions)
+
         state.token = data.token
 
         await router.push({ name: 'profile' })
