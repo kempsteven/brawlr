@@ -68,10 +68,11 @@ self.addEventListener('push', e => {
 
     self.registration.showNotification(data.title, {
         body: data.message,
-        icon: '/img/icons/favicon-32x32.png'
+        icon: '/favicon.png'
     })
 
     self.addEventListener('notificationclick', function (event) {
+        console.log(event)
         var found = false;
         event.waitUntil(
             clients.matchAll().then(function (clientsArr) {
