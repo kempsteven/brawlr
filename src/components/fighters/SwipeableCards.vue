@@ -13,7 +13,10 @@
             <section class="card-wrapper" key="2" v-else>
                 <vue2-interact-draggable
                     class="card"
-                    :class="{ 'disabled' : key !== 0 }"
+                    :class="{
+                        'disabled' : key !== 0,
+                        'brawl': card.hasBrawledCurrentUser === true && key === 0
+                    }"
                     v-for="(card, key) in userList"
                     :key="userList.length - key"
                     :style="`z-index: ${userList.length - key}`"
@@ -38,6 +41,10 @@
                             alt="fighter-image"
                             v-if="card.profilePictures"
                         >
+
+                        <section class="brawl-label" v-if="card.hasBrawledCurrentUser === true && key === 0">
+                            B R A W L
+                        </section>
 
                         <section class="detail-name">
                             {{ `${card.firstName} | ${card.age} | ${card.gender.value}` | capitalize }}
@@ -251,9 +258,15 @@ export default {
             top: 30px;
             touch-action: none;
             background-color: #ddd;
+            transition: border box-shadow 0.2s;
 
             &.disabled {
                 pointer-events: none;
+            }
+
+            &.brawl {
+                box-shadow: -2px 2px 25px $red;
+                border: 1px solid $red;
             }
 
             @include mobile {
@@ -275,6 +288,21 @@ export default {
                     margin-left: 50%;
                     transform: translateX(-50%);
                     transition: 1s;
+                }
+
+                .brawl-label {
+                    position: absolute;
+                    top: 15px;
+                    color: #fff;
+                    font-weight: 600;
+                    font-size: 24px;
+                    text-shadow: 2px 2px 15px #ff0000;
+                    white-space: nowrap;
+                    opacity: 0;
+                    width: 100%;
+                    text-align: center;
+
+                    @include fadeinfromtop(0.2s, 0.6s);
                 }
                 
                 .detail-name {
