@@ -15,6 +15,15 @@
 
 		<transition name="_transition-anim">
 			<modal
+				class="match-container"
+				v-if="modalName.includes('countdown-modal')"
+			>
+				<countdown-modal slot="content"/>
+			</modal>
+		</transition>
+
+		<transition name="_transition-anim">
+			<modal
 				class="view-details-container"
 				v-if="modalName.includes('view-details-modal')"
 			>
@@ -145,6 +154,7 @@ export default {
 		SwipeableCards: () => import('@/components/fighters/SwipeableCards'),
 		Modal: () => import('@/components/global/Modal'),
 		MatchModal: () => import('@/components/fighters/MatchModal'),
+		CountdownModal: () => import('@/components/fighters/CountdownModal'),
 		ViewDetails: () => import('@/components/profile/matches/ViewDetails'),
 	},
 }
@@ -180,7 +190,7 @@ export default {
 	}
 
 	.match-container {
-		background: rgba(0, 0, 0, 0.7);
+		background: rgba(0, 0, 0, 0.8);
 
 		/deep/.modal-container {
 			padding: 0;

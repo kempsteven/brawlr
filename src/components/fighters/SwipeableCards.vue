@@ -10,7 +10,7 @@
                 :text="emptyStateText"
             />
 
-            <section class="card-wrapper" key="2" v-else>
+            <section class="card-wrapper" :key="2 + isNoRemaining" v-else>
                 <vue2-interact-draggable
                     class="card"
                     :class="{
@@ -43,7 +43,7 @@
                         >
 
                         <section class="brawl-label" v-if="card.hasBrawledCurrentUser === true && key === 0">
-                            B R A W L
+                            L E T ' S &nbsp; B R A W L
                         </section>
 
                         <section class="detail-name">
@@ -93,6 +93,7 @@ export default {
             'userListPagination.hasNextPage',
 
             'viewDetailsObject',
+            'isNoRemaining'
         ]),
 
         ...mapFields('connection-status', [
@@ -185,7 +186,12 @@ export default {
             form.append('challengedId', user._id)
             form.append('challengeType', challengeType)
 
-            this.$store.dispatch('match/challengeUser', form)
+            await this.$store.dispatch('match/challengeUser', form)
+
+            if (this.isNoRemaining) {
+                this.userList.unshift(user)
+                this.isNoRemaining = false
+            }
         },
 
         isCurrentCard (position) {
@@ -257,7 +263,7 @@ export default {
             overflow: hidden;
             top: 30px;
             touch-action: none;
-            background-color: #ddd;
+            background-color: #292929;
             transition: border box-shadow 0.2s;
 
             &.disabled {
@@ -281,7 +287,6 @@ export default {
                 height: 100%;
                 pointer-events: none;
                 z-index: 0;
-                background-color: #ddd;
 
                 .fighter-img {
                     height: 100%;
@@ -292,10 +297,10 @@ export default {
 
                 .brawl-label {
                     position: absolute;
-                    top: 15px;
+                    top: 25px;
                     color: #fff;
                     font-weight: 600;
-                    font-size: 24px;
+                    font-size: 32px;
                     text-shadow: 2px 2px 15px #ff0000;
                     white-space: nowrap;
                     opacity: 0;
@@ -303,6 +308,10 @@ export default {
                     text-align: center;
 
                     @include fadeinfromtop(0.2s, 0.6s);
+
+                    @include mobile {
+                        font-size: 24px;
+                    }
                 }
                 
                 .detail-name {

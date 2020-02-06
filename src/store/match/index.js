@@ -33,7 +33,13 @@ export const state = {
     challengeUserLoading: false,
 
     /* Unmatch User Loading */
-    unMatchLoading: false
+    unMatchLoading: false,
+
+    /* Countdown State */
+    resetDate: null,
+    currentDate: null,
+    challengeType: null,
+    isNoRemaining: false
 }
 
 export const actions = {
@@ -92,6 +98,14 @@ export const actions = {
 
         // if error
         if (status !== 200) {
+            const isBrawlFightLimit = status === 422 && data.resetDate
+
+            if (isBrawlFightLimit) {
+                dispatch('setCountdownModal', data)
+                state.isNoRemaining = true
+                return
+            }
+
             dispatch(
                 'modal/errorModal',
                 data.message || 'Sorry, Something went wrong.',
@@ -102,6 +116,16 @@ export const actions = {
         }
 
         state.challengeUserLoading = false
+    },
+
+    setCountdownModal({ commit }, payload) {
+        state.resetDate = payload.resetDate
+        state.currentDate = payload.currentDate
+        state.challengeType = payload.challengeType
+
+        commit('modal/toggleModal', {
+            modalName: 'countdown-modal',
+        }, { root: true })
     },
 
     async unMatch({ dispatch, commit }, { form, shouldGetMatchList }) {
@@ -150,6 +174,11 @@ export const mutations = {
         }
 
         state.matchListLoading = false
+    },
+
+    clearCountdownState () {
+        state.currentDate = null
+        state.currentTime = null
     }
 }
 
