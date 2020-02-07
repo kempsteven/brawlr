@@ -1,11 +1,23 @@
 import axios from 'axios'
 import store from './'
+import { setupCache } from 'axios-cache-adapter'
 
-axios.defaults.baseURL = process.env.VUE_APP_API_URL
+
+// Create `axios-cache-adapter` instance
+const cache = setupCache({
+    maxAge: 15 * 60 * 1000
+})
+
+const axiosInstance = axios.create({
+    baseURL: process.env.VUE_APP_API_URL,
+    adapter: cache.adapter
+});
+
+// axios.defaults.baseURL = process.env.VUE_APP_API_URL
 
 // axios.defaults.baseURL = 'https://brawlr-backend.herokuapp.com'
 
-axios.interceptors.request.use(request => {
+axiosInstance.interceptors.request.use(request => {
     const token = store.getters['authentication/getField']('token')
 
     if (token) {
@@ -34,7 +46,7 @@ export default async (method, url, payload) => {
     }
 
     try {
-        const response = await axios[method](url, payload)
+        const response = await axiosInstance[method](url, payload, {  })
 
         return {
             status: response.status,
